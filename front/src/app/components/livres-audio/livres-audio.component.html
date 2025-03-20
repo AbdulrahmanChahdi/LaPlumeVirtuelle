@@ -1,0 +1,109 @@
+<div class="livres-audio-container">
+  <!-- Section des filtres -->
+  <div class="filters-section">
+    <div class="search-container">
+      <input
+        type="text"
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="onSearch($event)"
+        placeholder="Rechercher un livre audio..."
+        class="search-input"
+      >
+      <i class="fas fa-search search-icon"></i>
+    </div>
+
+    <div class="filters-row">
+      <div class="filter-group">
+        <label>Catégorie</label>
+        <select
+          [ngModel]="selectedCategory"
+          (ngModelChange)="onCategoryChange($event)"
+          class="filter-select"
+        >
+          <option value="">Toutes les catégories</option>
+          <option *ngFor="let category of categories" [value]="category.id">
+            {{category.nom}}
+          </option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Durée maximale</label>
+        <select
+          [(ngModel)]="selectedDuration"
+          (ngModelChange)="onDurationChange($event)"
+          class="filter-select"
+        >
+          <option value="">Toutes les durées</option>
+          <option value="1">Moins d'1 heure</option>
+          <option value="2">Moins de 2 heures</option>
+          <option value="5">Moins de 5 heures</option>
+          <option value="10">Moins de 10 heures</option>
+          <option value="20">Moins de 20 heures</option>
+        </select>
+      </div>
+
+      <button class="reset-filters" (click)="resetFilters()" [class.visible]="hasActiveFilters">
+        <i class="fas fa-times"></i>
+        Réinitialiser les filtres
+      </button>
+    </div>
+  </div>
+
+  <!-- Message d'erreur -->
+  <div *ngIf="error" class="error-message">
+    <i class="fas fa-exclamation-circle"></i>
+    {{ error }}
+  </div>
+
+  <!-- Loading spinner -->
+  <div *ngIf="loading" class="loading-spinner">
+    <div class="spinner"></div>
+    <p>Chargement des livres audio...</p>
+  </div>
+
+  <!-- Grille des livres audio -->
+  <div *ngIf="!loading && !error" class="livres-audio-grid">
+    <div *ngFor="let livreAudio of filteredLivresAudio" class="livre-audio-card">
+      <div class="livre-audio-cover">
+        <img [src]="livreAudio.livre?.imageUrl || 'assets/images/default-book.png'" alt="Couverture">
+        <div class="duration-badge">
+          <i class="fas fa-clock"></i>
+          {{livreAudio.duree}}
+        </div>
+      </div>
+      <div class="livre-audio-info">
+        <h3 class="titre">{{livreAudio.titre}}</h3>
+        <p class="narrateur">
+          <i class="fas fa-microphone"></i>
+          Lu par {{livreAudio.narrateur}}
+        </p>
+        <p class="auteur">
+          <i class="fas fa-pen"></i>
+          {{livreAudio.livre?.auteur?.nom}}
+        </p>
+        <p class="categorie">
+          <i class="fas fa-bookmark"></i>
+          {{livreAudio.livre?.categorie?.nom}}
+        </p>
+        <div class="actions">
+          <button class="btn-ecouter">
+            <i class="fas fa-play"></i>
+            Écouter
+          </button>
+          <button class="btn-telecharger">
+            <i class="fas fa-download"></i>
+            Télécharger
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Message si aucun livre audio -->
+  <div *ngIf="!loading && !error && filteredLivresAudio.length === 0" class="no-results">
+    <i class="fas fa-search"></i>
+    <p>Aucun livre audio ne correspond à votre recherche.</p>
+    <button class="reset-search" (click)="resetFilters()">Réinitialiser la recherche</button>
+  </div>
+</div>

@@ -17,4 +17,12 @@ public interface LivreAudioService {
 	 LivreAudio saveLivreAudio(LivreAudio livreAudio);
 	
 	 void deleteLivreAudioById(Long id);
+	
+	 List<LivreAudio> searchLivresAudio(String searchTerm);
+	
+	 List<LivreAudio> findByCategorie(Long categorieId);
+	
+	 List<LivreAudio> findByDureeLessThanEqual(int heures);
+	
+	 List<LivreAudio> findWithFilters(String searchTerm, Long categorieId, Integer dureeMax);
 }

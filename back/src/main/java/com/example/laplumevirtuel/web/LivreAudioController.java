@@ -15,8 +15,29 @@ public class LivreAudioController {
 	private LivreAudioService livreAudioService;
 	
 	@GetMapping
-	public List<LivreAudio> getAllLivreAudios() {
+	public List<LivreAudio> getAllLivreAudios(
+			@RequestParam(required = false) String search,
+			@RequestParam(required = false) Long categorieId,
+			@RequestParam(required = false) Integer dureeMax) {
+		if (search != null || categorieId != null || dureeMax != null) {
+			return livreAudioService.findWithFilters(search, categorieId, dureeMax);
+		}
 		return livreAudioService.getAllLivreAudios();
+	}
+	
+	@GetMapping("/search")
+	public List<LivreAudio> searchLivresAudio(@RequestParam String term) {
+		return livreAudioService.searchLivresAudio(term);
+	}
+	
+	@GetMapping("/categorie/{categorieId}")
+	public List<LivreAudio> getLivresByCategorie(@PathVariable Long categorieId) {
+		return livreAudioService.findByCategorie(categorieId);
+	}
+	
+	@GetMapping("/duree/{heures}")
+	public List<LivreAudio> getLivresByDuree(@PathVariable int heures) {
+		return livreAudioService.findByDureeLessThanEqual(heures);
 	}
 	
 	@GetMapping("/{id}")

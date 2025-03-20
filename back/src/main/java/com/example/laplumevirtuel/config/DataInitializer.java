@@ -133,6 +133,7 @@ public class DataInitializer implements CommandLineRunner {
             lesMiserables.setResume("Un chef-d'œuvre de la littérature française");
             lesMiserables.setDisponible(true);
             lesMiserables.setNombreDePage(1500);
+            lesMiserables.setImageUrl("https://m.media-amazon.com/images/I/71W4ZP0-RQL._AC_UF1000,1000_QL80_.jpg");
             lesMiserables.setCategorie(roman);
             lesMiserables.setAuteur(hugo);
             lesMiserables.setEditeurs(new HashSet<>(Arrays.asList(gallimard)));
@@ -145,6 +146,7 @@ public class DataInitializer implements CommandLineRunner {
             tourDuMonde.setResume("Une aventure extraordinaire autour du monde");
             tourDuMonde.setDisponible(true);
             tourDuMonde.setNombreDePage(300);
+            tourDuMonde.setImageUrl("https://m.media-amazon.com/images/I/81WvnYY9ZxL._AC_UF1000,1000_QL80_.jpg");
             tourDuMonde.setCategorie(roman);
             tourDuMonde.setAuteur(verne);
             tourDuMonde.setEditeurs(new HashSet<>(Arrays.asList(flammarion)));
@@ -160,6 +162,14 @@ public class DataInitializer implements CommandLineRunner {
             audioMiserables.setLivre(lesMiserables);
             livreAudioRepository.save(audioMiserables);
 
+            LivreAudio audioTourDuMonde = new LivreAudio();
+            audioTourDuMonde.setTitre("Le Tour du monde en 80 jours - Version audio");
+            audioTourDuMonde.setDuree("12h");
+            audioTourDuMonde.setNarrateur("Jacques Gamblin");
+            audioTourDuMonde.setAudioUrl("https://example.com/audio/tourdumond.mp3");
+            audioTourDuMonde.setLivre(tourDuMonde);
+            livreAudioRepository.save(audioTourDuMonde);
+
             // Création des podcasts
             logger.info("Création des podcasts...");
             Podcast podcastScience = new Podcast();
@@ -167,13 +177,30 @@ public class DataInitializer implements CommandLineRunner {
             podcastScience.setDuree(1800); // 30 minutes en secondes
             podcastScience.setTheme("Sciences");
             podcastScience.setAnimateur("Marie Curie");
+            podcastScience.setImageUrl("https://example.com/images/science-decouverte.jpg");
             podcastRepository.save(podcastScience);
+
+            Podcast podcastHistoire = new Podcast();
+            podcastHistoire.setNom("Histoires Passionnantes");
+            podcastHistoire.setDuree(2400); // 40 minutes en secondes
+            podcastHistoire.setTheme("Histoire");
+            podcastHistoire.setAnimateur("Michel Pastoureau");
+            podcastHistoire.setImageUrl("https://example.com/images/histoires-passionnantes.jpg");
+            podcastRepository.save(podcastHistoire);
+
+            Podcast podcastLitterature = new Podcast();
+            podcastLitterature.setNom("Les Grands Classiques");
+            podcastLitterature.setDuree(3600); // 60 minutes en secondes
+            podcastLitterature.setTheme("Littérature");
+            podcastLitterature.setAnimateur("François Busnel");
+            podcastLitterature.setImageUrl("https://example.com/images/grands-classiques.jpg");
+            podcastRepository.save(podcastLitterature);
 
             // Association des utilisateurs aux livres et podcasts
             logger.info("Association des utilisateurs aux livres et podcasts...");
-            user.setLivresAchetes(new HashSet<>(Arrays.asList(lesMiserables)));
+            user.setLivresAchetes(new HashSet<>(Arrays.asList(lesMiserables, tourDuMonde)));
             user.setLivresEmpruntes(new HashSet<>(Arrays.asList(tourDuMonde)));
-            user.setPodcastsEcoutes(new HashSet<>(Arrays.asList(podcastScience)));
+            user.setPodcastsEcoutes(new HashSet<>(Arrays.asList(podcastScience, podcastHistoire, podcastLitterature)));
             utilisateurRepository.save(user);
 
             logger.info("Initialisation des données terminée avec succès !");

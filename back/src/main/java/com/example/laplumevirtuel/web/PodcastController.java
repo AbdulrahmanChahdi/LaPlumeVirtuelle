@@ -15,8 +15,29 @@ public class PodcastController {
 	private PodcastService podcastService;
 
 	@GetMapping
-	public List<Podcast> getAllPodcasts() {
+	public List<Podcast> getAllPodcasts(
+			@RequestParam(required = false) String search,
+			@RequestParam(required = false) String theme,
+			@RequestParam(required = false) Integer dureeMax) {
+		if (search != null || theme != null || dureeMax != null) {
+			return podcastService.findWithFilters(search, theme, dureeMax);
+		}
 		return podcastService.getAllPodcasts();
+	}
+	
+	@GetMapping("/search")
+	public List<Podcast> searchPodcasts(@RequestParam String term) {
+		return podcastService.searchPodcasts(term);
+	}
+	
+	@GetMapping("/theme/{theme}")
+	public List<Podcast> getPodcastsByTheme(@PathVariable String theme) {
+		return podcastService.findByTheme(theme);
+	}
+	
+	@GetMapping("/duree/{secondes}")
+	public List<Podcast> getPodcastsByDuree(@PathVariable int secondes) {
+		return podcastService.findByDureeLessThanEqual(secondes);
 	}
 
 	@GetMapping("/{id}")

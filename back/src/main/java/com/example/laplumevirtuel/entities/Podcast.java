@@ -27,6 +27,7 @@ public class Podcast {
     private int duree;
     private String theme;
     private String animateur;
+    private String imageUrl;
     
     @ManyToMany(mappedBy = "podcastsEcoutes")
     private Set<Utilisateur> utilisateurs;

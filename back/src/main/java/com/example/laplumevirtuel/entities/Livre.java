@@ -32,6 +32,7 @@ public class Livre {
     private String resume;
     private boolean disponible;
     private int nombreDePage;
+    private String imageUrl;
 
     @ManyToOne
     @JoinColumn(name = "categorie_id")

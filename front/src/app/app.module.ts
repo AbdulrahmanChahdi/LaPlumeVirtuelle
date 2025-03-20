@@ -11,6 +11,7 @@ import { AudiobooksComponent } from './library/audiobooks/audiobooks.component';
 import { FooterComponent } from './shared/footer/footer.component';
 import { httpInterceptorProviders } from './services/http-interceptors';
 import { LivresComponent } from './components/livres/livres.component';
+import { LivresAudioComponent } from './components/livres-audio/livres-audio.component';
 import { AuthModule } from './auth/auth.module';
 
 @NgModule({
@@ -20,7 +21,8 @@ import { AuthModule } from './auth/auth.module';
     PodcastsComponent,
     AudiobooksComponent,
     FooterComponent,
-    LivresComponent
+    LivresComponent,
+    LivresAudioComponent
   ],
   imports: [
     BrowserModule,

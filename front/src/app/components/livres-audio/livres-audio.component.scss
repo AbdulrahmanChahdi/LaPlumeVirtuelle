@@ -1,0 +1,491 @@
+// Variables
+$primary-color: #2D3436;
+$secondary-color: #0984E3;
+$accent-color: #00B894;
+$background-color: #F1F2F6;
+$card-shadow: 0 10px 20px rgba(45, 52, 54, 0.1);
+$transition-speed: 0.3s;
+
+// Styles globaux
+.livres-audio-container {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  background-color: $background-color;
+  min-height: 100vh;
+  background-image:
+    radial-gradient(circle at 10% 20%, rgba(9, 132, 227, 0.05) 0%, transparent 20%),
+    radial-gradient(circle at 90% 80%, rgba(0, 184, 148, 0.05) 0%, transparent 20%);
+}
+
+// Section des filtres
+.filters-section {
+  background: #FFFFFF;
+  border-radius: 20px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: $card-shadow;
+  border: 1px solid rgba(45, 52, 54, 0.1);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, $secondary-color, $accent-color);
+  }
+
+  .search-container {
+    position: relative;
+    margin-bottom: 1.5rem;
+
+    .search-input {
+      width: 100%;
+      padding: 1.2rem 1rem 1.2rem 3.5rem;
+      border: 2px solid rgba(45, 52, 54, 0.1);
+      border-radius: 15px;
+      font-size: 1.1rem;
+      transition: all $transition-speed ease;
+      background-color: #FFFFFF;
+
+      &:focus {
+        border-color: $secondary-color;
+        box-shadow: 0 0 0 4px rgba(9, 132, 227, 0.1);
+        outline: none;
+      }
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 1.2rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: $secondary-color;
+      font-size: 1.2rem;
+    }
+  }
+
+  .filters-row {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-end;
+    flex-wrap: wrap;
+
+    .filter-group {
+      flex: 1;
+      min-width: 250px;
+
+      label {
+        display: block;
+        margin-bottom: 0.8rem;
+        color: $secondary-color;
+        font-weight: 600;
+        font-size: 1.1rem;
+      }
+
+      .filter-select {
+        width: 100%;
+        padding: 1rem;
+        border: 2px solid rgba(108, 99, 255, 0.2);
+        border-radius: 12px;
+        background-color: rgba(255, 255, 255, 0.8);
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all $transition-speed ease;
+        color: $secondary-color;
+
+        &:focus {
+          border-color: $primary-color;
+          box-shadow: 0 0 0 4px rgba(108, 99, 255, 0.1);
+          outline: none;
+          background-color: #fff;
+        }
+
+        option {
+          padding: 10px;
+        }
+      }
+    }
+
+    .reset-filters {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      padding: 1rem 1.5rem;
+      border: none;
+      border-radius: 12px;
+      background-color: rgba(108, 99, 255, 0.1);
+      color: $primary-color;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all $transition-speed ease;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(5px);
+
+      &.visible {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(0);
+      }
+
+      &:hover {
+        background-color: rgba(108, 99, 255, 0.2);
+      }
+
+      i {
+        font-size: 1rem;
+      }
+    }
+  }
+}
+
+// Grille des livres audio
+.livres-audio-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2.5rem;
+  margin-top: 2.5rem;
+}
+
+.livre-audio-card {
+  background: #FFFFFF;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: $card-shadow;
+  transition: all $transition-speed ease;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(180deg,
+      rgba(45, 52, 54, 0) 0%,
+      rgba(45, 52, 54, 0.8) 100%);
+    opacity: 0;
+    transition: opacity $transition-speed ease;
+    z-index: 1;
+  }
+
+  &:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(45, 52, 54, 0.15);
+
+    &::before {
+      opacity: 1;
+    }
+
+    .livre-audio-cover {
+      .audio-wave {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .actions {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .livre-audio-cover {
+    position: relative;
+    height: 300px;
+    overflow: hidden;
+    background: $primary-color;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.9;
+      transition: all $transition-speed ease;
+    }
+
+    .audio-wave {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: linear-gradient(90deg,
+        $secondary-color,
+        $accent-color);
+      opacity: 0;
+      transform: translateY(100%);
+      transition: all $transition-speed ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      padding: 0 20px;
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 100%;
+        background: repeating-linear-gradient(
+          90deg,
+          transparent,
+          transparent 2px,
+          rgba(255, 255, 255, 0.1) 2px,
+          rgba(255, 255, 255, 0.1) 4px
+        );
+      }
+
+      span {
+        width: 3px;
+        height: 20px;
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 3px;
+        animation: wave 1s ease-in-out infinite;
+        transform-origin: bottom;
+
+        @for $i from 1 through 20 {
+          &:nth-child(#{$i}) {
+            animation-delay: #{$i * 0.1}s;
+            height: #{random(30)}px;
+          }
+        }
+      }
+    }
+
+    .duration-badge {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(45, 52, 54, 0.9);
+      color: white;
+      padding: 0.8rem 1.2rem;
+      border-radius: 25px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      backdrop-filter: blur(5px);
+      z-index: 2;
+
+      i {
+        color: $accent-color;
+      }
+    }
+  }
+
+  .livre-audio-info {
+    padding: 2rem;
+    background: #FFFFFF;
+    position: relative;
+    z-index: 2;
+
+    .titre {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin: 0 0 1.2rem;
+      color: $primary-color;
+      line-height: 1.4;
+    }
+
+    p {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      margin: 0.8rem 0;
+      color: rgba(45, 52, 54, 0.7);
+      font-size: 1rem;
+
+      i {
+        color: $secondary-color;
+        font-size: 1.1rem;
+      }
+    }
+
+    .actions {
+      display: flex;
+      gap: 1.2rem;
+      margin-top: 2rem;
+      opacity: 0.8;
+      transform: translateY(10px);
+      transition: all $transition-speed ease;
+
+      button {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.8rem;
+        padding: 1rem;
+        border: none;
+        border-radius: 12px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all $transition-speed ease;
+
+        &.btn-ecouter {
+          background: linear-gradient(135deg, $secondary-color, $accent-color);
+          color: white;
+          position: relative;
+          overflow: hidden;
+
+          &::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+              rgba(255, 255, 255, 0.2),
+              transparent
+            );
+            transform: translateY(-100%);
+            transition: transform 0.3s ease;
+          }
+
+          &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(9, 132, 227, 0.3);
+
+            &::before {
+              transform: translateY(0);
+            }
+          }
+
+          i {
+            font-size: 1.2rem;
+          }
+        }
+
+        &.btn-telecharger {
+          background-color: rgba(45, 52, 54, 0.05);
+          color: $primary-color;
+
+          &:hover {
+            background-color: rgba(45, 52, 54, 0.1);
+            transform: translateY(-2px);
+          }
+        }
+      }
+    }
+  }
+}
+
+// Messages d'erreur et de chargement
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background-color: #FEE7E7;
+  color: #E53935;
+  padding: 1.2rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  border: 1px solid rgba(229, 57, 53, 0.2);
+
+  i {
+    font-size: 1.4rem;
+  }
+}
+
+.loading-spinner {
+  text-align: center;
+  padding: 4rem 0;
+
+  .spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(108, 99, 255, 0.1);
+    border-top: 4px solid $primary-color;
+    border-radius: 50%;
+    margin: 0 auto 1.5rem;
+    animation: spin 1s linear infinite;
+  }
+}
+
+.no-results {
+  text-align: center;
+  padding: 4rem 0;
+  color: $secondary-color;
+
+  i {
+    font-size: 4rem;
+    color: rgba(108, 99, 255, 0.3);
+    margin-bottom: 1.5rem;
+  }
+
+  h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: $secondary-color;
+  }
+
+  p {
+    color: #666;
+    margin-bottom: 1.5rem;
+  }
+
+  .reset-search {
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 12px;
+    background-color: $primary-color;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all $transition-speed ease;
+
+    &:hover {
+      background-color: darken($primary-color, 10%);
+      transform: translateY(-2px);
+    }
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes wave {
+  0%, 100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(0.5);
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .livres-audio-container {
+    padding: 1rem;
+  }
+
+  .filters-section {
+    padding: 1.5rem;
+  }
+
+  .livres-audio-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .livre-audio-card {
+    .livre-audio-cover {
+      height: 250px;
+    }
+  }
+}

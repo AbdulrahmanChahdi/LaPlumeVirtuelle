@@ -4,6 +4,18 @@ import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { tap } from 'rxjs/operators';
 
+export interface Categorie {
+  id: number;
+  nom: string;
+  description: string;
+}
+
+export interface Auteur {
+  id: number;
+  nom: string;
+  biographie: string;
+}
+
 export interface Livre {
   id: number;
   titre: string;
@@ -12,20 +24,18 @@ export interface Livre {
   resume: string;
   disponible: boolean;
   nombreDePage: number;
+  imageUrl: string;
   categorie: Categorie;
   auteur: Auteur;
 }
 
-export interface Categorie {
+export interface LivreAudio {
   id: number;
-  nom: string;
-}
-
-export interface Auteur {
-  id: number;
-  nom: string;
-  prenom: string;
-  biographie: string;
+  titre: string;
+  duree: string;
+  narrateur: string;
+  audioUrl: string;
+  livre: Livre;
 }
 
 @Injectable({
@@ -65,17 +75,29 @@ export class ContentService {
   }
 
   // Livres Audio
-  getAllLivresAudio(): Observable<any[]> {
-    console.log('Appel de getAllLivresAudio()');
-    return this.http.get<any[]>(`${this.API_URL}/api/livres-audio`).pipe(
-      tap(livresAudio => {
-        console.log('Livres audio reçus:', livresAudio);
-      })
+  getAllLivresAudio(params: any = {}): Observable<LivreAudio[]> {
+    const url = new URL(`${this.API_URL}/api/livres-audio`);
+
+    // Ajout des paramètres de filtrage à l'URL
+    if (params.search) url.searchParams.append('search', params.search);
+    if (params.categorieId) url.searchParams.append('categorieId', params.categorieId);
+    if (params.dureeMax) url.searchParams.append('dureeMax', params.dureeMax);
+
+    return this.http.get<LivreAudio[]>(url.toString()).pipe(
+      tap(livresAudio => console.log('Livres audio chargés:', livresAudio))
     );
   }
 
-  getLivreAudioById(id: number): Observable<any> {
-    return this.http.get<any>(`${this.API_URL}/api/livres-audio/${id}`);
+  searchLivresAudio(term: string): Observable<LivreAudio[]> {
+    return this.http.get<LivreAudio[]>(`${this.API_URL}/api/livres-audio/search?term=${term}`);
+  }
+
+  getLivresAudioByCategorie(categorieId: number): Observable<LivreAudio[]> {
+    return this.http.get<LivreAudio[]>(`${this.API_URL}/api/livres-audio/categorie/${categorieId}`);
+  }
+
+  getLivresAudioByDuree(heures: number): Observable<LivreAudio[]> {
+    return this.http.get<LivreAudio[]>(`${this.API_URL}/api/livres-audio/duree/${heures}`);
   }
 
   // Podcasts

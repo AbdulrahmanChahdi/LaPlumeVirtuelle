@@ -17,5 +17,9 @@ public interface PodcastService {
 
 	void deletePodcastById(Long id);
 
+	List<Podcast> searchPodcasts(String searchTerm);
+	List<Podcast> findByTheme(String theme);
+	List<Podcast> findByDureeLessThanEqual(int dureeEnSecondes);
+	List<Podcast> findWithFilters(String searchTerm, String theme, Integer dureeMax);
 
 }

@@ -47,17 +47,18 @@
       }
 
       .category-filter {
-        padding: 0.5rem 1rem;
+        padding: 0.8rem;
+        border: 1px solid #ddd;
         border-radius: 8px;
-        border: 1px solid #e5e7eb;
-        background-color: #f9fafb;
-        color: #111827;
-        font-size: 0.9rem;
+        font-size: 1rem;
+        min-width: 200px;
+        background-color: white;
         cursor: pointer;
-        outline: none;
+        transition: border-color 0.3s;
 
-        &:hover {
-          border-color: #d1d5db;
+        &:focus {
+          outline: none;
+          border-color: #007bff;
         }
       }
     }
