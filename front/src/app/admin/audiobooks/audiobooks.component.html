@@ -1,0 +1,62 @@
+<div class="audiobooks-container">
+  <div class="header">
+    <h1>Gestion des livres audio</h1>
+    <button class="btn btn-primary" routerLink="new">
+      <i class="fas fa-plus"></i> Nouveau livre audio
+    </button>
+  </div>
+
+  <!-- Message d'erreur -->
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+  </div>
+
+  <!-- Tableau des livres audio -->
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Couverture</th>
+          <th>Titre</th>
+          <th>Auteur</th>
+          <th>Narrateur</th>
+          <th>Durée</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let audiobook of audiobooks">
+          <td>{{ audiobook.id }}</td>
+          <td>
+            <img [src]="audiobook.imageUrl" [alt]="audiobook.titre" class="audiobook-cover">
+          </td>
+          <td>{{ audiobook.titre }}</td>
+          <td>{{ audiobook.auteur.nom }}</td>
+          <td>{{ audiobook.narrateur }}</td>
+          <td>{{ audiobook.duree }}</td>
+          <td>
+            <button class="btn btn-sm btn-primary me-2" [routerLink]="[audiobook.id, 'edit']">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn btn-sm btn-danger" (click)="deleteAudiobook(audiobook.id)">
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- État de chargement -->
+  <div *ngIf="loading" class="loading">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Chargement...</span>
+    </div>
+  </div>
+
+  <!-- Message si aucun livre audio -->
+  <div *ngIf="!loading && audiobooks.length === 0" class="no-data">
+    <p>Aucun livre audio trouvé</p>
+  </div>
+</div>

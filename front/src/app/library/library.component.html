@@ -1,0 +1,100 @@
+<div class="library-container">
+  <!-- Navigation des onglets -->
+  <div class="tabs-navigation">
+    <button
+      [class.active]="activeTab === 'books'"
+      (click)="setActiveTab('books')"
+      class="tab-button">
+      <i class="fas fa-book"></i>
+      Livres Numériques
+    </button>
+    <button
+      [class.active]="activeTab === 'audiobooks'"
+      (click)="setActiveTab('audiobooks')"
+      class="tab-button">
+      <i class="fas fa-headphones"></i>
+      Livres Audio
+    </button>
+    <button
+      [class.active]="activeTab === 'podcasts'"
+      (click)="setActiveTab('podcasts')"
+      class="tab-button">
+      <i class="fas fa-podcast"></i>
+      Podcasts
+    </button>
+  </div>
+
+  <!-- Contenu des onglets -->
+  <div class="tab-content">
+    <!-- Livres Numériques -->
+    <div *ngIf="activeTab === 'books'" class="products-grid">
+      <div class="product-card" *ngFor="let book of books">
+        <div class="product-image">
+          <img [src]="book.image" [alt]="book.title">
+        </div>
+        <div class="product-info">
+          <h3>{{ book.title }}</h3>
+          <p class="author">{{ book.author }}</p>
+          <p class="description">{{ book.description }}</p>
+          <div class="product-footer">
+            <span class="price">{{ book.price }}€</span>
+            <button class="btn-buy">
+              <i class="fas fa-shopping-cart"></i>
+              Acheter
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Livres Audio -->
+    <div *ngIf="activeTab === 'audiobooks'" class="products-grid">
+      <div class="product-card" *ngFor="let audiobook of audiobooks">
+        <div class="product-image">
+          <img [src]="audiobook.image" [alt]="audiobook.title">
+          <span class="duration">
+            <i class="fas fa-clock"></i>
+            {{ audiobook.duration }}
+          </span>
+        </div>
+        <div class="product-info">
+          <h3>{{ audiobook.title }}</h3>
+          <p class="author">{{ audiobook.author }}</p>
+          <p class="narrator">Lu par : {{ audiobook.narrator }}</p>
+          <p class="description">{{ audiobook.description }}</p>
+          <div class="product-footer">
+            <span class="price">{{ audiobook.price }}€</span>
+            <button class="btn-buy">
+              <i class="fas fa-shopping-cart"></i>
+              Acheter
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Podcasts -->
+    <div *ngIf="activeTab === 'podcasts'" class="products-grid">
+      <div class="product-card" *ngFor="let podcast of podcasts">
+        <div class="product-image">
+          <img [src]="podcast.image" [alt]="podcast.title">
+          <span class="episodes">
+            {{ podcast.episodeCount }} épisodes
+          </span>
+        </div>
+        <div class="product-info">
+          <h3>{{ podcast.title }}</h3>
+          <p class="author">{{ podcast.creator }}</p>
+          <p class="description">{{ podcast.description }}</p>
+          <div class="product-footer">
+            <span class="price">{{ podcast.price }}€</span>
+            <button class="btn-buy">
+              <i class="fas fa-shopping-cart"></i>
+              S'abonner
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

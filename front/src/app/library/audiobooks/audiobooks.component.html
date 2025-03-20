@@ -1,0 +1,80 @@
+<div class="audiobooks-container">
+  <header class="section-header">
+    <h1>Livres Audio</h1>
+    <div class="filters">
+      <div class="search-bar">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Rechercher un livre audio..." [(ngModel)]="searchQuery" (input)="onSearch()">
+      </div>
+      <select [(ngModel)]="selectedCategorieId" (change)="onSearch()" class="category-filter">
+        <option [ngValue]="null">Toutes les catégories</option>
+        <option *ngFor="let categorie of categories" [value]="categorie.id">
+          {{categorie.nom}}
+        </option>
+      </select>
+      <select [(ngModel)]="selectedDuree" (change)="onSearch()" class="duration-filter">
+        <option [ngValue]="null">Toutes les durées</option>
+        <option *ngFor="let duree of durees" [value]="duree">{{duree}}</option>
+      </select>
+    </div>
+  </header>
+
+  <div *ngIf="error" class="error-message">
+    {{error}}
+  </div>
+
+  <div *ngIf="loading" class="loading-spinner">
+    <i class="fas fa-spinner fa-spin"></i>
+    Chargement...
+  </div>
+
+  <div class="audiobooks-grid" *ngIf="!loading && !error">
+    <div class="audiobook-card" *ngFor="let livreAudio of filteredLivresAudio">
+      <div class="audiobook-cover">
+        <img [src]="livreAudio.couverture_url" [alt]="livreAudio.titre">
+        <div class="audiobook-overlay">
+          <button class="play-btn" (click)="playLivreAudio(livreAudio)">
+            <i class="fas fa-play"></i>
+            Écouter
+          </button>
+          <button class="add-to-cart-btn" (click)="addToCart(livreAudio)">
+            <i class="fas fa-shopping-cart"></i>
+            {{livreAudio.prix}}€
+          </button>
+        </div>
+      </div>
+      <div class="audiobook-info">
+        <h3>{{livreAudio.titre}}</h3>
+        <p class="author" *ngIf="livreAudio.auteur">
+          {{livreAudio.auteur.prenom}} {{livreAudio.auteur.nom}}
+        </p>
+        <p class="narrator">Lu par {{livreAudio.narrateur}}</p>
+        <div class="audiobook-meta">
+          <span class="duration">{{livreAudio.duree}}</span>
+          <span class="quality">{{livreAudio.qualite_audio}}</span>
+        </div>
+        <p class="description">{{livreAudio.description}}</p>
+        <div class="additional-info">
+          <span class="category" *ngIf="livreAudio.categorie">{{livreAudio.categorie.nom}}</span>
+          <span class="format">{{livreAudio.format_audio}}</span>
+          <span class="language">{{livreAudio.langue}}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="no-results" *ngIf="!loading && !error && filteredLivresAudio.length === 0">
+    Aucun livre audio ne correspond à votre recherche.
+  </div>
+
+  <div class="pagination" *ngIf="!loading && !error && totalPages > 1">
+    <button [disabled]="currentPage === 1" (click)="changePage(currentPage - 1)">
+      <i class="fas fa-chevron-left"></i>
+    </button>
+    <span>Page {{currentPage}} sur {{totalPages}}</span>
+    <button [disabled]="currentPage === totalPages" (click)="changePage(currentPage + 1)">
+      <i class="fas fa-chevron-right"></i>
+    </button>
+  </div>
+</div>
+

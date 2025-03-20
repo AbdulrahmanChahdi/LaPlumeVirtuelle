@@ -1,0 +1,163 @@
+<div class="dashboard-container">
+  <h1>Tableau de bord administrateur</h1>
+
+  <!-- Statistiques -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <i class="fas fa-users"></i>
+      <div class="stat-info">
+        <h3>Utilisateurs</h3>
+        <p class="stat-number">{{ stats.users }}</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <i class="fas fa-book"></i>
+      <div class="stat-info">
+        <h3>Livres</h3>
+        <p class="stat-number">{{ stats.books }}</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <i class="fas fa-headphones"></i>
+      <div class="stat-info">
+        <h3>Livres Audio</h3>
+        <p class="stat-number">{{ stats.audiobooks }}</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <i class="fas fa-podcast"></i>
+      <div class="stat-info">
+        <h3>Podcasts</h3>
+        <p class="stat-number">{{ stats.podcasts }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contenu récent -->
+  <div class="recent-content">
+    <!-- Utilisateurs récents -->
+    <div class="recent-section">
+      <h2>Utilisateurs récents</h2>
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Nom</th>
+              <th>Email</th>
+              <th>Date d'inscription</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let user of recentUsers">
+              <td>{{ user.nom }} {{ user.prenom }}</td>
+              <td>{{ user.email }}</td>
+              <td>{{ user.dateInscription | date }}</td>
+              <td>
+                <button class="btn btn-sm btn-danger" (click)="deleteUser(user.id)">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Livres récents -->
+    <div class="recent-section">
+      <h2>Livres récents</h2>
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Titre</th>
+              <th>Auteur</th>
+              <th>Catégorie</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let book of recentBooks">
+              <td>{{ book.titre }}</td>
+              <td>{{ book.auteur.nom }}</td>
+              <td>{{ book.categorie.nom }}</td>
+              <td>
+                <button class="btn btn-sm btn-primary me-2" (click)="editBook(book.id)">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-sm btn-danger" (click)="deleteBook(book.id)">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Livres audio récents -->
+    <div class="recent-section">
+      <h2>Livres audio récents</h2>
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Titre</th>
+              <th>Auteur</th>
+              <th>Durée</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let audiobook of recentAudiobooks">
+              <td>{{ audiobook.titre }}</td>
+              <td>{{ audiobook.auteur.nom }}</td>
+              <td>{{ audiobook.duree }}</td>
+              <td>
+                <button class="btn btn-sm btn-primary me-2" (click)="editAudiobook(audiobook.id)">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-sm btn-danger" (click)="deleteAudiobook(audiobook.id)">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Podcasts récents -->
+    <div class="recent-section">
+      <h2>Podcasts récents</h2>
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Titre</th>
+              <th>Catégorie</th>
+              <th>Durée</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let podcast of recentPodcasts">
+              <td>{{ podcast.titre }}</td>
+              <td>{{ podcast.categorie.nom }}</td>
+              <td>{{ podcast.duree }}</td>
+              <td>
+                <button class="btn btn-sm btn-primary me-2" (click)="editPodcast(podcast.id)">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-sm btn-danger" (click)="deletePodcast(podcast.id)">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

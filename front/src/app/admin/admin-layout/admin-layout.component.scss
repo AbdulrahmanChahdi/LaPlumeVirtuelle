@@ -1,0 +1,81 @@
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+  position: relative;
+
+  .menu-toggle {
+    display: none;
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 1000;
+    background: #111827;
+    color: white;
+    border: none;
+    padding: 0.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1.25rem;
+
+    &:hover {
+      background: #1f2937;
+    }
+  }
+
+  .admin-nav {
+    width: 250px;
+    background: #111827;
+    color: white;
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+    transition: transform 0.3s ease;
+  }
+
+  .main-content {
+    flex: 1;
+    margin-left: 250px;
+    padding: 2rem;
+    background: #f3f4f6;
+    min-height: 100vh;
+  }
+
+  .sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 900;
+  }
+}
+
+// Styles pour le mode mobile
+@media (max-width: 768px) {
+  .admin-layout {
+    .menu-toggle {
+      display: block;
+    }
+
+    .admin-nav {
+      transform: translateX(-100%);
+      z-index: 1000;
+    }
+
+    .main-content {
+      margin-left: 0;
+    }
+
+    &.sidebar-open {
+      .admin-nav {
+        transform: translateX(0);
+      }
+
+      .sidebar-overlay {
+        display: block;
+      }
+    }
+  }
+}

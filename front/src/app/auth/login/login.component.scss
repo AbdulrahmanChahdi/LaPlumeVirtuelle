@@ -1,0 +1,255 @@
+// Variables
+$primary-color: #4b5563;
+$primary-light: #9ca3af;
+$primary-dark: #374151;
+$text-color: #111827;
+$text-light: #6b7280;
+$background-color: #ffffff;
+$background-light: #f9fafb;
+$border-color: #e5e7eb;
+$secondary-text: #4b5563;
+$hover-color: #1f2937;
+$error-color: #ef4444;
+$error-light: #fee2e2;
+$error-border: #fecaca;
+
+.auth-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: $background-color;
+  padding: 2rem;
+}
+
+.auth-card {
+  background: $background-color;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba($text-color, 0.1);
+  width: 100%;
+  max-width: 500px;
+  padding: 2.5rem;
+  border: 1px solid $border-color;
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+
+  h1 {
+    color: $text-color;
+    font-size: 2.2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    color: $text-light;
+    font-size: 1.2rem;
+  }
+}
+
+.alert {
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+
+  &.alert-danger {
+    background-color: $error-light;
+    color: $error-color;
+    border: 1px solid $error-border;
+  }
+}
+
+.auth-form {
+  .form-group {
+    margin-bottom: 1.8rem;
+    position: relative;
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: $text-color;
+      font-weight: 500;
+      font-size: 1.05rem;
+    }
+
+    .password-field {
+      position: relative;
+
+      .form-control {
+        padding-right: 2.8rem;
+      }
+
+      .password-toggle {
+        position: absolute;
+        right: 0.8rem;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        padding: 0.5rem;
+        color: $text-light;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: color 0.2s ease;
+
+        &:hover {
+          color: $text-color;
+        }
+
+        i {
+          font-size: 1.2rem;
+        }
+      }
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 0.9rem;
+      border: 1px solid $border-color;
+      border-radius: 8px;
+      font-size: 1.05rem;
+      transition: all 0.3s ease;
+      background-color: $background-color;
+
+      &:focus {
+        border-color: $text-color;
+        box-shadow: 0 0 0 2px rgba($text-color, 0.1);
+        outline: none;
+      }
+
+      &.is-invalid {
+        border-color: $error-color;
+        background-color: $error-light;
+      }
+    }
+
+    .invalid-feedback {
+      color: $error-color;
+      font-size: 0.875rem;
+      margin-top: 0.5rem;
+      background-color: $error-light;
+      padding: 0.5rem;
+      border-radius: 4px;
+      border: 1px solid $error-border;
+    }
+  }
+
+  .form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+
+    .form-check {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      .form-check-input {
+        width: 1rem;
+        height: 1rem;
+        border: 1px solid $border-color;
+        border-radius: 4px;
+        cursor: pointer;
+
+        &:checked {
+          background-color: $text-color;
+          border-color: $text-color;
+        }
+      }
+
+      .form-check-label {
+        color: $text-light;
+        font-size: 0.95rem;
+      }
+    }
+
+    .forgot-password {
+      color: $text-color;
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 500;
+
+      &:hover {
+        color: $hover-color;
+      }
+    }
+  }
+
+  .btn-block {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.1rem;
+    border-radius: 8px;
+    background-color: $text-color;
+    color: white;
+    border: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    font-weight: 500;
+
+    &:hover:not(:disabled) {
+      background-color: $hover-color;
+      transform: translateY(-2px);
+    }
+
+    &:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.auth-footer {
+  text-align: center;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid $border-color;
+
+  p {
+    color: $text-light;
+    margin: 0;
+    font-size: 1rem;
+
+    a {
+      color: $text-color;
+      text-decoration: none;
+      font-weight: 500;
+
+      &:hover {
+        color: $hover-color;
+      }
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .auth-container {
+    padding: 1rem;
+  }
+
+  .auth-card {
+    padding: 1.5rem;
+  }
+
+  .auth-header {
+    h1 {
+      font-size: 2rem;
+    }
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .form-options {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+}

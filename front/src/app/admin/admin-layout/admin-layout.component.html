@@ -1,0 +1,17 @@
+<div class="admin-layout" [class.sidebar-open]="toggleSidebar">
+  <!-- Bouton pour basculer le menu sur mobile -->
+  <button class="menu-toggle" (click)="toggleSidebarMenu()">
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <!-- Navigation latérale -->
+  <app-admin-nav class="admin-nav"></app-admin-nav>
+
+  <!-- Contenu principal -->
+  <main class="main-content">
+    <router-outlet></router-outlet>
+  </main>
+
+  <!-- Overlay pour fermer le menu sur mobile -->
+  <div class="sidebar-overlay" *ngIf="toggleSidebar" (click)="toggleSidebarMenu()"></div>
+</div>

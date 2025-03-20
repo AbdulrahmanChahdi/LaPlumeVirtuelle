@@ -1,0 +1,85 @@
+<div class="dashboard-container">
+  <header class="dashboard-header">
+    <div class="header-content">
+      <div class="user-info" *ngIf="userInfo">
+        <h1>Bienvenue, {{ userInfo.nom }}</h1>
+      </div>
+    </div>
+  </header>
+
+  <main class="dashboard-main">
+    <div class="dashboard-grid">
+      <!-- Section Bibliothèque -->
+      <section class="dashboard-section">
+        <h2>Ma Bibliothèque</h2>
+        <div class="section-content">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <i class="fas fa-book"></i>
+              <div class="stat-info">
+                <h3>Livres</h3>
+                <p>{{ stats.livres || 0 }}</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <i class="fas fa-headphones"></i>
+              <div class="stat-info">
+                <h3>Livres Audio</h3>
+                <p>{{ stats.livresAudio || 0 }}</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <i class="fas fa-podcast"></i>
+              <div class="stat-info">
+                <h3>Podcasts</h3>
+                <p>{{ stats.podcasts || 0 }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section Activité Récente -->
+      <section class="dashboard-section">
+        <h2>Activité Récente</h2>
+        <div class="section-content">
+          <div class="activity-list" *ngIf="recentActivity.length > 0">
+            <div class="activity-item" *ngFor="let activity of recentActivity">
+              <div class="activity-icon">
+                <i [class]="activity.icon"></i>
+              </div>
+              <div class="activity-details">
+                <h4>{{ activity.title }}</h4>
+                <p>{{ activity.description }}</p>
+                <span class="activity-date">{{ activity.date | date:'dd/MM/yyyy' }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="empty-state" *ngIf="recentActivity.length === 0">
+            <p>Aucune activité récente</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section Recommandations -->
+      <section class="dashboard-section">
+        <h2>Recommandations</h2>
+        <div class="section-content">
+          <div class="recommendations-grid" *ngIf="recommendations.length > 0">
+            <div class="recommendation-card" *ngFor="let item of recommendations">
+              <img [src]="item.image" [alt]="item.title">
+              <div class="recommendation-info">
+                <h4>{{ item.title }}</h4>
+                <p>{{ item.author }}</p>
+                <button class="btn btn-primary">Découvrir</button>
+              </div>
+            </div>
+          </div>
+          <div class="empty-state" *ngIf="recommendations.length === 0">
+            <p>Aucune recommandation disponible</p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
