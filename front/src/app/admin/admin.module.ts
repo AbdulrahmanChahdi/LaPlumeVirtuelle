@@ -6,22 +6,14 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { AdminRoutingModule } from './admin-routing.module';
 import { DashboardComponent } from './dashboard/dashboard.component';
-import { UsersComponent } from './users/users.component';
-import { BooksComponent } from './books/books.component';
-import { AudiobooksComponent } from './audiobooks/audiobooks.component';
-import { PodcastsComponent } from './podcasts/podcasts.component';
-import { AdminNavComponent } from './admin-nav/admin-nav.component';
 import { AdminLayoutComponent } from './admin-layout/admin-layout.component';
+import { AuthService } from './services/auth.service';
+import { AdminService } from './services/admin.service';
 
 @NgModule({
   declarations: [
-    DashboardComponent,
-    UsersComponent,
-    BooksComponent,
-    AudiobooksComponent,
-    PodcastsComponent,
-    AdminNavComponent,
-    AdminLayoutComponent
+    AdminLayoutComponent,
+    DashboardComponent
   ],
   imports: [
     CommonModule,
@@ -30,6 +22,10 @@ import { AdminLayoutComponent } from './admin-layout/admin-layout.component';
     ReactiveFormsModule,
     HttpClientModule,
     AdminRoutingModule
+  ],
+  providers: [
+    AuthService,
+    AdminService
   ]
 })
 export class AdminModule { }

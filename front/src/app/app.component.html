@@ -1,12 +1,16 @@
 <!-- Interface pour les utilisateurs non connectés -->
-<div *ngIf="!isLoggedIn" class="guest-interface">
+<div *ngIf="!isLoggedIn && !isAdminRoute" class="guest-interface">
   <nav class="navbar">
     <div class="logo">
       <h1>La Plume Virtuelle</h1>
     </div>
     <div class="nav-buttons">
-      <button class="btn btn-outline-primary me-2" routerLink="/auth/login">Connexion</button>
-      <button class="btn btn-primary" routerLink="/auth/register">Inscription</button>
+      <button class="btn btn-outline-primary me-2" routerLink="/auth/login">
+        Connexion
+      </button>
+      <button class="btn btn-primary" routerLink="/auth/register">
+        Inscription
+      </button>
     </div>
   </nav>
 
@@ -14,11 +18,13 @@
     <div class="hero-section">
       <h2>Votre Bibliothèque Multimédia en Ligne</h2>
       <p>Découvrez notre collection de livres, podcasts et livres audio</p>
-      <button class="btn btn-primary btn-lg" routerLink="/auth/register">Commencer l'aventure</button>
+      <button class="btn btn-primary btn-lg" routerLink="/auth/register">
+        Commencer l'aventure
+      </button>
     </div>
 
     <div class="features-section">
-      <a routerLink="/library/books" class="feature-card">
+      <a routerLink="/library/digital-books" class="feature-card">
         <i class="fas fa-book"></i>
         <div class="card-content">
           <h3>Livres Numériques</h3>
@@ -56,45 +62,74 @@
 </div>
 
 <!-- Interface pour les utilisateurs connectés -->
-<div *ngIf="isLoggedIn" class="user-interface">
+<div *ngIf="isLoggedIn && !isAdminRoute" class="user-interface">
   <nav class="navbar navbar-logged">
     <div class="nav-left">
       <div class="logo">
         <h1>La Plume Virtuelle</h1>
       </div>
-      <button class="menu-toggle" (click)="toggleMenu()" [class.active]="isMenuOpen">
+      <button
+        class="menu-toggle"
+        (click)="toggleMenu()"
+        [class.active]="isMenuOpen"
+      >
         <span></span>
         <span></span>
         <span></span>
       </button>
       <div class="nav-links" [class.active]="isMenuOpen">
-        <a routerLink="/dashboard" routerLinkActive="active" (click)="closeMenu()">
+        <a
+          routerLink="/dashboard"
+          routerLinkActive="active"
+          (click)="closeMenu()"
+        >
           <i class="fas fa-home"></i>
           Tableau de bord
         </a>
-        <a routerLink="/library/books" routerLinkActive="active" (click)="closeMenu()">
+        <a
+          routerLink="/library/digital-books"
+          routerLinkActive="active"
+          (click)="closeMenu()"
+        >
           <i class="fas fa-book"></i>
-          Livres
+          Livres Numériques
         </a>
-        <a routerLink="/library/podcasts" routerLinkActive="active" (click)="closeMenu()">
-          <i class="fas fa-podcast"></i>
-          Podcasts
-        </a>
-        <a routerLink="/library/audiobooks" routerLinkActive="active" (click)="closeMenu()">
+        <a
+          routerLink="/library/audiobooks"
+          routerLinkActive="active"
+          (click)="closeMenu()"
+        >
           <i class="fas fa-headphones"></i>
           Livres Audio
+        </a>
+        <a
+          routerLink="/library/podcasts"
+          routerLinkActive="active"
+          (click)="closeMenu()"
+        >
+          <i class="fas fa-podcast"></i>
+          Podcasts
         </a>
       </div>
     </div>
     <div class="nav-right">
       <div class="search-bar">
-        <input type="text" placeholder="Rechercher..." [(ngModel)]="searchQuery" (keyup.enter)="onSearch()">
+        <input
+          type="text"
+          placeholder="Rechercher..."
+          [(ngModel)]="searchQuery"
+          (keyup.enter)="onSearch()"
+        />
         <button class="search-btn" (click)="onSearch()">
           <i class="fas fa-search"></i>
         </button>
       </div>
       <div class="user-menu">
-        <button class="notifications-btn" [class.has-notifications]="hasNotifications" (click)="toggleNotifications()">
+        <button
+          class="notifications-btn"
+          [class.has-notifications]="hasNotifications"
+          (click)="toggleNotifications()"
+        >
           <i class="fas fa-bell"></i>
         </button>
         <div class="user-dropdown">
@@ -124,9 +159,13 @@
   </nav>
 
   <!-- Overlay pour fermer le menu mobile -->
-  <div class="menu-overlay" [class.active]="isMenuOpen" (click)="closeMenu()"></div>
+  <div
+    class="menu-overlay"
+    [class.active]="isMenuOpen"
+    (click)="closeMenu()"
+  ></div>
 </div>
 
 <router-outlet></router-outlet>
 
-<app-footer></app-footer>
+<app-footer *ngIf="!isAdminRoute"></app-footer>

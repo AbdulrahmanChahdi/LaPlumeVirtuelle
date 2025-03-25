@@ -1,17 +1,70 @@
-<div class="admin-layout" [class.sidebar-open]="toggleSidebar">
-  <!-- Bouton pour basculer le menu sur mobile -->
-  <button class="menu-toggle" (click)="toggleSidebarMenu()">
-    <i class="fas fa-bars"></i>
-  </button>
+<!-- Layout principal -->
+<div class="admin-container">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <img [src]="logoPath" alt="Logo" class="logo" />
+      <h1>La Plume Virtuelle</h1>
+      <p class="subtitle">Administration</p>
+    </div>
 
-  <!-- Navigation latérale -->
-  <app-admin-nav class="admin-nav"></app-admin-nav>
+    <nav class="sidebar-nav">
+      <a routerLink="/admin/dashboard" routerLinkActive="active">
+        <i class="fas fa-chart-line"></i>
+        <span>Tableau de bord</span>
+      </a>
+      <a routerLink="/admin/users" routerLinkActive="active">
+        <i class="fas fa-users"></i>
+        <span>Utilisateurs</span>
+      </a>
+      <a routerLink="/admin/digital-books" routerLinkActive="active">
+        <i class="fas fa-book"></i>
+        <span>Livres</span>
+      </a>
+      <a routerLink="/admin/audiobooks" routerLinkActive="active">
+        <i class="fas fa-headphones"></i>
+        <span>Livres Audio</span>
+      </a>
+      <a routerLink="/admin/podcasts" routerLinkActive="active">
+        <i class="fas fa-podcast"></i>
+        <span>Podcasts</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="admin-profile">
+        <img [src]="adminAvatar" [alt]="adminName" class="admin-avatar" />
+        <span class="admin-name">{{ adminName }}</span>
+      </div>
+      <button class="logout-btn" (click)="onLogout()">
+        <i class="fas fa-sign-out-alt"></i>
+        <span>Déconnexion</span>
+      </button>
+    </div>
+  </aside>
 
   <!-- Contenu principal -->
   <main class="main-content">
-    <router-outlet></router-outlet>
-  </main>
+    <div class="content-header">
+      <div class="search-bar">
+        <input
+          type="text"
+          [(ngModel)]="searchQuery"
+          placeholder="Rechercher..."
+          (keyup.enter)="onSearch()"
+        />
+        <button (click)="onSearch()">
+          <i class="fas fa-search"></i>
+        </button>
+      </div>
+      <button class="refresh-btn" (click)="refreshData()">
+        <i class="fas fa-sync-alt"></i>
+        Actualiser
+      </button>
+    </div>
 
-  <!-- Overlay pour fermer le menu sur mobile -->
-  <div class="sidebar-overlay" *ngIf="toggleSidebar" (click)="toggleSidebarMenu()"></div>
+    <div class="content-body">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
 </div>

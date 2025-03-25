@@ -16,6 +16,7 @@ export class AppComponent implements OnInit, OnDestroy {
   isUserMenuOpen: boolean = false;
   hasNotifications: boolean = false;
   searchQuery: string = '';
+  isAdminRoute: boolean = false;
   private authSubscription: Subscription;
 
   constructor(
@@ -36,12 +37,15 @@ export class AppComponent implements OnInit, OnDestroy {
       }
     );
 
-    // Fermer les menus lors des changements de route
+    // Surveiller les changements de route
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
-    ).subscribe(() => {
-      this.closeMenu();
-      this.closeUserMenu();
+    ).subscribe((event: any) => {
+      // Vérifier si c'est une route admin
+      this.isAdminRoute = event.url.includes('/admin');
+      // Fermer les menus si ouverts
+      this.isMenuOpen = false;
+      this.isUserMenuOpen = false;
     });
   }
 
@@ -59,15 +63,12 @@ export class AppComponent implements OnInit, OnDestroy {
   toggleMenu(): void {
     this.isMenuOpen = !this.isMenuOpen;
     if (this.isMenuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
+      this.isUserMenuOpen = false;
     }
   }
 
   closeMenu(): void {
     this.isMenuOpen = false;
-    document.body.style.overflow = '';
   }
 
   toggleUserMenu(): void {

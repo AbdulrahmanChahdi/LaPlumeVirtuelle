@@ -4,19 +4,28 @@
     <div class="filters">
       <div class="search-bar">
         <i class="fas fa-search"></i>
-        <input type="text" placeholder="Rechercher un livre..." [(ngModel)]="searchQuery" (input)="onSearch()">
+        <input
+          type="text"
+          placeholder="Rechercher un livre..."
+          [(ngModel)]="searchQuery"
+          (input)="onSearch()"
+        />
       </div>
-      <select [(ngModel)]="selectedCategorieId" (change)="onSearch()" class="category-filter">
+      <select
+        [(ngModel)]="selectedCategorieId"
+        (change)="onSearch()"
+        class="category-filter"
+      >
         <option [ngValue]="null">Toutes les catégories</option>
         <option *ngFor="let categorie of categories" [value]="categorie.id">
-          {{categorie.nom}}
+          {{ categorie.nom }}
         </option>
       </select>
     </div>
   </header>
 
   <div *ngIf="error" class="error-message">
-    {{error}}
+    {{ error }}
   </div>
 
   <div *ngIf="loading" class="loading-spinner">
@@ -27,43 +36,60 @@
   <div class="books-grid" *ngIf="!loading && !error">
     <div class="book-card" *ngFor="let livre of filteredLivres">
       <div class="book-cover">
-        <img [src]="livre.couverture_url" [alt]="livre.titre">
+        <img [src]="livre.couverture_url" [alt]="livre.titre" />
         <div class="book-overlay">
-          <button class="preview-btn" (click)="previewLivre(livre)">Aperçu</button>
+          <button class="preview-btn" (click)="previewLivre(livre)">
+            Aperçu
+          </button>
           <button class="add-to-cart-btn" (click)="addToCart(livre)">
             <i class="fas fa-shopping-cart"></i>
-            {{livre.prix}}€
+            {{ livre.prix }}€
           </button>
         </div>
       </div>
       <div class="book-info">
-        <h3>{{livre.titre}}</h3>
+        <h3>{{ livre.titre }}</h3>
         <p class="author" *ngIf="livre.auteur">
-          {{livre.auteur.prenom}} {{livre.auteur.nom}}
+          {{ livre.auteur.prenom }} {{ livre.auteur.nom }}
         </p>
         <div class="book-meta">
-          <span class="pages" *ngIf="livre.nombre_pages">{{livre.nombre_pages}} pages</span>
-          <span class="format">{{livre.format}}</span>
+          <span class="pages" *ngIf="livre.nombre_pages"
+            >{{ livre.nombre_pages }} pages</span
+          >
+          <span class="format">{{ livre.format }}</span>
         </div>
-        <p class="description">{{livre.description}}</p>
+        <p class="description">{{ livre.description }}</p>
         <div class="additional-info">
-          <span class="category" *ngIf="livre.categorie">{{livre.categorie.nom}}</span>
-          <span class="publisher" *ngIf="livre.editeur">{{livre.editeur.nom}}</span>
+          <span class="category" *ngIf="livre.categorie">{{
+            livre.categorie.nom
+          }}</span>
+          <span class="publisher" *ngIf="livre.editeur">{{
+            livre.editeur.nom
+          }}</span>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="no-results" *ngIf="!loading && !error && filteredLivres.length === 0">
+  <div
+    class="no-results"
+    *ngIf="!loading && !error && filteredLivres.length === 0"
+  >
     Aucun livre ne correspond à votre recherche.
   </div>
 
   <div class="pagination" *ngIf="!loading && !error && totalPages > 1">
-    <button [disabled]="currentPage === 1" (click)="changePage(currentPage - 1)">
+    <button
+      [disabled]="currentPage === 1"
+      (click)="changePage(currentPage - 1)"
+    >
       <i class="fas fa-chevron-left"></i>
     </button>
-    <span>Page {{currentPage}} sur {{totalPages}}</span>
-    <button [disabled]="currentPage === totalPages" (click)="changePage(currentPage + 1)">
+    <span>Page {{ currentPage }} sur {{ totalPages }}</span>
+    <button
+      [disabled]="currentPage === totalPages"
+      (click)="changePage(currentPage + 1)"
+    >
       <i class="fas fa-chevron-right"></i>
     </button>
   </div>

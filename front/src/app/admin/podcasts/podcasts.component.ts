@@ -1,47 +1,54 @@
-import { Component, OnInit } from '@angular/core';
-import { AdminService } from '../../services/admin.service';
-import { Podcast } from '../../models/podcast.model';
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-podcasts',
-  templateUrl: './podcasts.component.html',
-  styleUrls: ['./podcasts.component.scss']
-})
-export class PodcastsComponent implements OnInit {
-  podcasts: Podcast[] = [];
-  loading = true;
-  error: string | null = null;
+  standalone: true,
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule],
+  template: `
+    <div class="podcasts-admin">
+      <div class="header">
+        <h1>Gestion des Podcasts</h1>
+        <button class="btn-add" routerLink="new">Ajouter un podcast</button>
+      </div>
 
-  constructor(private adminService: AdminService) { }
-
-  ngOnInit(): void {
-    this.loadPodcasts();
-  }
-
-  private loadPodcasts(): void {
-    this.loading = true;
-    this.adminService.getPodcasts().subscribe({
-      next: (podcasts) => {
-        this.podcasts = podcasts;
-        this.loading = false;
-      },
-      error: (error) => {
-        this.error = 'Erreur lors du chargement des podcasts';
-        this.loading = false;
-      }
-    });
-  }
-
-  deletePodcast(podcastId: number): void {
-    if (confirm('Êtes-vous sûr de vouloir supprimer ce podcast ?')) {
-      this.adminService.deletePodcast(podcastId).subscribe({
-        next: () => {
-          this.loadPodcasts();
-        },
-        error: (error) => {
-          this.error = 'Erreur lors de la suppression du podcast';
-        }
-      });
+      <div class="content">
+        <p>Cette section est en cours de développement.</p>
+      </div>
+    </div>
+  `,
+  styles: [`
+    .podcasts-admin {
+      padding: 2rem;
     }
-  }
-}
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+
+      h1 {
+        margin: 0;
+        color: #2c3e50;
+      }
+
+      .btn-add {
+        background: #3498db;
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: background 0.3s ease;
+
+        &:hover {
+          background: #2980b9;
+        }
+      }
+    }
+  `]
+})
+export class PodcastsComponent { }

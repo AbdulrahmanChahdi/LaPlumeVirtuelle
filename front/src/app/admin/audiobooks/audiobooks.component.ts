@@ -1,47 +1,54 @@
-import { Component, OnInit } from '@angular/core';
-import { AdminService } from '../../services/admin.service';
-import { LivreAudio } from '../../models/livre-audio.model';
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-audiobooks',
-  templateUrl: './audiobooks.component.html',
-  styleUrls: ['./audiobooks.component.scss']
-})
-export class AudiobooksComponent implements OnInit {
-  audiobooks: LivreAudio[] = [];
-  loading = true;
-  error: string | null = null;
+  standalone: true,
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule],
+  template: `
+    <div class="audiobooks-admin">
+      <div class="header">
+        <h1>Gestion des Livres Audio</h1>
+        <button class="btn-add" routerLink="new">Ajouter un livre audio</button>
+      </div>
 
-  constructor(private adminService: AdminService) { }
-
-  ngOnInit(): void {
-    this.loadAudiobooks();
-  }
-
-  private loadAudiobooks(): void {
-    this.loading = true;
-    this.adminService.getAudiobooks().subscribe({
-      next: (audiobooks) => {
-        this.audiobooks = audiobooks;
-        this.loading = false;
-      },
-      error: (error) => {
-        this.error = 'Erreur lors du chargement des livres audio';
-        this.loading = false;
-      }
-    });
-  }
-
-  deleteAudiobook(audiobookId: number): void {
-    if (confirm('Êtes-vous sûr de vouloir supprimer ce livre audio ?')) {
-      this.adminService.deleteAudiobook(audiobookId).subscribe({
-        next: () => {
-          this.loadAudiobooks();
-        },
-        error: (error) => {
-          this.error = 'Erreur lors de la suppression du livre audio';
-        }
-      });
+      <div class="content">
+        <p>Cette section est en cours de développement.</p>
+      </div>
+    </div>
+  `,
+  styles: [`
+    .audiobooks-admin {
+      padding: 2rem;
     }
-  }
-}
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+
+      h1 {
+        margin: 0;
+        color: #2c3e50;
+      }
+
+      .btn-add {
+        background: #3498db;
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: background 0.3s ease;
+
+        &:hover {
+          background: #2980b9;
+        }
+      }
+    }
+  `]
+})
+export class AudiobooksComponent { }

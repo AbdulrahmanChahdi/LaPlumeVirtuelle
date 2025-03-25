@@ -2,12 +2,10 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { tap } from 'rxjs/operators';
 
 export interface Categorie {
   id: number;
   nom: string;
-  description: string;
 }
 
 export interface Auteur {
@@ -19,98 +17,120 @@ export interface Auteur {
 export interface Livre {
   id: number;
   titre: string;
-  anneeEdition: string;
-  langue: string;
+  auteur: {
+    nom: string;
+    prenom: string;
+  };
   resume: string;
-  disponible: boolean;
   nombreDePage: number;
+  langue: string;
   imageUrl: string;
-  categorie: Categorie;
-  auteur: Auteur;
+  categorie: {
+    id: number;
+    nom: string;
+  };
+  prix: number;
 }
 
 export interface LivreAudio {
   id: number;
   titre: string;
-  duree: string;
+  auteur: {
+    nom: string;
+    prenom: string;
+  };
   narrateur: string;
-  audioUrl: string;
-  livre: Livre;
+  duree: string;
+  description: string;
+  imageUrl: string;
+  categorie: {
+    id: number;
+    nom: string;
+  };
+  prix: number;
+}
+
+export interface Podcast {
+  id: number;
+  titre: string;
+  description: string;
+  auteur: string;
+  imageUrl: string;
+  duree: string;
+  categorie: {
+    id: number;
+    nom: string;
+  };
+  datePublication: string;
+  nombreEpisodes: number;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class ContentService {
-  private readonly API_URL = environment.apiUrl;
+  private apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
 
-  // Catégories
-  getAllCategories(): Observable<Categorie[]> {
-    console.log('Appel de getAllCategories()');
-    return this.http.get<Categorie[]>(`${this.API_URL}/api/categories`).pipe(
-      tap(categories => {
-        console.log('Catégories reçues:', categories);
-      })
-    );
+  // Livres numériques
+  getAllLivres(params: { search?: string; categorieId?: number | null; langue?: string | null } = {}): Observable<Livre[]> {
+    let queryParams = new URLSearchParams();
+
+    if (params.search) {
+      queryParams.append('search', params.search);
+    }
+    if (params.categorieId) {
+      queryParams.append('categorieId', params.categorieId.toString());
+    }
+    if (params.langue) {
+      queryParams.append('langue', params.langue);
+    }
+
+    return this.http.get<Livre[]>(`${this.apiUrl}/library/livres${queryParams.toString() ? '?' + queryParams.toString() : ''}`);
   }
 
-  getCategorieById(id: number): Observable<Categorie> {
-    return this.http.get<Categorie>(`${this.API_URL}/api/categories/${id}`);
-  }
+  // Livres audio
+  getAllLivresAudio(params: { search?: string; categorieId?: number | null; dureeMax?: number | null } = {}): Observable<LivreAudio[]> {
+    let queryParams = new URLSearchParams();
 
-  // Livres
-  getAllLivres(): Observable<Livre[]> {
-    console.log('Appel de getAllLivres()');
-    return this.http.get<Livre[]>(`${this.API_URL}/api/livres`).pipe(
-      tap(livres => {
-        console.log('Livres reçus:', livres);
-      })
-    );
-  }
+    if (params.search) {
+      queryParams.append('search', params.search);
+    }
+    if (params.categorieId) {
+      queryParams.append('categorieId', params.categorieId.toString());
+    }
+    if (params.dureeMax) {
+      queryParams.append('dureeMax', params.dureeMax.toString());
+    }
 
-  getLivreById(id: number): Observable<Livre> {
-    return this.http.get<Livre>(`${this.API_URL}/api/livres/${id}`);
-  }
-
-  // Livres Audio
-  getAllLivresAudio(params: any = {}): Observable<LivreAudio[]> {
-    const url = new URL(`${this.API_URL}/api/livres-audio`);
-
-    // Ajout des paramètres de filtrage à l'URL
-    if (params.search) url.searchParams.append('search', params.search);
-    if (params.categorieId) url.searchParams.append('categorieId', params.categorieId);
-    if (params.dureeMax) url.searchParams.append('dureeMax', params.dureeMax);
-
-    return this.http.get<LivreAudio[]>(url.toString()).pipe(
-      tap(livresAudio => console.log('Livres audio chargés:', livresAudio))
-    );
-  }
-
-  searchLivresAudio(term: string): Observable<LivreAudio[]> {
-    return this.http.get<LivreAudio[]>(`${this.API_URL}/api/livres-audio/search?term=${term}`);
-  }
-
-  getLivresAudioByCategorie(categorieId: number): Observable<LivreAudio[]> {
-    return this.http.get<LivreAudio[]>(`${this.API_URL}/api/livres-audio/categorie/${categorieId}`);
-  }
-
-  getLivresAudioByDuree(heures: number): Observable<LivreAudio[]> {
-    return this.http.get<LivreAudio[]>(`${this.API_URL}/api/livres-audio/duree/${heures}`);
+    return this.http.get<LivreAudio[]>(`${this.apiUrl}/library/livres-audio${queryParams.toString() ? '?' + queryParams.toString() : ''}`);
   }
 
   // Podcasts
-  getAllPodcasts(): Observable<any[]> {
-    console.log('Appel de getAllPodcasts()');
-    return this.http.get<any[]>(`${this.API_URL}/api/podcasts`).pipe(
-      tap(podcasts => {
-        console.log('Podcasts reçus:', podcasts);
-      })
-    );
+  getAllPodcasts(params: { search?: string; categorieId?: number | null; sort?: string } = {}): Observable<Podcast[]> {
+    let queryParams = new URLSearchParams();
+
+    if (params.search) {
+      queryParams.append('search', params.search);
+    }
+    if (params.categorieId) {
+      queryParams.append('categorieId', params.categorieId.toString());
+    }
+    if (params.sort) {
+      queryParams.append('sort', params.sort);
+    }
+
+    return this.http.get<Podcast[]>(`${this.apiUrl}/library/podcasts${queryParams.toString() ? '?' + queryParams.toString() : ''}`);
   }
 
-  getPodcastById(id: number): Observable<any> {
-    return this.http.get<any>(`${this.API_URL}/api/podcasts/${id}`);
+  // Catégories
+  getAllCategories(): Observable<Categorie[]> {
+    return this.http.get<Categorie[]>(`${this.apiUrl}/library/categories`);
+  }
+
+  // Prévisualisation
+  getPreview(type: 'livre' | 'livre-audio' | 'podcast', id: number): Observable<string> {
+    return this.http.get<string>(`${this.apiUrl}/library/${type}s/${id}/preview`);
   }
 }

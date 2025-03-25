@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { BehaviorSubject, Observable, tap, of } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { Router } from '@angular/router';
 
 export interface User {
   id: number;
@@ -31,12 +32,16 @@ export interface RegisterData {
 })
 export class AuthService {
   private readonly TOKEN_KEY = 'auth_token';
-  private readonly USER_KEY = 'user_data';
+  private readonly USER_DATA_KEY = 'user_data';
   private readonly API_URL = environment.apiUrl;
-  private isLoggedInSubject = new BehaviorSubject<boolean>(this.hasToken());
-  isLoggedIn$ = this.isLoggedInSubject.asObservable();
 
-  constructor(private http: HttpClient) {}
+  private authStateSubject = new BehaviorSubject<boolean>(this.hasToken());
+  isLoggedIn$ = this.authStateSubject.asObservable();
+
+  constructor(private http: HttpClient, private router: Router) {
+    // Vérifier l'état de l'authentification au démarrage
+    this.authStateSubject.next(this.hasToken());
+  }
 
   login(loginData: LoginData): Observable<any> {
     const headers = new HttpHeaders()
@@ -51,8 +56,8 @@ export class AuthService {
       tap((response: any) => {
         if (response.token) {
           localStorage.setItem(this.TOKEN_KEY, response.token);
-          localStorage.setItem(this.USER_KEY, JSON.stringify(response.user));
-          this.isLoggedInSubject.next(true);
+          localStorage.setItem(this.USER_DATA_KEY, JSON.stringify(response.user));
+          this.authStateSubject.next(true);
         }
       })
     );
@@ -71,30 +76,29 @@ export class AuthService {
       tap((response: any) => {
         if (response.token) {
           localStorage.setItem(this.TOKEN_KEY, response.token);
-          localStorage.setItem(this.USER_KEY, JSON.stringify(response.user));
-          this.isLoggedInSubject.next(true);
+          localStorage.setItem(this.USER_DATA_KEY, JSON.stringify(response.user));
+          this.authStateSubject.next(true);
         }
       })
     );
   }
 
-  logout(): void {
-    localStorage.removeItem(this.TOKEN_KEY);
-    localStorage.removeItem(this.USER_KEY);
-    this.isLoggedInSubject.next(false);
+  logout(): Observable<void> {
+    return of(undefined).pipe(
+      tap(() => {
+        localStorage.clear();
+        this.authStateSubject.next(false);
+        this.router.navigate(['/auth/login'], { replaceUrl: true });
+      })
+    );
   }
 
   isLoggedIn(): boolean {
     return this.hasToken();
   }
 
-  getToken(): string | null {
-    return localStorage.getItem(this.TOKEN_KEY);
-  }
-
-  getUser(): User | null {
-    const userStr = localStorage.getItem(this.USER_KEY);
-    return userStr ? JSON.parse(userStr) : null;
+  isAuthenticated(): boolean {
+    return this.hasToken();
   }
 
   isAdmin(): boolean {
@@ -102,7 +106,21 @@ export class AuthService {
     return user?.role === 'ADMIN';
   }
 
+  getUser(): User | null {
+    const userStr = localStorage.getItem(this.USER_DATA_KEY);
+    return userStr ? JSON.parse(userStr) : null;
+  }
+
+  getAdminName(): string {
+    const user = this.getUser();
+    return user?.nom || 'Admin';
+  }
+
+  getAdminAvatar(): string {
+    return 'assets/images/default-avatar.png';
+  }
+
   private hasToken(): boolean {
-    return !!this.getToken();
+    return !!localStorage.getItem(this.TOKEN_KEY);
   }
 }
