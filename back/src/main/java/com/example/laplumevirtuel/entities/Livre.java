@@ -33,7 +33,10 @@ public class Livre {
     private boolean disponible;
     private int nombreDePage;
     private String imageUrl;
+    private String genre;
 
+    
+    
     @ManyToOne
     @JoinColumn(name = "categorie_id")
     private Categorie categorie;

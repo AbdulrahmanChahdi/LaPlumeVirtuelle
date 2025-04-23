@@ -1,9 +1,16 @@
 <div class="dashboard-container">
   <header class="dashboard-header">
     <div class="header-content">
-      <div class="user-info" *ngIf="userInfo">
+      <div class="user-info" *ngIf="userInfo; else loadingUser">
         <h1>Bienvenue, {{ userInfo.nom }}</h1>
       </div>
+  
+      <!-- Sinon, affiche un petit message de chargement -->
+      <ng-template #loadingUser>
+        <div class="user-info">
+          <h1>Chargement de votre profil...</h1>
+        </div>
+      </ng-template>
     </div>
   </header>
 

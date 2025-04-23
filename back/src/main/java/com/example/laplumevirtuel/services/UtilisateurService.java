@@ -1,6 +1,7 @@
-package com.example.laplumevirtuel.services;
+	package com.example.laplumevirtuel.services;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -18,5 +19,7 @@ public interface UtilisateurService {
 	 Utilisateur saveUtilisateur(Utilisateur utilisateur);
 	
 	 void deleteUtilisateurById(Long id);
+
+	 Optional<Utilisateur> findByEmail(String email);
 	
 }

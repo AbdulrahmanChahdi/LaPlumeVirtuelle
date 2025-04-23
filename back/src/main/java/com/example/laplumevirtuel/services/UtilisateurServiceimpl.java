@@ -1,6 +1,7 @@
 package com.example.laplumevirtuel.services;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,6 +42,11 @@ public class UtilisateurServiceimpl implements UtilisateurService{
 	@Override
 	public void deleteUtilisateurById(Long id) {
 		utilisateurRepository.deleteById(id);
+	}
+
+	@Override
+	public Optional findByEmail(String email) {
+		return utilisateurRepository.findByAdresseMail(email);
 	}
 	
 }

@@ -1,15 +1,15 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { AuthService } from './services/auth.service';
+import { Component, OnInit } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
-import { Subscription } from 'rxjs';
+import { KeycloakService } from './auth/keycloak.service';
+import { UtilisateurService } from './services/utilisateur.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit, OnDestroy {
+export class AppComponent implements OnInit {
   title = 'La Plume Virtuelle';
   isLoggedIn: boolean = false;
   isMenuOpen: boolean = false;
@@ -17,46 +17,50 @@ export class AppComponent implements OnInit, OnDestroy {
   hasNotifications: boolean = false;
   searchQuery: string = '';
   isAdminRoute: boolean = false;
-  private authSubscription: Subscription;
+  isAuthRoute: boolean = false;
+
+  utilisateur?: any;
 
   constructor(
-    private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private utilisateurService: UtilisateurService
   ) {
-    this.authSubscription = this.authService.isLoggedIn$.subscribe(
-      isLoggedIn => {
-        this.isLoggedIn = isLoggedIn;
-        if (isLoggedIn) {
-          // Redirection initiale en fonction du rôle
-          if (this.authService.isAdmin()) {
-            this.router.navigate(['/admin/dashboard']);
-          } else {
-            this.router.navigate(['/dashboard']);
-          }
-        }
-      }
-    );
-
-    // Surveiller les changements de route
+    // Fermer les menus lors de changement de route
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event: any) => {
-      // Vérifier si c'est une route admin
       this.isAdminRoute = event.url.includes('/admin');
-      // Fermer les menus si ouverts
+      this.isAuthRoute = event.url.includes('/auth');
       this.isMenuOpen = false;
       this.isUserMenuOpen = false;
     });
   }
 
   ngOnInit(): void {
-    // Vérifier l'état de connexion initial
-    this.isLoggedIn = this.authService.isLoggedIn();
-  }
+    this.isLoggedIn = !!KeycloakService.getToken();
 
-  ngOnDestroy(): void {
-    if (this.authSubscription) {
-      this.authSubscription.unsubscribe();
+    if (this.isLoggedIn) {
+      this.utilisateurService.getConnectedUtilisateur().subscribe({
+        next: (data) => {
+          this.utilisateur = data;
+          this.utilisateurService.setLocalUtilisateur(data);
+          console.log('✅ Utilisateur connecté :', data);
+
+          // Redirection selon rôle
+          const roles = KeycloakService.getRoles();
+          const currentUrl = this.router.url;
+
+          if (roles.includes('admin') && !currentUrl.includes('/admin')) {
+            this.router.navigate(['/admin/dashboard']);
+          } 
+          else if (!roles.includes('admin') && !currentUrl.includes('/dashboard')) {
+            this.router.navigate(['/dashboard']);
+          }
+        },
+        error: (err) => {
+          console.error('❌ Erreur utilisateur connecté :', err);
+        }
+      });
     }
   }
 
@@ -80,22 +84,26 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   toggleNotifications(): void {
-    // Implémentation à venir pour la gestion des notifications
     console.log('Toggling notifications');
   }
 
   onSearch(): void {
     if (this.searchQuery.trim()) {
-      // Implémentation à venir pour la recherche
-      console.log('Searching for:', this.searchQuery);
       this.router.navigate(['/search'], {
         queryParams: { q: this.searchQuery }
       });
     }
   }
 
+  seConnecter(): void {
+    KeycloakService.login();
+  }
+
+  sInscrire(): void {
+    KeycloakService.register({});
+  }
+
   logout(): void {
-    this.authService.logout();
-    this.router.navigate(['/auth/login']);
+    KeycloakService.logout();
   }
 }

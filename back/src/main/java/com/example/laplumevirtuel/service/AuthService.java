@@ -5,6 +5,7 @@ import com.example.laplumevirtuel.repository.UtilisateurRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,10 +16,15 @@ public class AuthService {
 
     private final UtilisateurRepository utilisateurRepository;
     private final PasswordEncoder passwordEncoder;
+    private final KeycloakService keycloakService;
 
-    public AuthService(UtilisateurRepository utilisateurRepository, PasswordEncoder passwordEncoder) {
+    @Autowired
+    public AuthService(UtilisateurRepository utilisateurRepository, 
+                      PasswordEncoder passwordEncoder,
+                      KeycloakService keycloakService) {
         this.utilisateurRepository = utilisateurRepository;
         this.passwordEncoder = passwordEncoder;
+        this.keycloakService = keycloakService;
     }
 
     public Map<String, Object> login(String email, String password) {
@@ -34,11 +40,25 @@ public class AuthService {
         return response;
     }
 
+    @Transactional
     public Utilisateur register(Utilisateur utilisateur) {
         if (utilisateurRepository.findByAdresseMail(utilisateur.getAdresseMail()).isPresent()) {
             throw new RuntimeException("Un utilisateur avec cet email existe déjà");
         }
 
+        // Créer l'utilisateur dans Keycloak
+        try {
+            keycloakService.createUser(
+                utilisateur.getAdresseMail(),
+                utilisateur.getMotDePasse(),
+                utilisateur.getNom(),
+                "" // Pas de prénom dans notre modèle
+            );
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur lors de la création de l'utilisateur dans Keycloak: " + e.getMessage());
+        }
+
+        // Créer l'utilisateur dans notre base de données
         utilisateur.setMotDePasse(passwordEncoder.encode(utilisateur.getMotDePasse()));
         utilisateur.setRole("USER");
         return utilisateurRepository.save(utilisateur);

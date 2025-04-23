@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthService, User } from '../services/auth.service';
+import { UtilisateurService } from '../services/utilisateur.service';
+import { KeycloakService } from '../auth/keycloak.service';
 
 interface Stats {
   livres: number;
@@ -27,7 +28,7 @@ interface Recommendation {
   styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit {
-  userInfo: User | null = null;
+  userInfo: any = null;
   stats: Stats = {
     livres: 0,
     livresAudio: 0,
@@ -37,25 +38,34 @@ export class DashboardComponent implements OnInit {
   recommendations: Recommendation[] = [];
 
   constructor(
-    private authService: AuthService,
+    private utilisateurService: UtilisateurService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
-    if (!this.authService.isLoggedIn()) {
-      this.router.navigate(['/auth/login']);
+    if (!KeycloakService.getToken()) {
+      this.router.navigate(['/']);
       return;
     }
-    this.userInfo = this.authService.getUser();
 
-    this.loadStats();
-    this.loadRecentActivity();
-    this.loadRecommendations();
+    this.utilisateurService.getConnectedUtilisateur().subscribe({
+      next: (data) => {
+        this.userInfo = data;
+        this.utilisateurService.setLocalUtilisateur(data);
+        console.log('👤 Utilisateur connecté (dashboard) :', data);
+        this.loadStats();
+        this.loadRecentActivity();
+        this.loadRecommendations();
+      },
+      error: (err) => {
+        console.error('❌ Erreur utilisateur :', err);
+        this.router.navigate(['/']);
+      }
+    });
   }
 
   logout(): void {
-    this.authService.logout();
-    this.router.navigate(['/auth/login']);
+    KeycloakService.logout();
   }
 
   private loadStats(): void {
