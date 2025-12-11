@@ -1,0 +1,91 @@
+// Styles communs pour les boutons admin
+.btn-admin {
+  background-color: #111827;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: #1f2937;
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    background-color: #9ca3af;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  i {
+    font-size: 1rem;
+  }
+}
+
+// Bouton principal
+.btn-primary {
+  @extend .btn-admin;
+}
+
+// Bouton d'ajout
+.btn-add {
+  @extend .btn-admin;
+  background-color: #111827;
+  padding: 0.75rem 2rem;
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+}
+
+// Bouton d'édition
+.btn-edit {
+  @extend .btn-admin;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+}
+
+// Bouton de suppression (garde sa couleur rouge pour l'avertissement)
+.btn-delete {
+  @extend .btn-admin;
+  background-color: #dc2626;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+
+  &:hover {
+    background-color: #b91c1c;
+  }
+}
+
+// Bouton de rafraîchissement
+.refresh-btn {
+  @extend .btn-admin;
+  padding: 0.5rem 1rem;
+  background-color: #111827;
+  margin-left: auto;
+}
+
+// Bouton de petite taille
+.btn-sm {
+  @extend .btn-admin;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+// Bouton de déconnexion (garde sa couleur rouge)
+.btn-logout {
+  background-color: #dc2626;
+  color: white;
+
+  &:hover {
+    background-color: #b91c1c;
+  }
+}

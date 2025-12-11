@@ -1,0 +1,62 @@
+<div class="books-container">
+  <div class="header">
+    <h1>Gestion des livres</h1>
+    <button class="btn btn-primary" routerLink="new">
+      <i class="fas fa-plus"></i> Nouveau livre
+    </button>
+  </div>
+
+  <!-- Message d'erreur -->
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+  </div>
+
+  <!-- Tableau des livres -->
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Couverture</th>
+          <th>Titre</th>
+          <th>Auteur</th>
+          <th>Catégorie</th>
+          <th>Éditeur</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let book of books">
+          <td>{{ book.id }}</td>
+          <td>
+            <img [src]="book.imageUrl" [alt]="book.titre" class="book-cover">
+          </td>
+          <td>{{ book.titre }}</td>
+          <td>{{ book.auteur.nom }}</td>
+          <td>{{ book.categorie.nom }}</td>
+          <td>{{ book.editeur.nom }}</td>
+          <td>
+            <button class="btn btn-sm btn-primary me-2" [routerLink]="[book.id, 'edit']">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn btn-sm btn-danger" (click)="deleteBook(book.id)">
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- État de chargement -->
+  <div *ngIf="loading" class="loading">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Chargement...</span>
+    </div>
+  </div>
+
+  <!-- Message si aucun livre -->
+  <div *ngIf="!loading && books.length === 0" class="no-data">
+    <p>Aucun livre trouvé</p>
+  </div>
+</div>
