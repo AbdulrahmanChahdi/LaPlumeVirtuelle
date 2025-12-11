@@ -120,6 +120,11 @@ export class AuthService {
     return 'assets/images/default-avatar.png';
   }
 
+  getUserName(): string {
+    const user = this.getUser();
+    return user?.nom || '';
+  }
+
   private hasToken(): boolean {
     return !!localStorage.getItem(this.TOKEN_KEY);
   }
