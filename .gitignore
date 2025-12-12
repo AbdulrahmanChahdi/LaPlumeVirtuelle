@@ -1,0 +1,47 @@
+# ======================
+# Ancien front (local only)
+# ======================
+front_legacy/
+
+# ======================
+# Node / React / Vite
+# ======================
+node_modules/
+dist/
+build/
+.vite/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ======================
+# Environnement
+# ======================
+.env
+.env.*
+!.env.example
+
+# ======================
+# Java / Spring / Maven
+# ======================
+target/
+*.class
+*.jar
+*.war
+*.ear
+
+# ======================
+# IDE / OS
+# ======================
+.vscode/
+.settings/
+.idea/
+.project
+.classpath
+*.iml
+
+# ======================
+# OS
+# ======================
+.DS_Store
+Thumbs.db

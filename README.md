@@ -13,7 +13,7 @@
 ## Technologies utilisées
 - **Backend** : Spring Boot (Java, JPA, Hibernate)
 - **Base de données** : H2 (pour le développement) ou PostgreSQL/MySQL en production
-- **Frontend** : Angular (prévu pour l'intégration future)
+- **Frontend** : Reax (prévu pour l'intégration future)
 - **Gestion des dépendances** : Maven
 
 ## Prérequis
