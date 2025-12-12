@@ -2,11 +2,16 @@ import Card from "../../components/ui/Card"
 
 export default function StatCard({ title, value, subtitle }) {
   return (
-    <Card className="text-center">
+    <Card className="h-40 flex flex-col justify-center text-center">
       <h3 className="text-sm text-inkSoft mb-1">{title}</h3>
-      <p className="text-2xl font-bold text-accent">{value}</p>
-      <p className="text-xs text-inkMuted">{subtitle}</p>
 
+      <p className="text-2xl font-bold text-accent">
+        {value}
+      </p>
+
+      <p className="text-xs text-inkMuted mt-1">
+        {subtitle}
+      </p>
     </Card>
   )
 }
