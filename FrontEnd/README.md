@@ -1,16 +1,69 @@
-# React + Vite
+# La Plume Virtuelle – Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Frontend de l’application **La Plume Virtuelle**, développé en **React (JSX)** avec **Vite** et **Tailwind CSS**.  
+Il remplace l’ancien frontend Angular.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Stack
 
-## React Compiler
+- React
+- Vite
+- React Router
+- Tailwind CSS
+- Axios
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## Structure (vue d’ensemble)
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```
+
+FrontEnd/
+├── src/
+├── index.html
+├── package.json
+└── vite.config.js
+
+````
+
+---
+
+## Lancer le projet
+
+### Prérequis
+- Node.js ≥ 18
+- npm
+
+### Installation
+```bash
+npm install
+````
+
+### Démarrage
+
+```bash
+npm run dev
+```
+
+Application accessible sur :
+
+```
+http://localhost:5173
+```
+
+---
+
+## Notes
+
+* Le frontend est en cours de développement
+* Les fonctionnalités admin seront ajoutées plus tard
+* L’ancien frontend Angular est conservé en local uniquement
+
+---
+
+##  Auteur
+
+[**Abdulrahman Chahdi**](https://github.com/AbdulrahmanChahdi)<br>
+[**Youcef Mansouri**](https://github.com/Mansouriyoucef)<br>
+Projet : *La Plume Virtuelle*
