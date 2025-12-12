@@ -1,6 +1,7 @@
 import HeroSection from "./HeroSection"
 import MediaSection from "./MediaSection"
 import HomeStats from "./HomeStats"
+import HomeRecommendations from "./HomeRecommendations"
 
 export default function Home() {
   return (
@@ -8,6 +9,7 @@ export default function Home() {
       <HeroSection />
       <MediaSection />
       <HomeStats />
+      <HomeRecommendations />
     </div>
   )
 }
