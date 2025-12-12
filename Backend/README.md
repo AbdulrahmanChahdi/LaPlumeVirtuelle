@@ -1,10 +1,3 @@
-Parfait.
-Voici un **README backend clair, propre et professionnel**, prêt à être poussé sur GitHub, **adapté à un backend Java Spring Boot**, et cohérent avec ton projet *La Plume Virtuelle*.
-
-Tu peux **copier-coller tel quel** dans `Backend/README.md`.
-
----
-
 # Backend — La Plume Virtuelle
 
 Backend de l’application **La Plume Virtuelle**, développé en **Java avec Spring Boot**.
@@ -12,7 +5,7 @@ Il expose une API REST consommée par le frontend React.
 
 ---
 
-## 🧱 Stack technique
+##  Stack technique
 
 * **Java** (JDK 17 ou supérieur)
 * **Spring Boot**
@@ -30,7 +23,7 @@ Il expose une API REST consommée par le frontend React.
 
 ---
 
-## 📁 Structure du projet
+##  Structure du projet
 
 ```text
 Backend/
@@ -53,9 +46,9 @@ Backend/
 
 ---
 
-## 🚀 Lancer le projet en local
+##  Lancer le projet en local
 
-### 1️⃣ Prérequis
+### 1️ Prérequis
 
 * Java **17+**
 * Maven **3.8+**
@@ -70,7 +63,7 @@ mvn -version
 
 ---
 
-### 2️⃣ Configuration
+### 2️ Configuration
 
 Configurer la base de données dans :
 
@@ -91,7 +84,7 @@ spring.jpa.show-sql=true
 
 ---
 
-### 3️⃣ Lancer l’application
+### 3 Lancer l’application
 
 Depuis le dossier `Backend` :
 
@@ -104,7 +97,7 @@ Ou directement depuis l’IDE (Eclipse / IntelliJ / VS Code).
 
 ---
 
-### 4️⃣ Accès à l’API
+### 4 Accès à l’API
 
 Par défaut :
 
@@ -112,15 +105,15 @@ Par défaut :
 http://localhost:8080
 ```
 
-Exemple d’endpoint :
+Exemple d’endpoint sur swagger :
 
-```text
-GET http://localhost:8080/api/livres
+```
+http://localhost:8080/swagger-ui/index.html#/
 ```
 
 ---
 
-## 🔐 Sécurité (si activée)
+##  Sécurité (si activée)
 
 * Authentification via Spring Security / JWT / Keycloak (selon configuration)
 * Les endpoints protégés nécessitent un token valide
@@ -128,7 +121,7 @@ GET http://localhost:8080/api/livres
 
 ---
 
-## 🧪 Tests
+##  Tests
 
 Lancer les tests :
 
@@ -138,7 +131,7 @@ mvn test
 
 ---
 
-## 🔗 Lien avec le frontend
+##  Lien avec le frontend
 
 Le frontend React consomme l’API exposée par ce backend.
 
@@ -154,7 +147,7 @@ axios.get("http://localhost:8080/api/livres")
 
 ---
 
-## 📌 Bonnes pratiques
+## Bonnes pratiques
 
 * Architecture en couches (Controller / Service / Repository)
 * DTO pour les échanges API
