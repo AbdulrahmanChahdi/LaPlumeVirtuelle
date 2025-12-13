@@ -2,14 +2,21 @@ import Button from "../../components/ui/Button"
 
 export default function HeroSection() {
   return (
-    <section className="bg-paperSoft py-24 text-center">
-      <h1 className="text-4xl md:text-5xl font-bold mb-4">
-        Votre Bibliothèque Multimédia en Ligne
-      </h1>
+    <section className="py-20">
+      <div className="max-w-4xl mx-auto px-6 text-center">
+        <h1 className="text-4xl font-bold mb-4">
+          Votre Bibliothèque Multimédia en Ligne
+        </h1>
 
-      <Button>
-        Démarrer maintenant
-      </Button>
+        <p className="text-inkSoft mb-6">
+          Découvrez, lisez et écoutez une sélection de livres et de podcasts,
+          adaptés à vos envies.
+        </p>
+
+        <Button>
+          Découvrir maintenant
+        </Button>
+      </div>
     </section>
   )
 }

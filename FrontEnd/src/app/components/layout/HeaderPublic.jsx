@@ -3,7 +3,7 @@ import UserMenu from "./UserMenu"
 
 export default function HeaderPublic() {
   return (
-    <header className="bg-paper border-b border-borderSoft">
+    <header className="bg-paperSoft border-b border-borderSoft">
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
 
         {/* Logo */}
