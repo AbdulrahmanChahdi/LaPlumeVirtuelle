@@ -1,60 +1,44 @@
-import Card from "../../components/ui/Card"
 import { Link } from "react-router-dom"
+import Card from "../../components/ui/Card"
+import Section from "../../components/layout/Section"
 
 export default function MediaSection() {
-  const items = [
-    {
-      title: "Livres numériques",
-      description: "Accédez à notre collection de livres numériques.",
-      icon: "📘",
-      link: "/library/digital-books",
-    },
-    {
-      title: "Livres audio",
-      description: "Écoutez vos livres préférés partout.",
-      icon: "🎧",
-      link: "/library/audiobooks",
-    },
-    {
-      title: "Podcasts",
-      description: "Découvrez nos podcasts culturels.",
-      icon: "🎙️",
-      link: "/library/podcasts",
-    },
-  ]
-
   return (
-    <section className="bg-paperSoft py-20">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <Section
+      title="Explorer la bibliothèque"
+      subtitle="Choisissez votre format préféré"
+    >
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Link to="/library/digital-books">
+          <Card className="text-center hover:shadow-md transition">
+            <div className="h-24 bg-paperSoft rounded mb-4" />
+            <h3 className="font-semibold">Livres numériques</h3>
+            <p className="text-sm text-inkSoft mt-2">
+              Accédez à notre collection de livres numériques.
+            </p>
+          </Card>
+        </Link>
 
-          {items.map((item) => (
-            <Link key={item.title} to={item.link}>
-              <Card className="group cursor-pointer text-center">
-                
-                {/* Placeholder visuel */}
-                <div className="h-28 bg-paperSoft rounded mb-6 flex items-center justify-center">
-                  <span className="text-4xl opacity-60 group-hover:text-accent transition">
-                    {item.icon}
-                  </span>
-                </div>
+        <Link to="/library/audiobooks">
+          <Card className="text-center hover:shadow-md transition">
+            <div className="h-24 bg-paperSoft rounded mb-4" />
+            <h3 className="font-semibold">Livres audio</h3>
+            <p className="text-sm text-inkSoft mt-2">
+              Écoutez vos livres préférés partout.
+            </p>
+          </Card>
+        </Link>
 
-                {/* Titre */}
-                <h2 className="font-semibold text-lg mb-2 group-hover:text-accent transition">
-                  {item.title}
-                </h2>
-
-                {/* Description */}
-                <p className="text-sm text-inkSoft">
-                  {item.description}
-                </p>
-
-              </Card>
-            </Link>
-          ))}
-
-        </div>
+        <Link to="/library/podcasts">
+          <Card className="text-center hover:shadow-md transition">
+            <div className="h-24 bg-paperSoft rounded mb-4" />
+            <h3 className="font-semibold">Podcasts</h3>
+            <p className="text-sm text-inkSoft mt-2">
+              Découvrez nos podcasts culturels.
+            </p>
+          </Card>
+        </Link>
       </div>
-    </section>
+    </Section>
   )
 }
