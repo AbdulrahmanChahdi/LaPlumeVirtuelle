@@ -1,14 +1,16 @@
 # Exclure les dossiers de build et dépendances des statistiques de langages
-target/** linguist-vendored
-Backend/target/** linguist-vendored
-Backend/bin/** linguist-vendored
-FrontEnd/node_modules/** linguist-vendored
-front_legacy/node_modules/** linguist-vendored
+**/target/** linguist-vendored
+**/bin/** linguist-vendored
+**/node_modules/** linguist-vendored
+**/dist/** linguist-vendored
+**/build/** linguist-vendored
 
 # Exclure les fichiers générés
 *.class linguist-generated
 *.log linguist-generated
 *.map linguist-generated
+**/generated-sources/** linguist-generated
+**/generated-test-sources/** linguist-generated
 
 # Inclure explicitement les fichiers source principaux
 *.java linguist-detectable=true
