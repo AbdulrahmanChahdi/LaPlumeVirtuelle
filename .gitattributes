@@ -13,15 +13,19 @@
 **/generated-test-sources/** linguist-generated
 
 # Inclure explicitement les fichiers source principaux
-*.java linguist-detectable=true
-*.jsx linguist-detectable=true
-*.js linguist-detectable=true
-*.ts linguist-detectable=true
-*.tsx linguist-detectable=true
-*.scss linguist-detectable=true
-*.css linguist-detectable=true
-*.html linguist-detectable=true
+*.java linguist-detectable=true linguist-language=Java
+*.jsx linguist-detectable=true linguist-language=JavaScript
+*.js linguist-detectable=true linguist-language=JavaScript
+*.ts linguist-detectable=true linguist-language=TypeScript
+*.tsx linguist-detectable=true linguist-language=TypeScript
+*.scss linguist-detectable=true linguist-language=SCSS
+*.css linguist-detectable=true linguist-language=CSS
+*.html linguist-detectable=true linguist-language=HTML
 
-# Exclure les fichiers de documentation des statistiques si souhaité
-# docs/** linguist-documentation
-# *.md linguist-documentation
+# Forcer la détection des dossiers source
+FrontEnd/** linguist-vendored=false
+Backend/src/** linguist-vendored=false
+
+# Exclure les fichiers de documentation
+docs/** linguist-documentation=true
+*.md linguist-documentation=true
