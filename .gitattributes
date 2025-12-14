@@ -1,0 +1,25 @@
+# Exclure les dossiers de build et dépendances des statistiques de langages
+target/** linguist-vendored
+Backend/target/** linguist-vendored
+Backend/bin/** linguist-vendored
+FrontEnd/node_modules/** linguist-vendored
+front_legacy/node_modules/** linguist-vendored
+
+# Exclure les fichiers générés
+*.class linguist-generated
+*.log linguist-generated
+*.map linguist-generated
+
+# Inclure explicitement les fichiers source principaux
+*.java linguist-detectable=true
+*.jsx linguist-detectable=true
+*.js linguist-detectable=true
+*.ts linguist-detectable=true
+*.tsx linguist-detectable=true
+*.scss linguist-detectable=true
+*.css linguist-detectable=true
+*.html linguist-detectable=true
+
+# Exclure les fichiers de documentation des statistiques si souhaité
+# docs/** linguist-documentation
+# *.md linguist-documentation
