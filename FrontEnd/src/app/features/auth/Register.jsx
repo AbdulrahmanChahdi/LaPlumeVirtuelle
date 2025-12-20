@@ -1,10 +1,12 @@
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 import Input from "../../components/ui/Input"
 import Button from "../../components/ui/Button"
 import Card from "../../components/ui/Card"
 import { Link } from "react-router-dom"
 
 export default function Register() {
+  const navigate = useNavigate()
   const [form, setForm] = useState({
     nom: "",
     adresseMail: "",
@@ -71,6 +73,12 @@ export default function Register() {
 
     // Appel API à brancher plus tard
     console.log("Register payload:", payload)
+
+    // Marque l'inscription comme complète côté client puis redirige vers préférences
+    try {
+      localStorage.setItem("registrationComplete", "true")
+    } catch {}
+    navigate("/onboarding/preferences", { replace: true })
   }
 
   return (
