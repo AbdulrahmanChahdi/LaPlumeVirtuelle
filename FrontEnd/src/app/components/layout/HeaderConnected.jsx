@@ -1,11 +1,9 @@
 import { Link, useNavigate } from "react-router-dom"
-import { useEffect, useState, useRef } from "react"
+import { useEffect, useState } from "react"
 
 export default function HeaderConnected() {
   const navigate = useNavigate()
   const [user, setUser] = useState(null)
-  const [menuOpen, setMenuOpen] = useState(false)
-  const menuRef = useRef(null)
 
   useEffect(() => {
     try {
@@ -14,17 +12,6 @@ export default function HeaderConnected() {
         setUser(JSON.parse(userData))
       }
     } catch {}
-  }, [])
-
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setMenuOpen(false)
-      }
-    }
-
-    document.addEventListener("mousedown", handleClickOutside)
-    return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
 
   const handleLogout = () => {
@@ -60,30 +47,12 @@ export default function HeaderConnected() {
             Podcasts
           </Link>
 
-          {/* User Menu */}
-          <div className="relative" ref={menuRef}>
-            <button
-              onClick={() => setMenuOpen(!menuOpen)}
-              className="flex items-center gap-2 px-3 py-1 rounded hover:bg-borderSoft transition"
-            >
-              <span className="text-lg">👤</span>
-              <span className="text-xs">{user?.nom || "Utilisateur"}</span>
-            </button>
-
-            {menuOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white border border-borderSoft rounded-md shadow-lg py-2 z-50">
-                <div className="px-4 py-2 border-b border-borderSoft text-xs text-inkSoft">
-                  {user?.adresseMail}
-                </div>
-                <button
-                  onClick={handleLogout}
-                  className="w-full text-left px-4 py-2 text-sm hover:bg-paperSoft transition"
-                >
-                  Se déconnecter
-                </button>
-              </div>
-            )}
-          </div>
+          <button
+            onClick={handleLogout}
+            className="text-accent hover:text-accent/80 transition font-medium"
+          >
+            Se déconnecter
+          </button>
         </nav>
       </div>
     </header>

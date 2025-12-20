@@ -12,23 +12,8 @@ export default function HeaderPublic() {
           La Plume Virtuelle
         </Link>
 
-        {/* Navigation */}
-        <nav className="flex items-center gap-6 text-sm font-medium">
-          <Link to="/library/digital-books" className="hover:text-gray-600">
-            Livres
-          </Link>
-
-          <Link to="/library/audiobooks" className="hover:text-gray-600">
-            Audio
-          </Link>
-
-          <Link to="/library/podcasts" className="hover:text-gray-600">
-            Podcasts
-          </Link>
-
-          {/* Avatar menu */}
-          <UserMenu />
-        </nav>
+        {/* Avatar menu */}
+        <UserMenu />
 
       </div>
     </header>

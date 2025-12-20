@@ -14,6 +14,9 @@ import DigitalBooks from "../features/library/DigitalBooks"
 import Audiobooks from "../features/library/Audiobooks"
 import Podcasts from "../features/library/Podcasts"
 import Dashboard from "../features/dashboard/Dashboard"
+import BooksPublic from "../features/public/BooksPublic"
+import AudiobooksPublic from "../features/public/AudiobooksPublic"
+import PodcastsPublic from "../features/public/PodcastsPublic"
 
 export default function AppRouter() {
   return (
@@ -24,6 +27,9 @@ export default function AppRouter() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/public/livres" element={<BooksPublic />} />
+        <Route path="/public/audiobooks" element={<AudiobooksPublic />} />
+        <Route path="/public/podcasts" element={<PodcastsPublic />} />
         <Route
           path="/onboarding/preferences"
           element={
