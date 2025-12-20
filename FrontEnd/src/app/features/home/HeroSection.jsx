@@ -1,6 +1,26 @@
+import { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
 import Button from "../../components/ui/Button"
 
 export default function HeroSection() {
+  const navigate = useNavigate()
+  const [isConnected, setIsConnected] = useState(false)
+
+  useEffect(() => {
+    try {
+      const token = localStorage.getItem("authToken")
+      setIsConnected(!!token)
+    } catch {}
+  }, [])
+
+  const handleClick = () => {
+    if (isConnected) {
+      navigate("/library/digital-books")
+    } else {
+      navigate("/public/livres")
+    }
+  }
+
   return (
     <section className="py-20">
       <div className="max-w-4xl mx-auto px-6 text-center">
@@ -13,7 +33,7 @@ export default function HeroSection() {
           adaptés à vos envies.
         </p>
 
-        <Button>
+        <Button onClick={handleClick}>
           Découvrir maintenant
         </Button>
       </div>
