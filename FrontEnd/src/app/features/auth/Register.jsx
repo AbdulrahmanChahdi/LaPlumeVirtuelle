@@ -2,9 +2,11 @@ import { useState } from "react"
 import Input from "../../components/ui/Input"
 import Button from "../../components/ui/Button"
 import Card from "../../components/ui/Card"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
+import { register as apiRegister } from "../../api/authApi"
 
 export default function Register() {
+  const navigate = useNavigate()
   const [form, setForm] = useState({
     nom: "",
     adresseMail: "",
@@ -69,8 +71,17 @@ export default function Register() {
       tel: form.tel?.trim() || null,
     }
 
-    // Appel API à brancher plus tard
-    console.log("Register payload:", payload)
+    // Appel API d'inscription
+    apiRegister(payload)
+      .then(() => {
+        try {
+          localStorage.setItem("registrationComplete", "true")
+        } catch {}
+        navigate("/onboarding/preferences", { replace: true })
+      })
+      .catch((err) => {
+        setError(typeof err?.message === "string" ? err.message : "Erreur lors de l'inscription.")
+      })
   }
 
   return (
