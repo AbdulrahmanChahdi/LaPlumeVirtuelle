@@ -7,11 +7,12 @@ import Register from "../features/auth/Register"
 import PublicLayout from "../components/layout/PublicLayout"
 import MainLayout from "../components/layout/MainLayout"
 import LibraryLayout from "../components/layout/LibraryLayout"
+import RequireRegistration from "../guards/RequireRegistration"
+import PreferencesSignupForm from "../components/PreferencesSignupForm"
 
 import DigitalBooks from "../features/library/DigitalBooks"
 import Audiobooks from "../features/library/Audiobooks"
 import Podcasts from "../features/library/Podcasts"
-import PreferencesSignupForm from "../components/PreferencesSignupForm"
 
 export default function AppRouter() {
   return (
@@ -22,7 +23,14 @@ export default function AppRouter() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/onboarding/preferences" element={<PreferencesSignupForm />} />
+        <Route
+          path="/onboarding/preferences"
+          element={
+            <RequireRegistration>
+              <PreferencesSignupForm />
+            </RequireRegistration>
+          }
+        />
       </Route>
 
       {/* ================= APPLICATION (connecté) ================= */}

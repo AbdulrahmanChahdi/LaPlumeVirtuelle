@@ -1,12 +1,11 @@
-import { useMemo, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useMemo, useState } from "react";
+
 
 export default function PreferencesSignupForm() {
-  const navigate = useNavigate()
-  const [selectedObjectives, setSelectedObjectives] = useState([]) // max 2
-  const [selectedThemes, setSelectedThemes] = useState([]) // max 4
-  const maxObjectives = 2
-  const maxThemes = 4
+  const [selectedObjectives, setSelectedObjectives] = useState([]); // max 2
+  const [selectedThemes, setSelectedThemes] = useState([]); // max 4
+  const maxObjectives = 2;
+  const maxThemes = 4;
 
   const objectives = useMemo(
     () => [
@@ -18,7 +17,7 @@ export default function PreferencesSignupForm() {
       { id: "autre", label: "Autre" },
     ],
     []
-  )
+  );
 
   const formats = useMemo(
     () => [
@@ -27,7 +26,7 @@ export default function PreferencesSignupForm() {
       { id: "podcast", label: "Podcast" },
     ],
     []
-  )
+  );
 
   const themes = useMemo(
     () => [
@@ -45,7 +44,7 @@ export default function PreferencesSignupForm() {
       { id: "devPerso2", label: "Développement personnel" },
     ],
     []
-  )
+  );
 
   const moments = useMemo(
     () => [
@@ -96,12 +95,13 @@ export default function PreferencesSignupForm() {
         </select>
       </fieldset>
 
+      {/* 2. Objectif principal (choix multiple, max 2) */}
       <fieldset className="space-y-2">
         <legend className="font-medium">Objectif principal de consommation (max. 2)</legend>
         <div className="grid grid-cols-2 gap-3">
           {objectives.map((o) => {
-            const checked = selectedObjectives.includes(o.id)
-            const disabled = !checked && selectedObjectives.length >= maxObjectives
+            const checked = selectedObjectives.includes(o.id);
+            const disabled = !checked && selectedObjectives.length >= maxObjectives;
             return (
               <label key={o.id} className="flex items-center gap-2">
                 <input
@@ -114,12 +114,13 @@ export default function PreferencesSignupForm() {
                 />
                 <span>{o.label}</span>
               </label>
-            )
+            );
           })}
         </div>
         <p className="text-xs text-gray-500">Sélectionnez au maximum {maxObjectives} objectifs.</p>
       </fieldset>
 
+      {/* 3. Formats préférés (multiple) */}
       <fieldset className="space-y-2">
         <legend className="font-medium">Formats préférés</legend>
         <div className="flex flex-wrap gap-4">
@@ -132,12 +133,13 @@ export default function PreferencesSignupForm() {
         </div>
       </fieldset>
 
+      {/* 4. Thématiques préférées (choix multiple, max 4) */}
       <fieldset className="space-y-2">
         <legend className="font-medium">Thématiques préférées (max. 4)</legend>
         <div className="grid grid-cols-2 gap-3">
           {themes.map((t) => {
-            const checked = selectedThemes.includes(t.id)
-            const disabled = !checked && selectedThemes.length >= maxThemes
+            const checked = selectedThemes.includes(t.id);
+            const disabled = !checked && selectedThemes.length >= maxThemes;
             return (
               <label key={t.id} className="flex items-center gap-2">
                 <input
@@ -150,12 +152,13 @@ export default function PreferencesSignupForm() {
                 />
                 <span>{t.label}</span>
               </label>
-            )
+            );
           })}
         </div>
         <p className="text-xs text-gray-500">Sélectionnez au maximum {maxThemes} thématiques.</p>
       </fieldset>
 
+      {/* 5. Niveau de lecture global (radio) */}
       <fieldset className="space-y-2">
         <legend className="font-medium">Niveau de lecture global</legend>
         <div className="flex flex-wrap gap-4">
@@ -172,6 +175,7 @@ export default function PreferencesSignupForm() {
         </div>
       </fieldset>
 
+      {/* 6. Temps disponible par session (select) */}
       <fieldset className="space-y-2">
         <legend className="font-medium">Temps disponible par session</legend>
         <select name="sessionTime" required className="w-full border rounded p-2">
@@ -184,6 +188,7 @@ export default function PreferencesSignupForm() {
         </select>
       </fieldset>
 
+      {/* 7. Moments de consommation (checkbox) */}
       <fieldset className="space-y-2">
         <legend className="font-medium">Moments de consommation</legend>
         <div className="grid grid-cols-2 gap-3">
@@ -196,6 +201,7 @@ export default function PreferencesSignupForm() {
         </div>
       </fieldset>
 
+      {/* 8. Auteurs / livres / podcasts appréciés (texte libre, optionnel) */}
       <fieldset className="space-y-2">
         <legend className="font-medium">Auteurs, livres ou podcasts appréciés (optionnel)</legend>
         <textarea
@@ -206,6 +212,7 @@ export default function PreferencesSignupForm() {
         />
       </fieldset>
 
+      {/* 9. Description courte des goûts (texte libre, optionnel) */}
       <fieldset className="space-y-2">
         <legend className="font-medium">Décrivez brièvement vos goûts (optionnel)</legend>
         <textarea
@@ -216,6 +223,7 @@ export default function PreferencesSignupForm() {
         />
       </fieldset>
 
+      {/* 10. Préférence découverte vs continuité (radio) */}
       <fieldset className="space-y-2">
         <legend className="font-medium">Préférence : découverte vs continuité</legend>
         <div className="flex flex-wrap gap-4">
@@ -232,6 +240,7 @@ export default function PreferencesSignupForm() {
         </div>
       </fieldset>
 
+      {/* RGPD: consentement explicite (non pré-coché) */}
       <fieldset className="space-y-2">
         <legend className="font-medium">Consentement RGPD</legend>
         <label className="flex items-start gap-2">
@@ -242,11 +251,12 @@ export default function PreferencesSignupForm() {
         </label>
       </fieldset>
 
+      {/* Bouton de soumission (aucune logique backend) */}
       <div className="pt-2">
         <button type="submit" className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700">
           Valider
         </button>
       </div>
     </form>
-  )
+  );
 }
