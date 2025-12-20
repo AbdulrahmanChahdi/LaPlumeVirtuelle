@@ -27,7 +27,28 @@ export default function Login() {
         localStorage.setItem("authToken", data?.token || "")
         localStorage.setItem("currentUser", JSON.stringify(data?.user || null))
       } catch {}
-      navigate("/library", { replace: true })
+
+      const registrationComplete = (() => {
+        try {
+          return localStorage.getItem("registrationComplete") === "true"
+        } catch {
+          return false
+        }
+      })()
+
+      const onboardingDone = (() => {
+        try {
+          return localStorage.getItem("onboardingDone") === "true"
+        } catch {
+          return false
+        }
+      })()
+
+      const target = !onboardingDone
+        ? "/onboarding/preferences"
+        : "/dashboard"
+
+      navigate(target, { replace: true })
     } catch (err) {
       setError(typeof err?.message === "string" ? err.message : "Identifiants invalides.")
     }

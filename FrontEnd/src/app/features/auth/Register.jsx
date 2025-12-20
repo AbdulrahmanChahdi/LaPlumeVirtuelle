@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom"
 import Input from "../../components/ui/Input"
 import Button from "../../components/ui/Button"
 import Card from "../../components/ui/Card"
-import { Link, useNavigate } from "react-router-dom"
+import { Link } from "react-router-dom"
 import { register as apiRegister } from "../../api/authApi"
 
 export default function Register() {
@@ -72,14 +72,18 @@ export default function Register() {
       tel: form.tel?.trim() || null,
     }
 
-    // Appel API à brancher plus tard
-    console.log("Register payload:", payload)
-
-    // Marque l'inscription comme complète côté client puis redirige vers préférences
-    try {
-      localStorage.setItem("registrationComplete", "true")
-    } catch {}
-    navigate("/onboarding/preferences", { replace: true })
+    // Appel API d'inscription
+    apiRegister(payload)
+      .then(() => {
+        try {
+          localStorage.setItem("registrationComplete", "true")
+          localStorage.removeItem("onboardingDone")
+        } catch {}
+        navigate("/login", { replace: true })
+      })
+      .catch((err) => {
+        setError(typeof err?.message === "string" ? err.message : "Erreur lors de l'inscription.")
+      })
   }
 
   return (

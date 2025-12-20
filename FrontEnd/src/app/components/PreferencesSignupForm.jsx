@@ -1,8 +1,10 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState } from "react"
+import { useNavigate } from "react-router-dom"
 
 export default function PreferencesSignupForm() {
-  const [selectedObjectives, setSelectedObjectives] = useState([]); // max 2
-  const [selectedThemes, setSelectedThemes] = useState([]); // max 4
+  const navigate = useNavigate()
+  const [selectedObjectives, setSelectedObjectives] = useState([]) // max 2
+  const [selectedThemes, setSelectedThemes] = useState([]) // max 4
   const maxObjectives = 2;
   const maxThemes = 4;
 
@@ -56,24 +58,31 @@ export default function PreferencesSignupForm() {
       { id: "weekend", label: "Week-end" },
     ],
     []
-  );
+  )
 
   const handleLimitedCheckboxChange = (current, setCurrent, value, max) => {
-    const exists = current.includes(value);
+    const exists = current.includes(value)
     if (exists) {
-      setCurrent(current.filter((v) => v !== value));
+      setCurrent(current.filter((v) => v !== value))
     } else {
-      if (current.length >= max) return; // prevent exceeding limit
-      setCurrent([...current, value]);
+      if (current.length >= max) return
+      setCurrent([...current, value])
     }
-  };
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    try {
+      localStorage.setItem("onboardingDone", "true")
+    } catch {}
+    navigate("/dashboard", { replace: true })
+  }
 
   return (
-    <form aria-labelledby="preferences-title" className="max-w-2xl mx-auto p-6 space-y-6">
+    <form aria-labelledby="preferences-title" className="max-w-2xl mx-auto p-6 space-y-6" onSubmit={handleSubmit}>
       <h1 id="preferences-title" className="text-xl font-semibold">Formulaire de préférences</h1>
       <p className="text-sm text-gray-600">Ces informations servent uniquement à personnaliser vos recommandations de livres, livres audio et podcasts. Vos données ne seront pas partagées avec des tiers.</p>
 
-      {/* 1. Tranche d'âge (choix unique) */}
       <fieldset className="space-y-2">
         <legend className="font-medium">Tranche d’âge</legend>
         <select name="ageRange" required className="w-full border rounded p-2">
