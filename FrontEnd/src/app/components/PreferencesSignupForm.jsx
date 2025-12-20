@@ -1,9 +1,10 @@
-import { useMemo, useState } from "react";
-
+import { useMemo, useState } from "react"
+import { useNavigate } from "react-router-dom"
 
 export default function PreferencesSignupForm() {
-  const [selectedObjectives, setSelectedObjectives] = useState([]); // max 2
-  const [selectedThemes, setSelectedThemes] = useState([]); // max 4
+  const navigate = useNavigate()
+  const [selectedObjectives, setSelectedObjectives] = useState([]) // max 2
+  const [selectedThemes, setSelectedThemes] = useState([]) // max 4
   const maxObjectives = 2;
   const maxThemes = 4;
 
@@ -74,7 +75,7 @@ export default function PreferencesSignupForm() {
     try {
       localStorage.setItem("onboardingDone", "true")
     } catch {}
-    navigate("/library", { replace: true })
+    navigate("/dashboard", { replace: true })
   }
 
   return (

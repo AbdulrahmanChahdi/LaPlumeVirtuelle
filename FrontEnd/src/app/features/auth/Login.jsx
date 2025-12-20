@@ -46,7 +46,7 @@ export default function Login() {
 
       const target = !onboardingDone
         ? "/onboarding/preferences"
-        : "/library"
+        : "/dashboard"
 
       navigate(target, { replace: true })
     } catch (err) {

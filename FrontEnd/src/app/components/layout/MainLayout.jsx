@@ -1,11 +1,11 @@
 import { Outlet } from "react-router-dom"
-import Header from "./Header"
+import HeaderConnected from "./HeaderConnected"
 import Footer from "./Footer"
 
 export default function MainLayout() {
   return (
     <div className="main-layout">
-      <Header />
+      <HeaderConnected />
       <main>
         <Outlet />
       </main>

@@ -13,6 +13,7 @@ import PreferencesSignupForm from "../components/PreferencesSignupForm"
 import DigitalBooks from "../features/library/DigitalBooks"
 import Audiobooks from "../features/library/Audiobooks"
 import Podcasts from "../features/library/Podcasts"
+import Dashboard from "../features/dashboard/Dashboard"
 
 export default function AppRouter() {
   return (
@@ -35,8 +36,8 @@ export default function AppRouter() {
 
       {/* ================= APPLICATION (connecté) ================= */}
       <Route element={<MainLayout />}>
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/library" element={<LibraryLayout />}>
-          <Route index element={<Navigate to="digital-books" replace />} />
           <Route path="digital-books" element={<DigitalBooks />} />
           <Route path="audiobooks" element={<Audiobooks />} />
           <Route path="podcasts" element={<Podcasts />} />
