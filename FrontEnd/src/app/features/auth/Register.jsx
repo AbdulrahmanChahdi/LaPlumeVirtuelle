@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom"
 import Input from "../../components/ui/Input"
 import Button from "../../components/ui/Button"
 import Card from "../../components/ui/Card"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
+import { register as apiRegister } from "../../api/authApi"
 
 export default function Register() {
   const navigate = useNavigate()
