@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 import Input from "../../components/ui/Input"
 import Button from "../../components/ui/Button"
 import Card from "../../components/ui/Card"
@@ -71,17 +72,14 @@ export default function Register() {
       tel: form.tel?.trim() || null,
     }
 
-    // Appel API d'inscription
-    apiRegister(payload)
-      .then(() => {
-        try {
-          localStorage.setItem("registrationComplete", "true")
-        } catch {}
-        navigate("/onboarding/preferences", { replace: true })
-      })
-      .catch((err) => {
-        setError(typeof err?.message === "string" ? err.message : "Erreur lors de l'inscription.")
-      })
+    // Appel API à brancher plus tard
+    console.log("Register payload:", payload)
+
+    // Marque l'inscription comme complète côté client puis redirige vers préférences
+    try {
+      localStorage.setItem("registrationComplete", "true")
+    } catch {}
+    navigate("/onboarding/preferences", { replace: true })
   }
 
   return (
