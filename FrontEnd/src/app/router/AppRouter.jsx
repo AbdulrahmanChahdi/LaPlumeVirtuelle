@@ -11,6 +11,7 @@ import LibraryLayout from "../components/layout/LibraryLayout"
 import DigitalBooks from "../features/library/DigitalBooks"
 import Audiobooks from "../features/library/Audiobooks"
 import Podcasts from "../features/library/Podcasts"
+import PreferencesSignupForm from "../components/PreferencesSignupForm"
 
 export default function AppRouter() {
   return (
@@ -21,6 +22,7 @@ export default function AppRouter() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/onboarding/preferences" element={<PreferencesSignupForm />} />
       </Route>
 
       {/* ================= APPLICATION (connecté) ================= */}

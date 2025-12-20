@@ -76,8 +76,9 @@ export default function Register() {
       .then(() => {
         try {
           localStorage.setItem("registrationComplete", "true")
+          localStorage.removeItem("onboardingDone")
         } catch {}
-        navigate("/onboarding/preferences", { replace: true })
+        navigate("/login", { replace: true })
       })
       .catch((err) => {
         setError(typeof err?.message === "string" ? err.message : "Erreur lors de l'inscription.")
