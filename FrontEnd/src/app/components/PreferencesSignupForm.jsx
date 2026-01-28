@@ -1,10 +1,15 @@
 import { useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { savePreferences } from "../api/preferencesApi"
 
 export default function PreferencesSignupForm() {
   const navigate = useNavigate()
   const [selectedObjectives, setSelectedObjectives] = useState([]) // max 2
   const [selectedThemes, setSelectedThemes] = useState([]) // max 4
+  const [selectedFormats, setSelectedFormats] = useState([])
+  const [selectedMoments, setSelectedMoments] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
   const maxObjectives = 2;
   const maxThemes = 4;
 
@@ -70,18 +75,52 @@ export default function PreferencesSignupForm() {
     }
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
+    setLoading(true)
+    setError(null)
+
     try {
+      const formData = new FormData(e.target)
+      
+      const preferences = {
+        id_preference: null,
+        tranche_age: formData.get("ageRange"),
+        objectif: selectedObjectives.join(","),
+        format: selectedFormats.join(","),
+        thematique: selectedThemes.join(","),
+        niveau_lecture: formData.get("readingLevel"),
+        frequence_lecture: formData.get("sessionTime"),
+        moment_consomation: selectedMoments.join(","),
+        auteur_prefere: formData.get("favorites") || "",
+        description: formData.get("tasteDescription") || "",
+        continue_nouveau: formData.get("discoveryPreference"),
+        RGPD: formData.get("consent") === "on" ? true : false,
+      }
+
+      console.log("Données à envoyer:", preferences)
+      await savePreferences(preferences)
+
       localStorage.setItem("onboardingDone", "true")
-    } catch {}
-    navigate("/dashboard", { replace: true })
+      navigate("/dashboard", { replace: true })
+    } catch (err) {
+      console.error("Erreur lors de l'envoi des préférences:", err)
+      setError(err.message || "Une erreur est survenue")
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
     <form aria-labelledby="preferences-title" className="max-w-2xl mx-auto p-6 space-y-6" onSubmit={handleSubmit}>
       <h1 id="preferences-title" className="text-xl font-semibold">Formulaire de préférences</h1>
       <p className="text-sm text-gray-600">Ces informations servent uniquement à personnaliser vos recommandations de livres, livres audio et podcasts. Vos données ne seront pas partagées avec des tiers.</p>
+
+      {error && (
+        <div className="p-3 bg-red-100 text-red-700 rounded">
+          {error}
+        </div>
+      )}
 
       <fieldset className="space-y-2">
         <legend className="font-medium">Tranche d’âge</legend>
@@ -127,7 +166,20 @@ export default function PreferencesSignupForm() {
         <div className="flex flex-wrap gap-4">
           {formats.map((f) => (
             <label key={f.id} className="flex items-center gap-2">
-              <input type="checkbox" name="formats" value={f.id} />
+              <input 
+                type="checkbox" 
+                name="formats" 
+                value={f.id}
+                checked={selectedFormats.includes(f.id)}
+                onChange={() => {
+                  const exists = selectedFormats.includes(f.id)
+                  if (exists) {
+                    setSelectedFormats(selectedFormats.filter(v => v !== f.id))
+                  } else {
+                    setSelectedFormats([...selectedFormats, f.id])
+                  }
+                }}
+              />
               <span>{f.label}</span>
             </label>
           ))}
@@ -195,7 +247,20 @@ export default function PreferencesSignupForm() {
         <div className="grid grid-cols-2 gap-3">
           {moments.map((m) => (
             <label key={m.id} className="flex items-center gap-2">
-              <input type="checkbox" name="moments" value={m.id} />
+              <input 
+                type="checkbox" 
+                name="moments" 
+                value={m.id}
+                checked={selectedMoments.includes(m.id)}
+                onChange={() => {
+                  const exists = selectedMoments.includes(m.id)
+                  if (exists) {
+                    setSelectedMoments(selectedMoments.filter(v => v !== m.id))
+                  } else {
+                    setSelectedMoments([...selectedMoments, m.id])
+                  }
+                }}
+              />
               <span>{m.label}</span>
             </label>
           ))}
