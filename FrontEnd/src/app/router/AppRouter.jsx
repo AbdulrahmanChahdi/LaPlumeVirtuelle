@@ -8,6 +8,7 @@ import PublicLayout from "../components/layout/PublicLayout"
 import MainLayout from "../components/layout/MainLayout"
 import LibraryLayout from "../components/layout/LibraryLayout"
 import RequireRegistration from "../guards/RequireRegistration"
+import RequireAuth from "../guards/RequireAuth"
 import PreferencesSignupForm from "../components/PreferencesSignupForm"
 
 import DigitalBooks from "../features/library/DigitalBooks"
@@ -41,7 +42,13 @@ export default function AppRouter() {
       </Route>
 
       {/* ================= APPLICATION (connecté) ================= */}
-      <Route element={<MainLayout />}>
+      <Route
+        element={
+          <RequireAuth>
+            <MainLayout />
+          </RequireAuth>
+        }
+      >
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/library" element={<LibraryLayout />}>
           <Route path="digital-books" element={<DigitalBooks />} />
