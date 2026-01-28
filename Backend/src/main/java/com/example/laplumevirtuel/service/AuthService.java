@@ -2,7 +2,7 @@ package com.example.laplumevirtuel.service;
 
 import com.example.laplumevirtuel.entities.Utilisateur;
 import com.example.laplumevirtuel.repository.UtilisateurRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.laplumevirtuel.security.JwtUtil;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -15,10 +15,14 @@ public class AuthService {
 
     private final UtilisateurRepository utilisateurRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
-    public AuthService(UtilisateurRepository utilisateurRepository, PasswordEncoder passwordEncoder) {
+    public AuthService(UtilisateurRepository utilisateurRepository,
+            PasswordEncoder passwordEncoder,
+            JwtUtil jwtUtil) {
         this.utilisateurRepository = utilisateurRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtUtil = jwtUtil;
     }
 
     public Map<String, Object> login(String email, String password) {
@@ -45,7 +49,9 @@ public class AuthService {
     }
 
     private String generateToken(Utilisateur utilisateur) {
-        // TODO: Implémenter la génération de token JWT
-        return "dummy-token-" + utilisateur.getId();
+        return jwtUtil.generateToken(
+                utilisateur.getAdresseMail(),
+                utilisateur.getId(),
+                utilisateur.getRole());
     }
-} 
+}
