@@ -11,16 +11,16 @@ export default function HeaderConnected() {
       if (userData) {
         setUser(JSON.parse(userData))
       }
-    } catch {}
+    } catch { }
   }, [])
 
   const handleLogout = () => {
     try {
       localStorage.removeItem("authToken")
       localStorage.removeItem("currentUser")
-      localStorage.removeItem("registrationComplete")
-      localStorage.removeItem("onboardingDone")
-    } catch {}
+      // Ne pas supprimer registrationComplete et onboardingDone
+      // car ce sont des états permanents du compte utilisateur
+    } catch { }
     navigate("/", { replace: true })
   }
 
