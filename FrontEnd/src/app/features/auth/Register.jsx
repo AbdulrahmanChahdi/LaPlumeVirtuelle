@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import Input from "../../components/ui/Input"
 import Button from "../../components/ui/Button"
@@ -22,21 +22,22 @@ export default function Register() {
   const totalFields = 4 // nom, email, password, confirm
   const progress = Math.round((filledFields / totalFields) * 100)
 
+  // Calculate filled fields whenever form changes
+  useEffect(() => {
+    const filled = [
+      form.nom?.trim(),
+      form.adresseMail?.trim(),
+      form.motDePasse?.trim(),
+      form.confirmMotDePasse?.trim(),
+    ].filter(Boolean).length
+    setFilledFields(filled)
+  }, [form])
+
   function handleChange(e) {
     setForm((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
     }))
-
-    // Calculate filled required fields
-    const updatedForm = { ...form, [e.target.name]: e.target.value }
-    const filled = [
-      updatedForm.nom?.trim(),
-      updatedForm.adresseMail?.trim(),
-      updatedForm.motDePasse?.trim(),
-      updatedForm.confirmMotDePasse?.trim(),
-    ].filter(Boolean).length
-    setFilledFields(filled)
   }
 
   function isValidEmail(email) {

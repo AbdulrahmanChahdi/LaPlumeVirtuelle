@@ -17,6 +17,7 @@ export default function Button({ children, onClick, type = "button", disabled = 
       id: Date.now(),
       x,
       y,
+      size,
     }
 
     setRipples([...ripples, newRipple])
@@ -37,7 +38,7 @@ export default function Button({ children, onClick, type = "button", disabled = 
         relative bg-accent text-white
         px-6 py-2 rounded
         hover:bg-accentHover active:scale-95
-        transition-all duration-200
+        transition-[background-color,transform] duration-200
         disabled:opacity-50 disabled:cursor-not-allowed
         overflow-hidden
         ${className}
@@ -49,8 +50,8 @@ export default function Button({ children, onClick, type = "button", disabled = 
           key={ripple.id}
           className="absolute rounded-full bg-white opacity-30 pointer-events-none animate-ripple"
           style={{
-            width: "10px",
-            height: "10px",
+            width: ripple.size,
+            height: ripple.size,
             left: ripple.x,
             top: ripple.y,
           }}

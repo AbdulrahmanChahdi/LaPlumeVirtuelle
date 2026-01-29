@@ -17,7 +17,7 @@ export default function Input({ className = "", ...props }) {
         focus:border-accent
         focus:ring-2
         focus:ring-accent/20
-        transition-all
+        transition-[border-color,box-shadow,background-color] duration-200
         ${className}
       `}
     />
