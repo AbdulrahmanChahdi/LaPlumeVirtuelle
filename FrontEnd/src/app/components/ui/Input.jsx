@@ -1,18 +1,25 @@
-export default function Input(props) {
+export default function Input({ className = "", ...props }) {
   return (
     <input
       {...props}
-      className="
+      className={`
         w-full
-        bg-white
+        bg-gradient-to-br from-white to-accent/2
         border border-borderSoft
-        rounded
-        px-3 py-2
+        rounded-lg
+        px-4 py-3
         text-ink
         placeholder-inkMuted
+        font-medium
+        shadow-sm
+        hover:border-accent/50
         focus:outline-none
-        focus:ring-2 focus:ring-accent
-      "
+        focus:border-accent
+        focus:ring-2
+        focus:ring-accent/20
+        transition-all
+        ${className}
+      `}
     />
   )
 }

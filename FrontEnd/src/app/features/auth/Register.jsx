@@ -18,12 +18,25 @@ export default function Register() {
   })
 
   const [error, setError] = useState("")
+  const [filledFields, setFilledFields] = useState(0)
+  const totalFields = 4 // nom, email, password, confirm
+  const progress = Math.round((filledFields / totalFields) * 100)
 
   function handleChange(e) {
     setForm((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
     }))
+
+    // Calculate filled required fields
+    const updatedForm = { ...form, [e.target.name]: e.target.value }
+    const filled = [
+      updatedForm.nom?.trim(),
+      updatedForm.adresseMail?.trim(),
+      updatedForm.motDePasse?.trim(),
+      updatedForm.confirmMotDePasse?.trim(),
+    ].filter(Boolean).length
+    setFilledFields(filled)
   }
 
   function isValidEmail(email) {
@@ -87,29 +100,37 @@ export default function Register() {
   }
 
   return (
-    <div className="min-h-[60vh] flex items-start justify-center pt-16">
+    <div className="min-h-screen bg-gradient-to-br from-paper to-paperSoft flex items-center justify-center py-12 px-4">
+      <Card className="w-full max-w-md shadow-lg">
+        {/* Progress Indicator */}
+        <div className="mb-6 pb-4 border-b border-borderSoft">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-sm font-semibold text-accent">Progression de l'inscription</p>
+            <span className="text-xs font-medium text-inkMuted">{progress}%</span>
+          </div>
+          <div className="w-full h-2 bg-borderSoft rounded-full overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-accent to-gold transition-all duration-300 ease-out"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+          <p className="text-xs text-inkMuted mt-2">Étapes obligatoires : {filledFields}/{totalFields}</p>
+        </div>
 
-      <Card className="w-full max-w-lg px-10 py-8">
-
-        <h1 className="text-2xl font-bold text-center mb-2">
-          Créer un compte
-        </h1>
-
-        <p className="text-sm text-inkSoft text-center mb-6">
-          Rejoignez La Plume Virtuelle et découvrez une nouvelle façon
-          d’explorer la culture.
-        </p>
+        <div className="text-center space-y-2 mb-6 pb-4 border-b border-borderSoft">
+          <h1 className="text-3xl font-bold text-ink">Créer un compte</h1>
+          <p className="text-sm text-inkSoft">
+            Rejoignez La Plume Virtuelle et découvrez une nouvelle façon d'explorer la culture.
+          </p>
+        </div>
 
         {error && (
-          <p className="text-sm text-red-600 text-center mb-4">
-            {error}
-          </p>
+          <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-lg">
+            <p className="font-medium text-sm">{error}</p>
+          </div>
         )}
 
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-4 max-w-sm mx-auto"
-        >
+        <form onSubmit={handleSubmit} className="space-y-3">
           <Input name="nom" placeholder="Nom" value={form.nom} onChange={handleChange} />
           <Input type="email" name="adresseMail" placeholder="Adresse email" value={form.adresseMail} onChange={handleChange} />
           <Input type="password" name="motDePasse" placeholder="Mot de passe" value={form.motDePasse} onChange={handleChange} />
@@ -124,16 +145,18 @@ export default function Register() {
           </div>
         </form>
 
-        <p className="text-xs text-center text-inkMuted mt-2">
+        <p className="text-xs text-center text-inkMuted mt-4">
           Inscription gratuite. Aucune carte bancaire requise.
         </p>
 
-        <p className="text-sm text-center text-inkSoft mt-3">
-          Déjà un compte ?{" "}
-          <Link to="/login" className="text-accent font-medium hover:underline">
-            Se connecter
-          </Link>
-        </p>
+        <div className="mt-6 pt-6 border-t border-borderSoft text-center">
+          <p className="text-sm text-inkSoft">
+            Déjà un compte ?{" "}
+            <Link to="/login" className="text-accent font-semibold hover:text-accentHover transition-colors">
+              Se connecter
+            </Link>
+          </p>
+        </div>
 
       </Card>
     </div>
