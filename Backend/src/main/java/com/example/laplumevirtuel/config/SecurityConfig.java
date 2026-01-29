@@ -26,20 +26,21 @@ public class SecurityConfig {
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
     private static final String[] PUBLIC_URLS = {
-            "/api/livres/**",
-            "/api/categories/**",
-            "/api/podcasts/**",
-            "/api/livres-audio/**",
-            "/api/auteurs/**",
-            "/api/editeurs/**",
-            "/auth/**",
-            "/h2-console/**",
-            // Swagger UI
-            "/v3/api-docs/**",
-            "/swagger-ui/**",
-            "/swagger-ui.html",
-            "/swagger-resources/**",
-            "/webjars/**"
+        "/api/livres/**",
+        "/api/categories/**",
+        "/api/podcasts/**",
+        "/api/livres-audio/**",
+        "/api/auteurs/**",
+        "/api/editeurs/**",
+        "/auth/**",
+        "/preferences/**",
+        "/h2-console/**",
+        // Swagger UI
+        "/v3/api-docs/**",
+        "/swagger-ui/**",
+        "/swagger-ui.html",
+        "/swagger-resources/**",
+        "/webjars/**"
     };
 
     @Bean
