@@ -94,7 +94,7 @@ export default function PreferencesSignupForm() {
         moment_consomation: selectedMoments.join(","),
         auteur_prefere: formData.get("favorites") || "",
         description: formData.get("tasteDescription") || "",
-        continue_nouveau: formData.get("discoveryPreference"),
+        decouvertePrefrence: formData.get("discoveryPreference"),
         RGPD: formData.get("consent") === "on" ? true : false,
       }
 
