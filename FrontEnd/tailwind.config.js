@@ -13,6 +13,21 @@ export default {
         gold: "#C9A24D",
         borderSoft: "#E5E1DA",
       },
+      keyframes: {
+        ripple: {
+          "0%": {
+            transform: "scale(0)",
+            opacity: "1",
+          },
+          "100%": {
+            transform: "scale(4)",
+            opacity: "0",
+          },
+        },
+      },
+      animation: {
+        ripple: "ripple 0.6s ease-out",
+      },
     },
   },
   plugins: [],

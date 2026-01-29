@@ -55,25 +55,59 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-[60vh] flex items-start justify-center pt-16">
-      <Card className="w-full max-w-lg px-10 py-8">
-        <h1 className="text-2xl font-bold text-center mb-2">Se connecter</h1>
-        <p className="text-sm text-inkSoft text-center mb-6">Accédez à votre bibliothèque personnalisée.</p>
+    <div className="min-h-screen bg-gradient-to-br from-paper to-paperSoft flex items-center justify-center py-12 px-4">
+      <Card className="w-full max-w-md shadow-lg">
+        <div className="text-center space-y-2 mb-8 pb-6 border-b border-borderSoft">
+          <h1 className="text-3xl font-bold text-ink">Se connecter</h1>
+          <p className="text-base text-inkSoft">Accédez à votre bibliothèque personnalisée.</p>
+        </div>
 
-        {error && <p className="text-sm text-red-600 text-center mb-4">{error}</p>}
+        {error && (
+          <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-lg">
+            <p className="font-medium text-sm">{error}</p>
+          </div>
+        )}
 
-        <form onSubmit={handleSubmit} className="space-y-4 max-w-sm mx-auto">
-          <Input type="email" name="adresseMail" placeholder="Adresse email" value={form.adresseMail} onChange={handleChange} />
-          <Input type="password" name="motDePasse" placeholder="Mot de passe" value={form.motDePasse} onChange={handleChange} />
-          <div className="flex justify-center mt-4">
-            <Button type="submit" className="px-10">Se connecter</Button>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <label className="block text-sm font-semibold text-ink">Email</label>
+            <Input 
+              type="email" 
+              name="adresseMail" 
+              placeholder="votre.email@exemple.com" 
+              value={form.adresseMail} 
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-semibold text-ink">Mot de passe</label>
+            <Input 
+              type="password" 
+              name="motDePasse" 
+              placeholder="Votre mot de passe" 
+              value={form.motDePasse} 
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="pt-2">
+            <Button type="submit" className="w-full py-3 text-lg font-semibold">
+              Se connecter
+            </Button>
           </div>
         </form>
 
-        <p className="text-sm text-center text-inkSoft mt-3">
-          Pas de compte ? {" "}
-          <Link to="/register" className="text-accent font-medium hover:underline">Créer un compte</Link>
-        </p>
+        <div className="mt-6 pt-6 border-t border-borderSoft text-center">
+          <p className="text-sm text-inkSoft">
+            Pas de compte ?{" "}
+            <Link to="/register" className="text-accent font-semibold hover:text-accentHover transition-colors">
+              Créer un compte
+            </Link>
+          </p>
+        </div>
       </Card>
     </div>
   )

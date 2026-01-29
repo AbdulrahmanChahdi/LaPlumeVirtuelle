@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import Input from "../../components/ui/Input"
 import Button from "../../components/ui/Button"
@@ -22,22 +22,21 @@ export default function Register() {
   const totalFields = 4 // nom, email, password, confirm
   const progress = Math.round((filledFields / totalFields) * 100)
 
-  // Calculate filled fields whenever form changes
-  useEffect(() => {
-    const filled = [
-      form.nom?.trim(),
-      form.adresseMail?.trim(),
-      form.motDePasse?.trim(),
-      form.confirmMotDePasse?.trim(),
-    ].filter(Boolean).length
-    setFilledFields(filled)
-  }, [form])
-
   function handleChange(e) {
     setForm((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
     }))
+
+    // Calculate filled required fields
+    const updatedForm = { ...form, [e.target.name]: e.target.value }
+    const filled = [
+      updatedForm.nom?.trim(),
+      updatedForm.adresseMail?.trim(),
+      updatedForm.motDePasse?.trim(),
+      updatedForm.confirmMotDePasse?.trim(),
+    ].filter(Boolean).length
+    setFilledFields(filled)
   }
 
   function isValidEmail(email) {
@@ -131,17 +130,89 @@ export default function Register() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-3">
-          <Input name="nom" placeholder="Nom" value={form.nom} onChange={handleChange} />
-          <Input type="email" name="adresseMail" placeholder="Adresse email" value={form.adresseMail} onChange={handleChange} />
-          <Input type="password" name="motDePasse" placeholder="Mot de passe" value={form.motDePasse} onChange={handleChange} />
-          <Input type="password" name="confirmMotDePasse" placeholder="Confirmer le mot de passe" value={form.confirmMotDePasse} onChange={handleChange} />
-          <Input name="adressePostal" placeholder="Adresse postale (optionnel)" value={form.adressePostal} onChange={handleChange} />
-          <Input name="tel" placeholder="Téléphone (optionnel)" value={form.tel} onChange={handleChange} />
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <label className="block text-sm font-semibold text-ink">
+              Nom <span className="text-red-500">*</span>
+            </label>
+            <Input 
+              name="nom" 
+              placeholder="Votre nom complet" 
+              value={form.nom} 
+              onChange={handleChange}
+              required
+            />
+          </div>
 
-          <div className="flex justify-center mt-4">
-            <Button type="submit" className="px-10">
-              S’inscrire
+          <div className="space-y-2">
+            <label className="block text-sm font-semibold text-ink">
+              Email <span className="text-red-500">*</span>
+            </label>
+            <Input 
+              type="email" 
+              name="adresseMail" 
+              placeholder="votre.email@exemple.com" 
+              value={form.adresseMail} 
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-semibold text-ink">
+              Mot de passe <span className="text-red-500">*</span>
+            </label>
+            <Input 
+              type="password" 
+              name="motDePasse" 
+              placeholder="Minimum 8 caractères" 
+              value={form.motDePasse} 
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-semibold text-ink">
+              Confirmer le mot de passe <span className="text-red-500">*</span>
+            </label>
+            <Input 
+              type="password" 
+              name="confirmMotDePasse" 
+              placeholder="Retapez votre mot de passe" 
+              value={form.confirmMotDePasse} 
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="pt-4 border-t border-borderSoft">
+            <p className="text-xs text-inkMuted mb-3">Champs optionnels</p>
+            
+            <div className="space-y-2 mb-3">
+              <label className="block text-sm font-semibold text-ink">Adresse postale</label>
+              <Input 
+                name="adressePostal" 
+                placeholder="123 Rue Exemple, Ville" 
+                value={form.adressePostal} 
+                onChange={handleChange}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="block text-sm font-semibold text-ink">Téléphone</label>
+              <Input 
+                name="tel" 
+                placeholder="+33 6 12 34 56 78" 
+                value={form.tel} 
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+
+          <div className="flex justify-center mt-6">
+            <Button type="submit" className="w-full py-3 text-lg font-semibold">
+              S'inscrire
             </Button>
           </div>
         </form>
