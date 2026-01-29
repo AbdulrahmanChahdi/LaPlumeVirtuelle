@@ -37,11 +37,18 @@ public class Preference {
     @JsonProperty("description")
     private String goutUtilisateur;
     
-    @JsonProperty("continue_nouveau")
-    private String continueNouveau;
+    @JsonProperty("decouvertePrefrence")
+    @Enumerated(EnumType.STRING)
+    private decouvertePrefrence decouvertePrefrence;
     
     @JsonProperty("RGPD")
     private Boolean RGPD;
+
+    public enum decouvertePrefrence{
+        decouverte,
+        habitudes,
+        mix,
+    }
 
     public enum tranche_age {
         de_13_a_17_ans,

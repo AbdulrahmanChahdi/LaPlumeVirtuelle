@@ -188,10 +188,10 @@ export default function PreferencesSignupForm() {
         niveau_lecture: readingLevel,
         frequence_lecture: sessionTime,
         moment_consomation: selectedMoments.join(","),
-        auteur_prefere: favorites || "",
-        description: tasteDescription || "",
-        continue_nouveau: discoveryPreference,
-        RGPD: consent,
+        auteur_prefere: formData.get("favorites") || "",
+        description: formData.get("tasteDescription") || "",
+        decouvertePrefrence: formData.get("discoveryPreference"),
+        RGPD: formData.get("consent") === "on" ? true : false,
       }
 
       console.log("Données à envoyer:", preferences)
