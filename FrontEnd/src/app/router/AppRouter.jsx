@@ -26,19 +26,11 @@ export default function AppRouter() {
       {/* ================= PAGES PUBLIQUES ================= */}
       <Route element={<PublicLayout />}>
         <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route path="/auth/login" element={<Login />} />
+        <Route path="/auth/register" element={<Register />} />
         <Route path="/public/livres" element={<BooksPublic />} />
         <Route path="/public/audiobooks" element={<AudiobooksPublic />} />
         <Route path="/public/podcasts" element={<PodcastsPublic />} />
-        <Route
-          path="/onboarding/preferences"
-          element={
-            <RequireRegistration>
-              <PreferencesSignupForm />
-            </RequireRegistration>
-          }
-        />
       </Route>
 
       {/* ================= APPLICATION (connecté) ================= */}
@@ -50,6 +42,7 @@ export default function AppRouter() {
         }
       >
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/onboarding/preferences" element={<PreferencesSignupForm />} />
         <Route path="/library" element={<LibraryLayout />}>
           <Route path="digital-books" element={<DigitalBooks />} />
           <Route path="audiobooks" element={<Audiobooks />} />
