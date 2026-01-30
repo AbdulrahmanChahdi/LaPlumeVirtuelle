@@ -3,6 +3,7 @@ package com.example.laplumevirtuel.service;
 import com.example.laplumevirtuel.entities.Utilisateur;
 import com.example.laplumevirtuel.repository.UtilisateurRepository;
 import com.example.laplumevirtuel.security.JwtUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+@Slf4j
 @Service
 public class AuthService {
 
@@ -29,9 +31,11 @@ public class AuthService {
         Optional<Utilisateur> utilisateur = utilisateurRepository.findByAdresseMail(email);
 
         if (utilisateur.isEmpty() || !passwordEncoder.matches(password, utilisateur.get().getMotDePasse())) {
+            log.warn("Login attempt failed for email: {}", email);
             throw new RuntimeException("Utilisateur non trouvé ou mot de passe incorrect");
         }
 
+        log.info("User logged in: {}", email);
         Map<String, Object> response = new HashMap<>();
         response.put("user", utilisateur.get());
         response.put("token", generateToken(utilisateur.get()));
@@ -40,12 +44,15 @@ public class AuthService {
 
     public Utilisateur register(Utilisateur utilisateur) {
         if (utilisateurRepository.findByAdresseMail(utilisateur.getAdresseMail()).isPresent()) {
+            log.warn("Registration failed - email already exists: {}", utilisateur.getAdresseMail());
             throw new RuntimeException("Un utilisateur avec cet email existe déjà");
         }
 
         utilisateur.setMotDePasse(passwordEncoder.encode(utilisateur.getMotDePasse()));
         utilisateur.setRole("USER");
-        return utilisateurRepository.save(utilisateur);
+        Utilisateur saved = utilisateurRepository.save(utilisateur);
+        log.info("New user registered: {}", utilisateur.getAdresseMail());
+        return saved;
     }
 
     private String generateToken(Utilisateur utilisateur) {
