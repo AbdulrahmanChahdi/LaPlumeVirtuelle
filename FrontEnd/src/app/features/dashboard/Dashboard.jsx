@@ -15,15 +15,18 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-accent/10 to-transparent">
-      <div className="max-w-5xl mx-auto px-6 py-12">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
         {/* Header */}
-        <div className="mb-12">
-          <h1 className="text-4xl font-bold mb-2">Bienvenue{user?.nom ? `, ${user.nom}` : ""} 👋</h1>
-          <p className="text-lg text-inkSoft">Découvrez vos recommandations personnalisées</p>
+        <div className="mb-8 sm:mb-12">
+          <h1 className="text-3xl sm:text-4xl font-bold mb-2">Bienvenue{user?.nom ? `, ${user.nom}` : ""} 👋</h1>
+          <p className="text-base sm:text-lg text-inkSoft">Découvrez vos recommandations personnalisées</p>
         </div>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-12"
+          role="region"
+          aria-label="Statistiques de lecture"
+        >
           <div className="bg-white rounded-lg shadow p-6">
             <div className="text-3xl font-bold text-accent">0</div>
             <p className="text-inkMuted mt-2">Livres lus</p>
