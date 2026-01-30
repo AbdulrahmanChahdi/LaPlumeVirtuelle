@@ -22,31 +22,31 @@ export default function MediaSection() {
       title="Explorer la bibliothèque"
       subtitle="Choisissez votre format préféré"
     >
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Link to={booksLink}>
-          <Card className="text-center hover:shadow-md transition">
-            <div className="h-24 bg-paperSoft rounded mb-4" />
-            <h3 className="font-semibold">Livres numériques</h3>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        <Link to={booksLink} className="group">
+          <Card className="text-center hover:shadow-lg transition h-full cursor-pointer">
+            <div className="h-24 sm:h-32 bg-paperSoft rounded mb-4 group-hover:bg-paperSoft/80 transition" aria-hidden="true" />
+            <h3 className="font-semibold text-base sm:text-lg">Livres numériques</h3>
             <p className="text-sm text-inkSoft mt-2">
               Accédez à notre collection de livres numériques.
             </p>
           </Card>
         </Link>
 
-        <Link to={audiobooksLink}>
-          <Card className="text-center hover:shadow-md transition">
-            <div className="h-24 bg-paperSoft rounded mb-4" />
-            <h3 className="font-semibold">Livres audio</h3>
+        <Link to={audiobooksLink} className="group">
+          <Card className="text-center hover:shadow-lg transition h-full cursor-pointer">
+            <div className="h-24 sm:h-32 bg-paperSoft rounded mb-4 group-hover:bg-paperSoft/80 transition" aria-hidden="true" />
+            <h3 className="font-semibold text-base sm:text-lg">Livres audio</h3>
             <p className="text-sm text-inkSoft mt-2">
               Écoutez vos livres préférés partout.
             </p>
           </Card>
         </Link>
 
-        <Link to={podcastsLink}>
-          <Card className="text-center hover:shadow-md transition">
-            <div className="h-24 bg-paperSoft rounded mb-4" />
-            <h3 className="font-semibold">Podcasts</h3>
+        <Link to={podcastsLink} className="group">
+          <Card className="text-center hover:shadow-lg transition h-full cursor-pointer">
+            <div className="h-24 sm:h-32 bg-paperSoft rounded mb-4 group-hover:bg-paperSoft/80 transition" aria-hidden="true" />
+            <h3 className="font-semibold text-base sm:text-lg">Podcasts</h3>
             <p className="text-sm text-inkSoft mt-2">
               Découvrez nos podcasts culturels.
             </p>
