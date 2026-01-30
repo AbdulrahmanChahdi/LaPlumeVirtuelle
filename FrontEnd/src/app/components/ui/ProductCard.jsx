@@ -4,15 +4,24 @@ export default function ProductCard({
   title,
   subtitle,
   imageUrl,
+  onClick,
+  role = "article",
+  ariaLabel,
 }) {
   return (
-    <Card className="cursor-pointer hover:shadow-md transition">
+    <Card 
+      as={onClick ? "button" : "article"}
+      role={onClick ? undefined : role}
+      onClick={onClick}
+      className={onClick ? "cursor-pointer hover:shadow-lg transition text-left w-full" : ""}
+      aria-label={ariaLabel || title}
+    >
       
-      <div className="h-40 bg-paperSoft rounded mb-4 overflow-hidden">
+      <div className="h-40 sm:h-48 bg-paperSoft rounded mb-4 overflow-hidden">
         {imageUrl ? (
           <img
             src={imageUrl}
-            alt={title}
+            alt={`Couverture de ${title}`}
             className="h-full w-full object-cover"
           />
         ) : (
@@ -22,10 +31,10 @@ export default function ProductCard({
         )}
       </div>
 
-      <h4 className="font-semibold text-sm">{title}</h4>
+      <h4 className="font-semibold text-sm sm:text-base">{title}</h4>
 
       {subtitle && (
-        <p className="text-xs text-inkMuted mt-1">
+        <p className="text-xs sm:text-sm text-inkMuted mt-1">
           {subtitle}
         </p>
       )}
