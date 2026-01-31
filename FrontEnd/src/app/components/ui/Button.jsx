@@ -1,6 +1,15 @@
 import { useState } from "react"
 
-export default function Button({ children, onClick, type = "button", disabled = false, className = "", ...props }) {
+export default function Button({ 
+  children, 
+  onClick, 
+  type = "button", 
+  disabled = false, 
+  className = "", 
+  ariaLabel,
+  ariaDescribedBy,
+  ...props 
+}) {
   const [ripples, setRipples] = useState([])
 
   const handleClick = (e) => {
@@ -34,12 +43,16 @@ export default function Button({ children, onClick, type = "button", disabled = 
       type={type}
       onClick={handleClick}
       disabled={disabled}
+      aria-label={ariaLabel}
+      aria-describedby={ariaDescribedBy}
       className={`
         relative bg-accent text-white
-        px-6 py-2 rounded
+        px-4 sm:px-6 py-2 sm:py-3 rounded
+        text-sm sm:text-base
         hover:bg-accentHover active:scale-95
         transition-[background-color,transform] duration-200
         disabled:opacity-50 disabled:cursor-not-allowed
+        focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent
         overflow-hidden
         ${className}
       `}

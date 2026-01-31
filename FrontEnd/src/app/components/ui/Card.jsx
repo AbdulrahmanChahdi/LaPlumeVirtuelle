@@ -1,16 +1,26 @@
-export default function Card({ children, className = "" }) {
+export default function Card({ 
+  children, 
+  className = "",
+  as = "div",
+  role
+}) {
+  const Component = as
+  
   return (
-    <div
+    <Component
+      role={role}
       className={`
         bg-white
         border border-borderSoft
         rounded-lg
-        p-6
+        p-4 sm:p-6
         shadow-sm
+        hover:shadow-md
+        transition-shadow duration-200
         ${className}
       `}
     >
       {children}
-    </div>
+    </Component>
   )
 }
