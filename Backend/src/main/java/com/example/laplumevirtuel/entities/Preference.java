@@ -1,6 +1,8 @@
 package com.example.laplumevirtuel.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,19 +18,28 @@ public class Preference {
     private Long id_preference;
 
     @JsonProperty("tranche_age")
+    @NotBlank(message = "La tranche d'âge ne peut pas être vide")
     private String trancheAge;
     
+    @NotBlank(message = "L'objectif ne peut pas être vide")
     private String objectif;
+    
+    @NotBlank(message = "Le format ne peut pas être vide")
     private String format;
+    
+    @NotBlank(message = "La thématique ne peut pas être vide")
     private String thematique;
     
     @JsonProperty("niveau_lecture")
+    @NotBlank(message = "Le niveau de lecture ne peut pas être vide")
     private String niveauLecture;
 
     @JsonProperty("frequence_lecture")
+    @NotBlank(message = "La fréquence de lecture ne peut pas être vide")
     private String frequenceLecture;
     
     @JsonProperty("moment_consomation")
+    @NotBlank(message = "Le moment de consommation ne peut pas être vide")
     private String momentConsomation;
     
     @JsonProperty("auteur_prefere")
@@ -39,9 +50,11 @@ public class Preference {
     
     @JsonProperty("decouvertePrefrence")
     @Enumerated(EnumType.STRING)
+    @NotNull(message = "La préférence de découverte ne peut pas être vide")
     private decouvertePrefrence decouvertePrefrence;
     
     @JsonProperty("RGPD")
+    @NotNull(message = "Le consentement RGPD doit être fourni")
     private Boolean RGPD;
 
     public enum decouvertePrefrence{
