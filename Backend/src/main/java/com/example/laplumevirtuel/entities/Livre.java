@@ -21,7 +21,7 @@ import lombok.ToString;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = {"auteur", "utilisateursAcheteurs", "utilisateursEmprunteurs", "editeurs"})
+@ToString(exclude = {"auteur", "editeurs"})
 public class Livre {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,12 +42,6 @@ public class Livre {
     @JoinColumn(name = "auteur_id")
     private Auteur auteur;
     
-    @ManyToMany(mappedBy = "livresAchetes")
-    private Set<Utilisateur> utilisateursAcheteurs;
-    
-    @ManyToMany(mappedBy = "livresEmpruntes")
-    private Set<Utilisateur> utilisateursEmprunteurs;
-    
     @ManyToMany
     @JoinTable(
         name = "livre_editeur",
@@ -55,4 +49,12 @@ public class Livre {
         inverseJoinColumns = @JoinColumn(name = "editeur_id")
     )
     private Set<Editeur> editeurs;
+
+    @ManyToMany
+    @JoinTable(
+        name = "categorie_livre",
+        joinColumns = @JoinColumn(name = "livre_id"),
+        inverseJoinColumns = @JoinColumn(name = "categorie_id")
+    )
+    private Set<Categorie> categories;
 }

@@ -19,7 +19,7 @@ import lombok.ToString;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = {"livre", "utilisateurEcouteLivre", "utilisateurTelechargeLivre"})
+@ToString(exclude = {"livre", "utilisateurEcouteLivre"})
 public class LivreAudio {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,7 +34,4 @@ public class LivreAudio {
     
     @ManyToMany(mappedBy = "livresAudiosEcouter")
     private Set<Utilisateur> utilisateurEcouteLivre;
-    
-    @ManyToMany(mappedBy = "livresAudiosTelecharger")
-    private Set<Utilisateur> utilisateurTelechargeLivre;
 }

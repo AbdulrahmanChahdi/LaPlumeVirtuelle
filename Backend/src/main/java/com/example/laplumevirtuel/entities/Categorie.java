@@ -23,7 +23,6 @@ public class Categorie {
     private String nom;
     private String description;
 
-    @OneToMany(mappedBy = "categorie")
-    private List<Livre> livres;
+    
    
 }

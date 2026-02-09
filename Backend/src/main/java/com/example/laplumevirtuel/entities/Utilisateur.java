@@ -83,19 +83,12 @@ public class Utilisateur {
     
     @ManyToMany
     @JoinTable(
-        name = "utilisateur_livres_achetes",
+        name = "utilisateur_livres_telecharges",
         joinColumns = @JoinColumn(name = "utilisateur_id"),
         inverseJoinColumns = @JoinColumn(name = "livre_id")
     )
-    private Set<Livre> livresAchetes;
+    private Set<Livre> livresTelecharges;
     
-    @ManyToMany
-    @JoinTable(
-        name = "utilisateur_livres_empruntes",
-        joinColumns = @JoinColumn(name = "utilisateur_id"),
-        inverseJoinColumns = @JoinColumn(name = "livre_id")
-    )
-    private Set<Livre> livresEmpruntes;
 
     @ManyToMany
     @JoinTable(
@@ -104,13 +97,7 @@ public class Utilisateur {
         inverseJoinColumns = @JoinColumn(name = "livre_audio_id")
     )
     private Set<LivreAudio> livresAudiosEcouter;
-
-    @ManyToMany
-    @JoinTable(
-        name = "utilisateur_livres_audios_telecharges",
-        joinColumns = @JoinColumn(name = "utilisateur_id"),
-        inverseJoinColumns = @JoinColumn(name = "livre_audio_id")
-    )
-    private Set<LivreAudio> livresAudiosTelecharger;
 }
+
+   
 
