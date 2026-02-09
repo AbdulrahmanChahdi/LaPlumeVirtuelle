@@ -31,7 +31,7 @@ export default function UserMenu() {
       {open && (
         <div className="absolute right-0 mt-2 w-40 bg-white border rounded-md shadow-lg py-2 z-50">
           <Link
-            to="/login"
+            to="/auth/login"
             className="block px-4 py-2 text-sm hover:bg-gray-100"
             onClick={() => setOpen(false)}
           >
@@ -39,7 +39,7 @@ export default function UserMenu() {
           </Link>
 
           <Link
-            to="/register"
+            to="/auth/register"
             className="block px-4 py-2 text-sm hover:bg-gray-100"
             onClick={() => setOpen(false)}
           >
