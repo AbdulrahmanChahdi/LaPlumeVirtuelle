@@ -22,8 +22,8 @@ export default function HomeStats() {
 
   return (
     <Section title="Tendances actuelles">
-      <div className="bg-paperSoft/60 border border-borderSoft rounded-2xl px-6 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="bg-paperSoft/60 border border-borderSoft rounded-2xl px-4 sm:px-6 py-6 sm:py-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6" role="region" aria-label="Tendances actuelles">
           {stats.map((stat, index) => (
             <StatCard key={index} {...stat} />
           ))}
