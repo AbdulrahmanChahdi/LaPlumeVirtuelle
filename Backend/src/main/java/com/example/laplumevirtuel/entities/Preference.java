@@ -6,7 +6,10 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Data
@@ -57,6 +60,12 @@ public class Preference {
     @NotNull(message = "Le consentement RGPD doit être fourni")
     private Boolean RGPD;
 
+    @JsonIgnore
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @OneToOne(mappedBy = "preference")
+    private Utilisateur utilisateur;
+
     public enum decouvertePrefrence{
         decouverte,
         habitudes,
@@ -79,4 +88,9 @@ public class Preference {
         de_30_a_60_MIN_PAR_JOUR,
         plus_de_60_MIN_PAR_JOUR,
     }
+    
+    @JsonIgnore
+    @OneToOne
+    @JoinColumn(name = "utilisateur_id")
+    private Utilisateur utilisateurPrefrence;
 }

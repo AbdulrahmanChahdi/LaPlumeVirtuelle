@@ -13,6 +13,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;
@@ -30,7 +31,7 @@ import lombok.ToString;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = {"abonnements", "commentaires", "podcastsEcoutes", "livresAchetes", "livresEmpruntes", "livresAudiosEcouter", "livresAudiosTelecharger"})
+@ToString(exclude = {"abonnements", "commentaires", "podcastsEcoutes", "livresTelecharges", "livresAudiosEcouter", "preference"})
 public class Utilisateur {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -97,6 +98,11 @@ public class Utilisateur {
         inverseJoinColumns = @JoinColumn(name = "livre_audio_id")
     )
     private Set<LivreAudio> livresAudiosEcouter;
+
+    @JsonIgnore
+    @OneToOne
+    @JoinColumn(name = "preference_id")
+    private Preference preference;
 }
 
    
