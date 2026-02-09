@@ -63,7 +63,8 @@ public class Preference {
     @JsonIgnore
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @OneToOne(mappedBy = "preference")
+    @OneToOne
+    @JoinColumn(name = "utilisateur_id", nullable = false)
     private Utilisateur utilisateur;
 
     public enum decouvertePrefrence{
@@ -89,8 +90,4 @@ public class Preference {
         plus_de_60_MIN_PAR_JOUR,
     }
     
-    @JsonIgnore
-    @OneToOne
-    @JoinColumn(name = "utilisateur_id")
-    private Utilisateur utilisateurPrefrence;
 }
