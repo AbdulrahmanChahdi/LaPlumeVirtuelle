@@ -38,18 +38,26 @@ export default function HeaderConnected() {
             Tableau de bord
           </Link>
           <Link to="/library/digital-books" className="hover:text-accent transition">
-            Livres
+            Ma Bibliothèque
           </Link>
-          <Link to="/library/audiobooks" className="hover:text-accent transition">
-            Audio
-          </Link>
-          <Link to="/library/podcasts" className="hover:text-accent transition">
-            Podcasts
-          </Link>
+          
+          {/* Découvrir */}
+          <div className="border-l border-borderSoft pl-6 flex items-center gap-4">
+            <span className="text-inkMuted">Découvrir</span>
+            <Link to="/discover/books" className="hover:text-accent transition">
+              Livres
+            </Link>
+            <Link to="/discover/audiobooks" className="hover:text-accent transition">
+              Audiobooks
+            </Link>
+            <Link to="/discover/podcasts" className="hover:text-accent transition">
+              Podcasts
+            </Link>
+          </div>
 
           <button
             onClick={handleLogout}
-            className="text-accent hover:text-accent/80 transition font-medium"
+            className="text-accent hover:text-accent/80 transition font-medium ml-auto"
           >
             Se déconnecter
           </button>

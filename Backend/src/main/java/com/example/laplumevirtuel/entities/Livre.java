@@ -10,6 +10,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,13 +27,17 @@ public class Livre {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(length = 512)
     private String titre;
     private String anneeEdition;
     private String langue;
+    @Column(length = 2048)
     private String resume;
     private boolean disponible;
     private int nombreDePage;
+    @Column(length = 1024)
     private String imageUrl;
+    private String externalId; // Google Books volume ID
 
     @ManyToOne
     @JoinColumn(name = "categorie_id")

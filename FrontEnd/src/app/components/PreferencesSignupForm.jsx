@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { savePreferences } from "../api/preferencesApi"
+import { getAndClearIntendedDestination } from "../utils/navigation"
 import Card from "./ui/Card"
 import Button from "./ui/Button"
 import SelectDropdown from "./ui/SelectDropdown"
@@ -198,7 +199,12 @@ export default function PreferencesSignupForm() {
       await savePreferences(preferences)
 
       localStorage.setItem("onboardingDone", "true")
-      navigate("/dashboard", { replace: true })
+      
+      // Utiliser la destination sauvegardée si elle existe, sinon retour au dashboard
+      const intendedDestination = getAndClearIntendedDestination()
+      const destination = intendedDestination || "/dashboard"
+      
+      navigate(destination, { replace: true })
     } catch (err) {
       console.error("Erreur lors de l'envoi des préférences:", err)
       setError(err.message || "Une erreur est survenue")

@@ -1,0 +1,395 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------------< com.example:LaPlumeVirtuelle >--------------------
+[INFO] Building LaPlumeVirtuelle 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> spring-boot:3.2.3:run (default-cli) > test-compile @ LaPlumeVirtuelle >>>
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ LaPlumeVirtuelle ---
+[INFO] Copying 2 resources from src\main\resources to target\classes
+[INFO] Copying 0 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.11.0:compile (default-compile) @ LaPlumeVirtuelle ---
+[INFO] Changes detected - recompiling the module! :source
+[INFO] Compiling 65 source files with javac [debug release 17] to target\classes
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ LaPlumeVirtuelle ---
+[INFO] Copying 1 resource from src\test\resources to target\test-classes
+[INFO] 
+[INFO] --- compiler:3.11.0:testCompile (default-testCompile) @ LaPlumeVirtuelle ---
+[INFO] Changes detected - recompiling the module! :dependency
+[INFO] Compiling 1 source file with javac [debug release 17] to target\test-classes
+[INFO] 
+[INFO] <<< spring-boot:3.2.3:run (default-cli) < test-compile @ LaPlumeVirtuelle <<<
+[INFO] 
+[INFO] 
+[INFO] --- spring-boot:3.2.3:run (default-cli) @ LaPlumeVirtuelle ---
+[INFO] Attaching agents: []
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::                (v3.2.3)
+
+2026-01-31T12:58:47.606+01:00  INFO 1724 --- [LaPlumeVirtuel] [  restartedMain] c.e.l.LaPlumeVirtuelApplication          : Starting LaPlumeVirtuelApplication using Java 23.0.2 with PID 1724 (C:\Users\chahd\LaPlumeVirtuelleApp\LaPlumeVirtuelle\Backend\target\classes started by chahd in C:\Users\chahd\LaPlumeVirtuelleApp\LaPlumeVirtuelle\Backend)
+2026-01-31T12:58:47.607+01:00  INFO 1724 --- [LaPlumeVirtuel] [  restartedMain] c.e.l.LaPlumeVirtuelApplication          : No active profile set, falling back to 1 default profile: "default"
+2026-01-31T12:58:47.637+01:00  INFO 1724 --- [LaPlumeVirtuel] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-01-31T12:58:47.637+01:00  INFO 1724 --- [LaPlumeVirtuel] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-01-31T12:58:48.092+01:00  INFO 1724 --- [LaPlumeVirtuel] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-01-31T12:58:48.139+01:00  INFO 1724 --- [LaPlumeVirtuel] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 43 ms. Found 10 JPA repository interfaces.
+2026-01-31T12:58:48.439+01:00  INFO 1724 --- [LaPlumeVirtuel] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-01-31T12:58:48.446+01:00  INFO 1724 --- [LaPlumeVirtuel] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-01-31T12:58:48.447+01:00  INFO 1724 --- [LaPlumeVirtuel] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.19]
+2026-01-31T12:58:48.475+01:00  INFO 1724 --- [LaPlumeVirtuel] [  restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-01-31T12:58:48.475+01:00  INFO 1724 --- [LaPlumeVirtuel] [  restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 837 ms
+2026-01-31T12:58:48.492+01:00  INFO 1724 --- [LaPlumeVirtuel] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-01-31T12:58:48.584+01:00  INFO 1724 --- [LaPlumeVirtuel] [  restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:laplumevirtueldb user=SA
+2026-01-31T12:58:48.584+01:00  INFO 1724 --- [LaPlumeVirtuel] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-01-31T12:58:48.590+01:00  INFO 1724 --- [LaPlumeVirtuel] [  restartedMain] o.s.b.a.h2.H2ConsoleAutoConfiguration    : H2 console available at '/h2-console'. Database available at 'jdbc:h2:mem:laplumevirtueldb'
+2026-01-31T12:58:48.656+01:00  INFO 1724 --- [LaPlumeVirtuel] [  restartedMain] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-01-31T12:58:48.687+01:00  INFO 1724 --- [LaPlumeVirtuel] [  restartedMain] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.4.4.Final
+2026-01-31T12:58:48.704+01:00  INFO 1724 --- [LaPlumeVirtuel] [  restartedMain] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-01-31T12:58:48.827+01:00  INFO 1724 --- [LaPlumeVirtuel] [  restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-01-31T12:58:48.849+01:00  WARN 1724 --- [LaPlumeVirtuel] [  restartedMain] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-01-31T12:58:49.450+01:00  INFO 1724 --- [LaPlumeVirtuel] [  restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+Hibernate: 
+    drop table if exists abonnement cascade 
+Hibernate: 
+    drop table if exists auteur cascade 
+Hibernate: 
+    drop table if exists categorie cascade 
+Hibernate: 
+    drop table if exists commentaire cascade 
+Hibernate: 
+    drop table if exists editeur cascade 
+Hibernate: 
+    drop table if exists livre cascade 
+Hibernate: 
+    drop table if exists livre_editeur cascade 
+Hibernate: 
+    drop table if exists livre_audio cascade 
+Hibernate: 
+    drop table if exists podcast cascade 
+Hibernate: 
+    drop table if exists preference cascade 
+Hibernate: 
+    drop table if exists utilisateur_livres_achetes cascade 
+Hibernate: 
+    drop table if exists utilisateur_livres_audios_ecoutes cascade 
+Hibernate: 
+    drop table if exists utilisateur_livres_audios_telecharges cascade 
+Hibernate: 
+    drop table if exists utilisateur_livres_empruntes cascade 
+Hibernate: 
+    drop table if exists utilisateur_podcasts_ecoutes cascade 
+Hibernate: 
+    drop table if exists utilisateurs cascade 
+Hibernate: 
+    drop sequence if exists preference_seq
+Hibernate: 
+    create sequence preference_seq start with 1 increment by 50
+Hibernate: 
+    create table abonnement (
+        prix float(53) not null,
+        id bigint generated by default as identity,
+        utilisateur_id bigint,
+        date_debut varchar(255),
+        date_fin varchar(255),
+        type_abonnement varchar(255),
+        primary key (id)
+    )
+Hibernate: 
+    create table auteur (
+        id bigint generated by default as identity,
+        biographie varchar(255),
+        date_naissance varchar(255),
+        nom varchar(255),
+        primary key (id)
+    )
+Hibernate: 
+    create table categorie (
+        id bigint generated by default as identity,
+        description varchar(255),
+        nom varchar(255),
+        primary key (id)
+    )
+Hibernate: 
+    create table commentaire (
+        id bigint generated by default as identity,
+        note bigint,
+        utilisateur_id bigint,
+        contenue varchar(255),
+        date_publication varchar(255),
+        primary key (id)
+    )
+Hibernate: 
+    create table editeur (
+        id bigint generated by default as identity,
+        adresse varchar(255),
+        email varchar(255),
+        nom varchar(255),
+        telephone varchar(255),
+        primary key (id)
+    )
+Hibernate: 
+    create table livre (
+        disponible boolean not null,
+        nombre_de_page integer not null,
+        auteur_id bigint,
+        categorie_id bigint,
+        id bigint generated by default as identity,
+        annee_edition varchar(255),
+        image_url varchar(255),
+        langue varchar(255),
+        resume varchar(255),
+        titre varchar(255),
+        primary key (id)
+    )
+Hibernate: 
+    create table livre_editeur (
+        editeur_id bigint not null,
+        livre_id bigint not null,
+        primary key (editeur_id, livre_id)
+    )
+Hibernate: 
+    create table livre_audio (
+        id bigint generated by default as identity,
+        livre_id bigint unique,
+        audio_url varchar(255),
+        duree varchar(255),
+        narrateur varchar(255),
+        titre varchar(255),
+        primary key (id)
+    )
+Hibernate: 
+    create table podcast (
+        duree integer not null,
+        id bigint generated by default as identity,
+        animateur varchar(255),
+        image_url varchar(255),
+        nom varchar(255),
+        theme varchar(255),
+        primary key (id)
+    )
+Hibernate: 
+    create table preference (
+        rgpd boolean,
+        id_preference bigint not null,
+        auteur_prefere varchar(255),
+        decouverte_prefrence varchar(255) check (decouverte_prefrence in ('decouverte','habitudes','mix')),
+        format varchar(255),
+        frequence_lecture varchar(255),
+        gout_utilisateur varchar(255),
+        moment_consomation varchar(255),
+        niveau_lecture varchar(255),
+        objectif varchar(255),
+        thematique varchar(255),
+        tranche_age varchar(255),
+        primary key (id_preference)
+    )
+Hibernate: 
+    create table utilisateur_livres_achetes (
+        livre_id bigint not null,
+        utilisateur_id bigint not null,
+        primary key (livre_id, utilisateur_id)
+    )
+Hibernate: 
+    create table utilisateur_livres_audios_ecoutes (
+        livre_audio_id bigint not null,
+        utilisateur_id bigint not null,
+        primary key (livre_audio_id, utilisateur_id)
+    )
+Hibernate: 
+    create table utilisateur_livres_audios_telecharges (
+        livre_audio_id bigint not null,
+        utilisateur_id bigint not null,
+        primary key (livre_audio_id, utilisateur_id)
+    )
+Hibernate: 
+    create table utilisateur_livres_empruntes (
+        livre_id bigint not null,
+        utilisateur_id bigint not null,
+        primary key (livre_id, utilisateur_id)
+    )
+Hibernate: 
+    create table utilisateur_podcasts_ecoutes (
+        podcast_id bigint not null,
+        utilisateur_id bigint not null,
+        primary key (podcast_id, utilisateur_id)
+    )
+Hibernate: 
+    create table utilisateurs (
+        date_inscription timestamp(6),
+        id bigint generated by default as identity,
+        adresse_mail varchar(255) not null unique,
+        adresse_postal varchar(255),
+        mot_de_passe varchar(255) not null,
+        nom varchar(255) not null,
+        role varchar(255) not null,
+        tel varchar(255),
+        primary key (id)
+    )
+Hibernate: 
+    alter table if exists abonnement 
+       add constraint FKa618kdoywv0d7mhhvm74dwejg 
+       foreign key (utilisateur_id) 
+       references utilisateurs
+Hibernate: 
+    alter table if exists commentaire 
+       add constraint FK6932n1nb2xh52evf8xlmjajxr 
+       foreign key (utilisateur_id) 
+       references utilisateurs
+Hibernate: 
+    alter table if exists livre 
+       add constraint FKh0pb6pxv3ubtgo1s3ev4gebgj 
+       foreign key (auteur_id) 
+       references auteur
+Hibernate: 
+    alter table if exists livre 
+       add constraint FKsy7r5olr42j316utei2qvvbi2 
+       foreign key (categorie_id) 
+       references categorie
+Hibernate: 
+    alter table if exists livre_editeur 
+       add constraint FKjcyqkm0rar5txjk68dkd627g7 
+       foreign key (editeur_id) 
+       references editeur
+Hibernate: 
+    alter table if exists livre_editeur 
+       add constraint FKkjlji406dql8kwl2qufb461hf 
+       foreign key (livre_id) 
+       references livre
+Hibernate: 
+    alter table if exists livre_audio 
+       add constraint FKmta7uo32l209k1ofnt74b1dae 
+       foreign key (livre_id) 
+       references livre
+Hibernate: 
+    alter table if exists utilisateur_livres_achetes 
+       add constraint FK74bj6c07jijblihfwmpx4s1ct 
+       foreign key (livre_id) 
+       references livre
+Hibernate: 
+    alter table if exists utilisateur_livres_achetes 
+       add constraint FK6wt227klewlhgaxlfmq6ahjg3 
+       foreign key (utilisateur_id) 
+       references utilisateurs
+Hibernate: 
+    alter table if exists utilisateur_livres_audios_ecoutes 
+       add constraint FKdw07asgo5a5y8x5oyifly7qj8 
+       foreign key (livre_audio_id) 
+       references livre_audio
+Hibernate: 
+    alter table if exists utilisateur_livres_audios_ecoutes 
+       add constraint FK8k92ph0bpcec9uukvxl3gnh09 
+       foreign key (utilisateur_id) 
+       references utilisateurs
+Hibernate: 
+    alter table if exists utilisateur_livres_audios_telecharges 
+       add constraint FK6y4u608f2mvuqm81lm9w9hx3 
+       foreign key (livre_audio_id) 
+       references livre_audio
+Hibernate: 
+    alter table if exists utilisateur_livres_audios_telecharges 
+       add constraint FK6d8y0dp17ctot45oco4hcrj3c 
+       foreign key (utilisateur_id) 
+       references utilisateurs
+Hibernate: 
+    alter table if exists utilisateur_livres_empruntes 
+       add constraint FKch0hvkymswn4a3t4joj4v0xol 
+       foreign key (livre_id) 
+       references livre
+Hibernate: 
+    alter table if exists utilisateur_livres_empruntes 
+       add constraint FKc8mlk0glp0x5lhyxvchbwqtti 
+       foreign key (utilisateur_id) 
+       references utilisateurs
+Hibernate: 
+    alter table if exists utilisateur_podcasts_ecoutes 
+       add constraint FK53imf7vamhxtqv1toqix0tddq 
+       foreign key (podcast_id) 
+       references podcast
+Hibernate: 
+    alter table if exists utilisateur_podcasts_ecoutes 
+       add constraint FKn4llvqxpx7ekbdoiwhs2n0x85 
+       foreign key (utilisateur_id) 
+       references utilisateurs
+2026-01-31T12:58:49.491+01:00  INFO 1724 --- [LaPlumeVirtuel] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-01-31T12:58:49.674+01:00  INFO 1724 --- [LaPlumeVirtuel] [  restartedMain] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-01-31T12:58:50.137+01:00  WARN 1724 --- [LaPlumeVirtuel] [  restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-01-31T12:58:50.145+01:00  WARN 1724 --- [LaPlumeVirtuel] [  restartedMain] .s.s.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: 5a59822d-a7c0-4e97-a1e0-4207f69f7ad3
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-01-31T12:58:50.275+01:00  INFO 1724 --- [LaPlumeVirtuel] [  restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@2928c1e8, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@480fc2ba, org.springframework.security.web.context.SecurityContextHolderFilter@17b3759a, org.springframework.security.web.header.HeaderWriterFilter@3da4499c, org.springframework.web.filter.CorsFilter@5935c49, org.springframework.security.web.authentication.logout.LogoutFilter@1b29199d, com.example.laplumevirtuel.security.JwtAuthenticationFilter@2eea41ed, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@5dbcc5bd, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@69202351, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@e64ea1a, org.springframework.security.web.session.SessionManagementFilter@2f0f86b7, org.springframework.security.web.access.ExceptionTranslationFilter@58533d3c, org.springframework.security.web.access.intercept.AuthorizationFilter@5a076827]
+2026-01-31T12:58:50.401+01:00  WARN 1724 --- [LaPlumeVirtuel] [  restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : Unable to start LiveReload server
+2026-01-31T12:58:50.410+01:00  WARN 1724 --- [LaPlumeVirtuel] [  restartedMain] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Failed to start bean 'webServerStartStop'
+2026-01-31T12:58:50.412+01:00  INFO 1724 --- [LaPlumeVirtuel] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+Hibernate: 
+    drop table if exists abonnement cascade 
+Hibernate: 
+    drop table if exists auteur cascade 
+Hibernate: 
+    drop table if exists categorie cascade 
+Hibernate: 
+    drop table if exists commentaire cascade 
+Hibernate: 
+    drop table if exists editeur cascade 
+Hibernate: 
+    drop table if exists livre cascade 
+Hibernate: 
+    drop table if exists livre_editeur cascade 
+Hibernate: 
+    drop table if exists livre_audio cascade 
+Hibernate: 
+    drop table if exists podcast cascade 
+Hibernate: 
+    drop table if exists preference cascade 
+Hibernate: 
+    drop table if exists utilisateur_livres_achetes cascade 
+Hibernate: 
+    drop table if exists utilisateur_livres_audios_ecoutes cascade 
+Hibernate: 
+    drop table if exists utilisateur_livres_audios_telecharges cascade 
+Hibernate: 
+    drop table if exists utilisateur_livres_empruntes cascade 
+Hibernate: 
+    drop table if exists utilisateur_podcasts_ecoutes cascade 
+Hibernate: 
+    drop table if exists utilisateurs cascade 
+Hibernate: 
+    drop sequence if exists preference_seq
+2026-01-31T12:58:50.419+01:00  WARN 1724 --- [LaPlumeVirtuel] [  restartedMain] o.s.b.f.support.DisposableBeanAdapter    : Invocation of destroy method failed on bean with name 'inMemoryDatabaseShutdownExecutor': org.h2.jdbc.JdbcSQLNonTransientConnectionException: La base de données est déjà fermée (pour désactiver la fermeture automatique à l'arrêt de la VM, ajoutez "; DB_CLOSE_ON_EXIT = FALSE" à l'URL db)
+Database is already closed (to disable automatic closing at VM shutdown, add ";DB_CLOSE_ON_EXIT=FALSE" to the db URL) [90121-224]
+2026-01-31T12:58:50.419+01:00  INFO 1724 --- [LaPlumeVirtuel] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-01-31T12:58:50.421+01:00  INFO 1724 --- [LaPlumeVirtuel] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2026-01-31T12:58:50.427+01:00  INFO 1724 --- [LaPlumeVirtuel] [  restartedMain] .s.b.a.l.ConditionEvaluationReportLogger : 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2026-01-31T12:58:50.436+01:00 ERROR 1724 --- [LaPlumeVirtuel] [  restartedMain] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Web server failed to start. Port 8080 was already in use.
+
+Action:
+
+Identify and stop the process that's listening on port 8080 or configure this application to listen on another port.
+
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  6.558 s
+[INFO] Finished at: 2026-01-31T12:58:50+01:00
+[INFO] ------------------------------------------------------------------------
