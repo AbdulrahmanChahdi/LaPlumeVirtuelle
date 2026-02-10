@@ -198,8 +198,6 @@ public class DataInitializer implements CommandLineRunner {
 
             // Association des utilisateurs aux livres et podcasts
             logger.info("Association des utilisateurs aux livres et podcasts...");
-            user.setLivresAchetes(new HashSet<>(Arrays.asList(lesMiserables, tourDuMonde)));
-            user.setLivresEmpruntes(new HashSet<>(Arrays.asList(tourDuMonde)));
             user.setPodcastsEcoutes(new HashSet<>(Arrays.asList(podcastScience, podcastHistoire, podcastLitterature)));
             utilisateurRepository.save(user);
 

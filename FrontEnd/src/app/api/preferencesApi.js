@@ -2,9 +2,13 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
 
 export async function savePreferences(preferences) {
   console.log("Envoi des préférences:", preferences);
+  const token = typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
   const res = await fetch(`${API_BASE}/preferences/save`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
     credentials: "include",
     body: JSON.stringify(preferences),
   });

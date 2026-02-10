@@ -1,6 +1,5 @@
 package com.example.laplumevirtuel.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

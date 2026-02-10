@@ -297,7 +297,7 @@ export default function PreferencesSignupForm() {
                 </span>
               </div>
               <p className="text-sm text-inkMuted">Sélectionnez jusqu'à {maxObjectives} objectifs</p>
-              <div className="grid grid-cols-1 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
                 {objectives.map((o) => {
                   const checked = selectedObjectives.includes(o.id);
                   const disabled = !checked && selectedObjectives.length >= maxObjectives;
@@ -344,7 +344,7 @@ export default function PreferencesSignupForm() {
               <legend className="text-lg font-semibold text-ink">
                 Format préféré <span className="text-red-500">*</span>
               </legend>
-              <div className="grid grid-cols-1 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
                 {formats.map((f) => {
                   const checked = selectedFormats.includes(f.id);
                   return (
