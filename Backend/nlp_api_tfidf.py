@@ -24,22 +24,22 @@ swagger_template = {
 swagger = Swagger(app, template=swagger_template)
 
 # Model loading
-model_path = os.path.join(os.path.dirname(__file__), 'tfidf_recommendation_model.pkl')
 engine = None
 
 def load_model():
     global engine
     try:
-        with open(model_path, 'rb') as f:
-            engine = pickle.load(f)
-        return True
+        engine = TfidfRecommendationEngine()
+        if engine.load_model():
+            return True
+        return False
     except Exception as e:
         print(f"Error loading model: {e}")
         return False
 
 # Load model on startup
 if not load_model():
-    print(f"Warning: Could not load model from {model_path}")
+    print(f"Warning: Could not load model")
 
 @app.route('/health', methods=['GET'])
 def health():
@@ -107,19 +107,26 @@ def get_recommendations():
             return jsonify({'error': 'Missing user_profile'}), 400
 
         user_profile = data['user_profile']
-        top_k = data.get('top_k', 5)
+        k = data.get('top_k', 5)
 
-        recommendations, scores = engine.get_recommendations(user_profile, top_k)
+        recommendations = engine.get_recommendations(user_profile, k=k)
+        
+        # Extract products and scores
+        products = [rec['product'] for rec in recommendations]
+        scores = [rec['score'] for rec in recommendations]
 
         return jsonify({
-            'recommendations': recommendations,
-            'scores': scores.tolist()
+            'recommendations': products,
+            'scores': scores
         })
 
     except Exception as e:
+        # Log error server-side, don't expose details to client
+        import logging
+        logging.exception("Error in get_recommendations")
         return jsonify({
-            'error': str(e),
-            'traceback': traceback.format_exc()
+            'error': 'Failed to generate recommendations',
+            'error_id': 'REC_001'
         }), 500
 
 @app.route('/api/recommendations/detailed', methods=['POST'])
@@ -182,7 +189,7 @@ def get_stats():
 
         stats = {
             'vocab_size': len(engine.vectorizer.vocabulary_),
-            'n_documents': engine.vectorizer.transform(engine.training_documents).shape[0],
+            'n_documents': engine.document_vectors.shape[0],
             'model_type': 'TF-IDF'
         }
 

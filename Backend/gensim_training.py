@@ -4,7 +4,6 @@ Entraîne un modèle Doc2Vec sur les profils utilisateurs et génère des recomm
 """
 
 import pandas as pd
-import numpy as np
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 from gensim.utils import simple_preprocess
 import re
@@ -80,11 +79,11 @@ class GensimRecommendationEngine:
             tokens = simple_preprocess(profile_text, deacc=True)
             
             # Créer un TaggedDocument
-            doc = TaggedDocument(words=tokens, tags=[row['profile_id']])
+            doc = TaggedDocument(words=tokens, tags=[row['user_id']])
             documents.append(doc)
             
             # Stocker les recommandations pour ce profil
-            self.product_recommendations[row['profile_id']] = row['recommendations'].split('|')
+            self.product_recommendations[row['user_id']] = row['recommendations'].split('|')
         
         print(f"   ✓ {len(documents)} documents préparés")
         return documents

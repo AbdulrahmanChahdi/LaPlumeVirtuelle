@@ -4,7 +4,6 @@ Utilise TF-IDF et la similarité cosinus pour recommander du contenu
 """
 
 import pandas as pd
-import numpy as np
 import re
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
@@ -18,7 +17,7 @@ class RecommendationEngine:
         
         # Créer la colonne de texte combiné
         self.df_content['text_combined'] = self.df_content.apply(
-            lambda row: self._combine_text(row), axis=1
+            self._combine_text, axis=1
         )
         
         # Vectoriser avec TF-IDF
@@ -56,9 +55,9 @@ class RecommendationEngine:
         text = re.sub(r'[ôö]', 'o', text)
         text = re.sub(r'[ûü]', 'u', text)
         text = re.sub(r'[ç]', 'c', text)
-        # Garder seulement lettres et chiffres
-        text = re.sub(r'[^a-z0-9\\s]', '', text)
-        text = re.sub(r'\\s+', ' ', text).strip()
+        # Garder seulement lettres et chiffres (et espaces)
+        text = re.sub(r'[^a-z0-9\s]', '', text)
+        text = re.sub(r'\s+', ' ', text).strip()
         return text
     
     def _map_preferences(self, preferences):

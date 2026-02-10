@@ -10,7 +10,6 @@ that works across Python versions.
 
 import pandas as pd
 import pickle
-import os
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
@@ -86,6 +85,7 @@ class TfidfRecommendationEngine:
         print(f"✓ TF-IDF model trained successfully")
         print(f"  - Vocabulary size: {len(self.vectorizer.get_feature_names_out())} terms")
         print(f"  - Training documents: {len(documents)}")
+        return True
         
     def infer_vector(self, profile_dict):
         """Generate TF-IDF vector for new user profile"""
@@ -131,27 +131,35 @@ class TfidfRecommendationEngine:
         top_indices = np.argsort(similarities)[-k:][::-1]
         
         # Aggregate recommendations from similar users
-        recommendation_counts = {}
+        # Track both frequency and weighted similarity for each recommendation
+        recommendation_stats = {}
         for idx in top_indices:
             if similarities[idx] > 0:  # Only consider positive similarity
                 user_recs = self.recommendations_map[idx]['recommendations']
                 for rec in user_recs:
                     rec = rec.strip()
                     if rec:
-                        recommendation_counts[rec] = recommendation_counts.get(rec, 0) + 1
+                        if rec not in recommendation_stats:
+                            recommendation_stats[rec] = {'frequency': 0, 'similarity_sum': 0.0}
+                        recommendation_stats[rec]['frequency'] += 1
+                        recommendation_stats[rec]['similarity_sum'] += float(similarities[idx])
         
         # Sort by frequency
         sorted_recs = sorted(
-            recommendation_counts.items(),
-            key=lambda x: x[1],
+            recommendation_stats.items(),
+            key=lambda x: x[1]['frequency'],
             reverse=True
         )
         
         return [
             {
                 'product': rec[0],
-                'score': float(similarities[top_indices[0]]),  # Use highest similarity as score
-                'frequency': rec[1]
+                'score': (
+                    float(rec[1]['similarity_sum']) / rec[1]['frequency']
+                    if rec[1]['frequency'] > 0
+                    else 0.0
+                ),
+                'frequency': rec[1]['frequency']
             }
             for rec in sorted_recs[:k]
         ]
@@ -162,7 +170,9 @@ class TfidfRecommendationEngine:
             with open(self.model_path, 'wb') as f:
                 pickle.dump({
                     'vectorizer': self.vectorizer,
-                    'recommendations_map': self.recommendations_map
+                    'document_vectors': self.document_vectors,
+                    'recommendations_map': self.recommendations_map,
+                    'user_profiles': self.user_profiles
                 }, f)
             print(f"✓ Model saved to {self.model_path}")
             return True
@@ -176,7 +186,9 @@ class TfidfRecommendationEngine:
             with open(self.model_path, 'rb') as f:
                 data = pickle.load(f)
                 self.vectorizer = data['vectorizer']
+                self.document_vectors = data['document_vectors']
                 self.recommendations_map = data['recommendations_map']
+                self.user_profiles = data.get('user_profiles')
             print(f"✓ Model loaded from {self.model_path}")
             return True
         except Exception as e:
