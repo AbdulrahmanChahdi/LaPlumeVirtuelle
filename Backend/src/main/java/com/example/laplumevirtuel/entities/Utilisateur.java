@@ -13,6 +13,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Table;
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;
@@ -30,7 +32,7 @@ import lombok.ToString;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = {"abonnements", "commentaires", "podcastsEcoutes", "livresAchetes", "livresEmpruntes", "livresAudiosEcouter", "livresAudiosTelecharger"})
+@ToString(exclude = {"abonnements", "commentaires", "podcastsEcoutes", "livresTelecharges", "livresAudiosEcouter", "preference"})
 public class Utilisateur {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -83,19 +85,12 @@ public class Utilisateur {
     
     @ManyToMany
     @JoinTable(
-        name = "utilisateur_livres_achetes",
+        name = "utilisateur_livres_telecharges",
         joinColumns = @JoinColumn(name = "utilisateur_id"),
         inverseJoinColumns = @JoinColumn(name = "livre_id")
     )
-    private Set<Livre> livresAchetes;
+    private Set<Livre> livresTelecharges;
     
-    @ManyToMany
-    @JoinTable(
-        name = "utilisateur_livres_empruntes",
-        joinColumns = @JoinColumn(name = "utilisateur_id"),
-        inverseJoinColumns = @JoinColumn(name = "livre_id")
-    )
-    private Set<Livre> livresEmpruntes;
 
     @ManyToMany
     @JoinTable(
@@ -105,12 +100,11 @@ public class Utilisateur {
     )
     private Set<LivreAudio> livresAudiosEcouter;
 
-    @ManyToMany
-    @JoinTable(
-        name = "utilisateur_livres_audios_telecharges",
-        joinColumns = @JoinColumn(name = "utilisateur_id"),
-        inverseJoinColumns = @JoinColumn(name = "livre_audio_id")
-    )
-    private Set<LivreAudio> livresAudiosTelecharger;
+    @JsonIgnore
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "preference_id")
+    private Preference preference;
 }
+
+   
 
