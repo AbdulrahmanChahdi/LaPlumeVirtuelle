@@ -100,7 +100,7 @@ public class Utilisateur {
     )
     private Set<LivreAudio> livresAudiosEcouter;
 
-    @JsonIgnore //#endregion
+    @JsonIgnore
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "preference_id")
     private Preference preference;
