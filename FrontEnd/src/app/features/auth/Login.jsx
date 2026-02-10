@@ -1,12 +1,14 @@
 import { useState } from "react"
-import { useNavigate, Link } from "react-router-dom"
+import { useNavigate, Link, useSearchParams } from "react-router-dom"
 import Input from "../../components/ui/Input"
 import Button from "../../components/ui/Button"
 import Card from "../../components/ui/Card"
 import { login as apiLogin } from "../../api/authApi"
+import { getRedirectDestination } from "../../utils/navigation"
 
 export default function Login() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const [form, setForm] = useState({ adresseMail: "", motDePasse: "" })
   const [error, setError] = useState("")
 
@@ -26,27 +28,13 @@ export default function Login() {
       try {
         localStorage.setItem("authToken", data?.token || "")
         localStorage.setItem("currentUser", JSON.stringify(data?.user || null))
+        localStorage.setItem("authTokenTime", Date.now().toString())
       } catch {}
 
-      const registrationComplete = (() => {
-        try {
-          return localStorage.getItem("registrationComplete") === "true"
-        } catch {
-          return false
-        }
-      })()
-
-      const onboardingDone = (() => {
-        try {
-          return localStorage.getItem("onboardingDone") === "true"
-        } catch {
-          return false
-        }
-      })()
-
-      const target = !onboardingDone
-        ? "/onboarding/preferences"
-        : "/dashboard"
+      // Déterminer la destination après connexion avec fallbacks intelligents
+      // Priorise l'onboarding si pas encore fait
+      const redirectFromQuery = searchParams.get("redirectTo")
+      const target = getRedirectDestination(redirectFromQuery, "/dashboard", data?.user)
 
       navigate(target, { replace: true })
     } catch (err) {
@@ -106,7 +94,7 @@ export default function Login() {
         <div className="mt-6 pt-6 border-t border-borderSoft text-center">
           <p className="text-sm text-inkSoft">
             Pas de compte ?{" "}
-            <Link to="/auth/register" className="text-accent font-semibold hover:text-accentHover focus:outline-none focus:ring-2 focus:ring-accent focus:rounded px-1 transition-colors">
+            <Link to="/register" className="text-accent font-semibold hover:text-accentHover focus:outline-none focus:ring-2 focus:ring-accent focus:rounded px-1 transition-colors">
               Créer un compte
             </Link>
           </p>

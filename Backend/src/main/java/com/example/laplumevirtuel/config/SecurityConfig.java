@@ -26,10 +26,11 @@ public class SecurityConfig {
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
     private static final String[] PUBLIC_URLS = {
-        "/api/livres/**",
+        // Livres publics - endpoints de découverte
+        "/api/books/search",
+        "/api/books/external/**",
+        // Autres ressources publiques
         "/api/categories/**",
-        "/api/podcasts/**",
-        "/api/livres-audio/**",
         "/api/auteurs/**",
         "/api/editeurs/**",
         "/auth/**",

@@ -6,11 +6,41 @@ export default function Button({
   type = "button", 
   disabled = false, 
   className = "", 
+  variant = "primary",
   ariaLabel,
   ariaDescribedBy,
   ...props 
 }) {
   const [ripples, setRipples] = useState([])
+
+  const baseClasses = `
+    relative px-4 sm:px-6 py-2 sm:py-3 rounded
+    text-sm sm:text-base
+    transition-[background-color,transform] duration-200
+    disabled:opacity-50 disabled:cursor-not-allowed
+    focus:outline-none focus:ring-2 focus:ring-offset-2
+    overflow-hidden
+  `;
+
+  const variantClasses = {
+    primary: `
+      bg-accent text-white
+      hover:bg-accentHover active:scale-95
+      focus:ring-accent
+    `,
+    secondary: `
+      bg-gray-200 text-ink
+      hover:bg-gray-300 active:scale-95
+      focus:ring-gray-400
+    `,
+    tertiary: `
+      bg-transparent text-accent border border-accent
+      hover:bg-accent/10 active:scale-95
+      focus:ring-accent
+    `
+  };
+
+  const combinedClasses = `${baseClasses} ${variantClasses[variant] || variantClasses.primary} ${className}`;
 
   const handleClick = (e) => {
     if (disabled) return
@@ -45,17 +75,7 @@ export default function Button({
       disabled={disabled}
       aria-label={ariaLabel}
       aria-describedby={ariaDescribedBy}
-      className={`
-        relative bg-accent text-white
-        px-4 sm:px-6 py-2 sm:py-3 rounded
-        text-sm sm:text-base
-        hover:bg-accentHover active:scale-95
-        transition-[background-color,transform] duration-200
-        disabled:opacity-50 disabled:cursor-not-allowed
-        focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent
-        overflow-hidden
-        ${className}
-      `}
+      className={combinedClasses}
       {...props}
     >
       {ripples.map((ripple) => (
