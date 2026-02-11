@@ -8,7 +8,7 @@ import com.example.laplumevirtuel.services.PodcastService;
 
 @RestController
 @RequestMapping("/api/podcasts")
-@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:5173"})
+@CrossOrigin(origins = { "http://localhost:4200", "http://localhost:5173" })
 public class PodcastController {
 
 	@Autowired
@@ -24,17 +24,17 @@ public class PodcastController {
 		}
 		return podcastService.getAllPodcasts();
 	}
-	
+
 	@GetMapping("/search")
 	public List<Podcast> searchPodcasts(@RequestParam String term) {
 		return podcastService.searchPodcasts(term);
 	}
-	
+
 	@GetMapping("/theme/{theme}")
 	public List<Podcast> getPodcastsByTheme(@PathVariable String theme) {
 		return podcastService.findByTheme(theme);
 	}
-	
+
 	@GetMapping("/duree/{secondes}")
 	public List<Podcast> getPodcastsByDuree(@PathVariable int secondes) {
 		return podcastService.findByDureeLessThanEqual(secondes);
