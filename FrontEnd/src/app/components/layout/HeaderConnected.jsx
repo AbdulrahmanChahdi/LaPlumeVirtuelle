@@ -26,7 +26,7 @@ export default function HeaderConnected() {
           <Link to="/library/digital-books" className="hover:text-accent transition">
             Ma Bibliothèque
           </Link>
-          
+
           {/* Découvrir */}
           <div className="border-l border-borderSoft pl-6 flex items-center gap-4">
             <span className="text-inkMuted">Découvrir</span>

@@ -15,7 +15,7 @@ export default function Podcasts() {
       try {
         setLoading(true);
         setError(null);
-        
+
         const podcastsData = await getPodcasts();
         setPodcasts(podcastsData || []);
       } catch (err) {
@@ -51,8 +51,8 @@ export default function Podcasts() {
 
       {/* Filter */}
       {!loading && !error && podcasts.length > 0 && (
-        <CategoryFilter 
-          items={podcasts} 
+        <CategoryFilter
+          items={podcasts}
           onFilterChange={setSelectedCategory}
           filterKey="thematique"
         />
@@ -93,8 +93,8 @@ export default function Podcasts() {
       {!loading && !error && filteredPodcasts.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
           {filteredPodcasts.map((podcast) => (
-            <BookCard 
-              key={podcast.id} 
+            <BookCard
+              key={podcast.id}
               book={{
                 ...podcast,
                 authors: podcast.auteur ? [podcast.auteur.nom] : []

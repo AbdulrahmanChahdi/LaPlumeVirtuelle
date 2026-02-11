@@ -15,7 +15,7 @@ export default function DigitalBooks() {
       try {
         setLoading(true);
         setError(null);
-        
+
         const booksData = await getDigitalBooks();
         setBooks(booksData || []);
       } catch (err) {
@@ -51,8 +51,8 @@ export default function DigitalBooks() {
 
       {/* Filter */}
       {!loading && !error && books.length > 0 && (
-        <CategoryFilter 
-          items={books} 
+        <CategoryFilter
+          items={books}
           onFilterChange={setSelectedCategory}
           filterKey="thematique"
         />
@@ -93,8 +93,8 @@ export default function DigitalBooks() {
       {!loading && !error && filteredBooks.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
           {filteredBooks.map((book) => (
-            <BookCard 
-              key={book.id} 
+            <BookCard
+              key={book.id}
               book={{
                 ...book,
                 authors: book.auteur ? [book.auteur.nom] : []

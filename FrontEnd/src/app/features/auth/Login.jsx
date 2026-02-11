@@ -27,7 +27,7 @@ export default function Login() {
     }
     try {
       const data = await apiLogin({ adresseMail: form.adresseMail.trim().toLowerCase(), motDePasse: form.motDePasse })
-      
+
       // Utiliser la fonction login du contexte au lieu de manipuler localStorage
       login(data?.token || "", data?.user || null)
 

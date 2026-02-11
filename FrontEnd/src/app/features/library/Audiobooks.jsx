@@ -15,7 +15,7 @@ export default function Audiobooks() {
       try {
         setLoading(true);
         setError(null);
-        
+
         const audiobooksData = await getAudiobooks();
         setAudiobooks(audiobooksData || []);
       } catch (err) {
@@ -51,8 +51,8 @@ export default function Audiobooks() {
 
       {/* Filter */}
       {!loading && !error && audiobooks.length > 0 && (
-        <CategoryFilter 
-          items={audiobooks} 
+        <CategoryFilter
+          items={audiobooks}
           onFilterChange={setSelectedCategory}
           filterKey="thematique"
         />
@@ -93,8 +93,8 @@ export default function Audiobooks() {
       {!loading && !error && filteredAudiobooks.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
           {filteredAudiobooks.map((audiobook) => (
-            <BookCard 
-              key={audiobook.id} 
+            <BookCard
+              key={audiobook.id}
               book={{
                 ...audiobook,
                 authors: audiobook.auteur ? [audiobook.auteur.nom] : []

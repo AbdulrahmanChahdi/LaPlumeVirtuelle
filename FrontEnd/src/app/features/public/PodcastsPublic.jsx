@@ -24,7 +24,7 @@ export default function PodcastsPublic() {
     if (!selectedCategory) {
       return podcasts;
     }
-    return podcasts.filter((podcast) => 
+    return podcasts.filter((podcast) =>
       podcast.thematique === selectedCategory
     );
   }, [podcasts, selectedCategory]);
@@ -36,8 +36,8 @@ export default function PodcastsPublic() {
 
       {/* Filter */}
       {!loading && podcasts.length > 0 && (
-        <CategoryFilter 
-          items={podcasts} 
+        <CategoryFilter
+          items={podcasts}
           onFilterChange={setSelectedCategory}
           filterKey="thematique"
         />

@@ -24,7 +24,7 @@ export default function AudiobooksPublic() {
     if (!selectedCategory) {
       return audiobooks;
     }
-    return audiobooks.filter((audio) => 
+    return audiobooks.filter((audio) =>
       audio.livre?.thematique === selectedCategory
     );
   }, [audiobooks, selectedCategory]);
@@ -36,8 +36,8 @@ export default function AudiobooksPublic() {
 
       {/* Filter */}
       {!loading && audiobooks.length > 0 && (
-        <CategoryFilter 
-          items={audiobooks.map(a => a.livre).filter(Boolean)} 
+        <CategoryFilter
+          items={audiobooks.map(a => a.livre).filter(Boolean)}
           onFilterChange={setSelectedCategory}
           filterKey="thematique"
         />

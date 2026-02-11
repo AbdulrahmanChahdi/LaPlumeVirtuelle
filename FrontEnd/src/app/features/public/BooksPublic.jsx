@@ -18,15 +18,15 @@ export default function BooksPublic() {
       try {
         setLoading(true);
         setError(null);
-        
+
         // Charger plusieurs catégories pour avoir plus de diversité dès le départ
         const queries = ["bestseller", "fiction", "science", "technology"];
         const allBooks = [];
         const seenIds = new Set();
-        
+
         for (const query of queries) {
           const results = await searchBooks(query, 40);
-          
+
           // Filtrer les doublons et enrichir avec catégories normalisées
           results.forEach(book => {
             if (!seenIds.has(book.externalId)) {
@@ -35,7 +35,7 @@ export default function BooksPublic() {
             }
           });
         }
-        
+
         setBooks(allBooks);
         setHasMore(true);
       } catch (err) {
@@ -54,19 +54,19 @@ export default function BooksPublic() {
 
     try {
       setLoadingMore(true);
-      
+
       // Charger une autre catégorie pour avoir plus de diversité
       const queries = ["fiction", "science", "history", "technology", "art", "business"];
       const randomQuery = queries[Math.floor(Math.random() * queries.length)];
-      
+
       const moreResults = await searchBooks(randomQuery, 40);
-      
+
       // Filtrer les doublons par externalId et enrichir avec catégories
       const existingIds = new Set(books.map(b => b.externalId));
       const newBooks = moreResults
         .filter(b => !existingIds.has(b.externalId))
         .map(b => enrichBookWithCategories(b));
-      
+
       setBooks([...books, ...newBooks]);
       setHasMore(newBooks.length > 0);
     } catch (err) {
@@ -79,9 +79,9 @@ export default function BooksPublic() {
   // Filtrage des livres par catégorie
   const filteredBooks = useMemo(() => {
     if (!selectedCategory) return books;
-    
-    return books.filter(book => 
-      book.normalizedCategories && 
+
+    return books.filter(book =>
+      book.normalizedCategories &&
       book.normalizedCategories.includes(selectedCategory)
     );
   }, [books, selectedCategory]);
@@ -134,7 +134,7 @@ export default function BooksPublic() {
           {filteredBooks.length === 0 ? (
             <div className="text-center py-20">
               <p className="text-gray-500 text-lg">
-                {selectedCategory 
+                {selectedCategory
                   ? `Aucun livre trouvé dans la catégorie "${selectedCategory}".`
                   : "Aucun livre disponible pour le moment."
                 }

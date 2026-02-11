@@ -55,7 +55,7 @@ export default function UserMenu() {
                   <p className="text-xs text-inkMuted truncate">{user.adresseMail}</p>
                 </div>
               )}
-              
+
               <Link
                 to="/dashboard"
                 className="block px-4 py-2 text-sm text-ink hover:bg-gray-100"

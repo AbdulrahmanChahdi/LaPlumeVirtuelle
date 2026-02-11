@@ -1,8 +1,8 @@
 import { useState, useMemo } from "react"
 
-export default function CategoryFilter({ 
-  items, 
-  onFilterChange, 
+export default function CategoryFilter({
+  items,
+  onFilterChange,
   filterKey = "thematique",
   categoryField,
   selectedCategory: externalSelectedCategory,
@@ -11,29 +11,29 @@ export default function CategoryFilter({
   filteredCount
 }) {
   const [internalSelectedCategory, setInternalSelectedCategory] = useState("")
-  
+
   // Support pour usage contrôlé ou non contrôlé
-  const selectedCategory = externalSelectedCategory !== undefined 
-    ? externalSelectedCategory 
+  const selectedCategory = externalSelectedCategory !== undefined
+    ? externalSelectedCategory
     : internalSelectedCategory
-  
-  const handleChange = externalSelectedCategory !== undefined 
-    ? onCategoryChange 
+
+  const handleChange = externalSelectedCategory !== undefined
+    ? onCategoryChange
     : (value) => {
-        setInternalSelectedCategory(value)
-        onFilterChange?.(value)
-      }
-  
+      setInternalSelectedCategory(value)
+      onFilterChange?.(value)
+    }
+
   // Détecter le champ à utiliser
   const field = categoryField || filterKey
 
   // Extraire les catégories uniques (supporte les champs simples et tableaux)
   const categories = useMemo(() => {
     const uniqueCategories = new Set()
-    
+
     items.forEach((item) => {
       const value = item[field]
-      
+
       // Si c'est un tableau (normalizedCategories)
       if (Array.isArray(value)) {
         value.forEach(cat => {
@@ -41,13 +41,13 @@ export default function CategoryFilter({
             uniqueCategories.add(cat)
           }
         })
-      } 
+      }
       // Si c'est une chaîne simple (thematique, categorie)
       else if (value && value.trim() !== "") {
         uniqueCategories.add(value)
       }
     })
-    
+
     return Array.from(uniqueCategories).sort()
   }, [items, field])
 
@@ -77,7 +77,7 @@ export default function CategoryFilter({
             }
             return value === category
           }).length
-          
+
           return (
             <option key={category} value={category}>
               {category} ({count})
@@ -85,7 +85,7 @@ export default function CategoryFilter({
           )
         })}
       </select>
-      
+
       {selectedCategory && filteredCount !== undefined && (
         <span className="text-sm text-gray-600">
           {displayFilteredCount} résultat{displayFilteredCount > 1 ? "s" : ""}

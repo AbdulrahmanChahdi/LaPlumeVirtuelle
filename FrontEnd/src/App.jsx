@@ -9,7 +9,7 @@ export default function App() {
     // Valider le token au démarrage de l'app
     const validateToken = async () => {
       const token = localStorage.getItem("authToken")
-      
+
       // Si pas de token, pas besoin de valider
       if (!token || token === "undefined") {
         setTokenValidated(true)
@@ -25,7 +25,7 @@ export default function App() {
           const now = Date.now()
           const age = now - createdAt
           const maxAge = 30 * 60 * 1000 // 30 min en ms
-          
+
           if (age > maxAge) {
             console.warn("Token trop ancien, nettoyage du localStorage")
             localStorage.removeItem("authToken")
@@ -51,7 +51,7 @@ export default function App() {
             "Authorization": `Bearer ${token}`
           }
         })
-        
+
         // Si le token est invalide (401), le nettoyer
         if (res.status === 401) {
           console.warn("Token invalide ou expiré, nettoyage du localStorage")
@@ -63,7 +63,7 @@ export default function App() {
         // Erreur de connexion - ne pas nettoyer, laisser une chance à l'utilisateur
         console.warn("Impossible de valider le token au démarrage:", err)
       }
-      
+
       // Token validé (ou nettoyé si invalide)
       setTokenValidated(true)
     }
