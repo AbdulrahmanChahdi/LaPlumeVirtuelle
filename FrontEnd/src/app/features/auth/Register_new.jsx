@@ -91,8 +91,8 @@ export default function Register() {
         try {
           localStorage.setItem("registrationComplete", "true")
           localStorage.removeItem("onboardingDone")
-        } catch {}
-        navigate("/login", { replace: true })
+        } catch { }
+        navigate("/auth/login", { replace: true })
       })
       .catch((err) => {
         setError(typeof err?.message === "string" ? err.message : "Erreur lors de l'inscription.")
@@ -135,10 +135,10 @@ export default function Register() {
             <label className="block text-sm font-semibold text-ink">
               Nom <span className="text-red-500">*</span>
             </label>
-            <Input 
-              name="nom" 
-              placeholder="Votre nom complet" 
-              value={form.nom} 
+            <Input
+              name="nom"
+              placeholder="Votre nom complet"
+              value={form.nom}
               onChange={handleChange}
               required
             />
@@ -148,11 +148,11 @@ export default function Register() {
             <label className="block text-sm font-semibold text-ink">
               Email <span className="text-red-500">*</span>
             </label>
-            <Input 
-              type="email" 
-              name="adresseMail" 
-              placeholder="votre.email@exemple.com" 
-              value={form.adresseMail} 
+            <Input
+              type="email"
+              name="adresseMail"
+              placeholder="votre.email@exemple.com"
+              value={form.adresseMail}
               onChange={handleChange}
               required
             />
@@ -162,11 +162,11 @@ export default function Register() {
             <label className="block text-sm font-semibold text-ink">
               Mot de passe <span className="text-red-500">*</span>
             </label>
-            <Input 
-              type="password" 
-              name="motDePasse" 
-              placeholder="Minimum 8 caractères" 
-              value={form.motDePasse} 
+            <Input
+              type="password"
+              name="motDePasse"
+              placeholder="Minimum 8 caractères"
+              value={form.motDePasse}
               onChange={handleChange}
               required
             />
@@ -176,11 +176,11 @@ export default function Register() {
             <label className="block text-sm font-semibold text-ink">
               Confirmer le mot de passe <span className="text-red-500">*</span>
             </label>
-            <Input 
-              type="password" 
-              name="confirmMotDePasse" 
-              placeholder="Retapez votre mot de passe" 
-              value={form.confirmMotDePasse} 
+            <Input
+              type="password"
+              name="confirmMotDePasse"
+              placeholder="Retapez votre mot de passe"
+              value={form.confirmMotDePasse}
               onChange={handleChange}
               required
             />
@@ -188,23 +188,23 @@ export default function Register() {
 
           <div className="pt-4 border-t border-borderSoft">
             <p className="text-xs text-inkMuted mb-3">Champs optionnels</p>
-            
+
             <div className="space-y-2 mb-3">
               <label className="block text-sm font-semibold text-ink">Adresse postale</label>
-              <Input 
-                name="adressePostal" 
-                placeholder="123 Rue Exemple, Ville" 
-                value={form.adressePostal} 
+              <Input
+                name="adressePostal"
+                placeholder="123 Rue Exemple, Ville"
+                value={form.adressePostal}
                 onChange={handleChange}
               />
             </div>
 
             <div className="space-y-2">
               <label className="block text-sm font-semibold text-ink">Téléphone</label>
-              <Input 
-                name="tel" 
-                placeholder="+33 6 12 34 56 78" 
-                value={form.tel} 
+              <Input
+                name="tel"
+                placeholder="+33 6 12 34 56 78"
+                value={form.tel}
                 onChange={handleChange}
               />
             </div>
@@ -224,7 +224,7 @@ export default function Register() {
         <div className="mt-6 pt-6 border-t border-borderSoft text-center">
           <p className="text-sm text-inkSoft">
             Déjà un compte ?{" "}
-            <Link to="/login" className="text-accent font-semibold hover:text-accentHover transition-colors">
+            <Link to="/auth/login" className="text-accent font-semibold hover:text-accentHover transition-colors">
               Se connecter
             </Link>
           </p>

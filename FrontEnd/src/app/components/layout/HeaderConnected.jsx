@@ -1,26 +1,12 @@
 import { Link, useNavigate } from "react-router-dom"
-import { useEffect, useState } from "react"
+import { useAuth } from "../../hooks/useAuth"
 
 export default function HeaderConnected() {
   const navigate = useNavigate()
-  const [user, setUser] = useState(null)
-
-  useEffect(() => {
-    try {
-      const userData = localStorage.getItem("currentUser")
-      if (userData) {
-        setUser(JSON.parse(userData))
-      }
-    } catch { }
-  }, [])
+  const { user, logout } = useAuth()
 
   const handleLogout = () => {
-    try {
-      localStorage.removeItem("authToken")
-      localStorage.removeItem("currentUser")
-      // Ne pas supprimer registrationComplete et onboardingDone
-      // car ce sont des états permanents du compte utilisateur
-    } catch { }
+    logout() // Utiliser la fonction logout du contexte
     navigate("/", { replace: true })
   }
 
@@ -40,7 +26,7 @@ export default function HeaderConnected() {
           <Link to="/library/digital-books" className="hover:text-accent transition">
             Ma Bibliothèque
           </Link>
-          
+
           {/* Découvrir */}
           <div className="border-l border-borderSoft pl-6 flex items-center gap-4">
             <span className="text-inkMuted">Découvrir</span>
