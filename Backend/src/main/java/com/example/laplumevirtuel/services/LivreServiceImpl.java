@@ -31,5 +31,13 @@ public class LivreServiceImpl  implements LivreService{
 	public void deleteLivreById(Long id) {
 		livreRepository.deleteById(id);
 	}
+	
+	@Override
+	public List<Livre> searchLivres(String keyword) {
+		if (keyword == null || keyword.trim().isEmpty()) {
+			return getAllLivres();
+		}
+		return livreRepository.searchByKeyword(keyword.trim());
+	}
 
 }

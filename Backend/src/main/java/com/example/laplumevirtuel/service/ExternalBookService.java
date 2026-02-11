@@ -63,11 +63,12 @@ public class ExternalBookService {
             log.info("Found {} books for query: {}", response.getItems().size(), query);
             return response.getItems().stream()
                     .map(this::mapToBookSearchResult)
+                    .filter(book -> book != null)
                     .collect(Collectors.toList());
 
         } catch (RestClientException e) {
             log.error("Error calling Google Books API for query '{}': {}", query, e.getMessage(), e);
-            return Collections.emptyList(); // Graceful fallback
+            return Collections.emptyList();
         }
     }
 
@@ -109,8 +110,8 @@ public class ExternalBookService {
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(googleBooksApiUrl)
                 .queryParam("q", query)
                 .queryParam("maxResults", maxResults)
-                .queryParam("printType", "books")
-                .queryParam("langRestrict", "fr"); // French books priority
+                .queryParam("printType", "books");
+                // Removed langRestrict to allow books in all languages
 
         if (apiKey != null && !apiKey.isEmpty()) {
             builder.queryParam("key", apiKey);
