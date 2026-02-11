@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { AuthProvider } from "./app/context/AuthContext"
 import AppRouter from "./app/router/Approuter"
 
 export default function App() {
@@ -75,6 +76,10 @@ export default function App() {
     return null
   }
 
-  return <AppRouter />
+  return (
+    <AuthProvider>
+      <AppRouter />
+    </AuthProvider>
+  )
 }
 

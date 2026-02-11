@@ -6,7 +6,7 @@ export default function UserMenu() {
   const [open, setOpen] = useState(false)
   const menuRef = useRef(null)
   const navigate = useNavigate()
-  const { isAuthenticated, user } = useAuth()
+  const { isAuthenticated, user, logout } = useAuth()
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -20,8 +20,7 @@ export default function UserMenu() {
   }, [])
 
   const handleLogout = () => {
-    localStorage.removeItem("authToken")
-    localStorage.removeItem("currentUser")
+    logout() // Utiliser la fonction logout du contexte
     setOpen(false)
     navigate("/", { replace: true })
   }
@@ -85,7 +84,7 @@ export default function UserMenu() {
           ) : (
             <>
               <Link
-                to="/login"
+                to="/auth/login"
                 className="block px-4 py-2 text-sm text-ink hover:bg-gray-100"
                 onClick={() => setOpen(false)}
               >
@@ -93,7 +92,7 @@ export default function UserMenu() {
               </Link>
 
               <Link
-                to="/register"
+                to="/auth/register"
                 className="block px-4 py-2 text-sm text-ink hover:bg-gray-100"
                 onClick={() => setOpen(false)}
               >

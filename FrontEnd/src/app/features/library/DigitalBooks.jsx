@@ -1,12 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { getDigitalBooks } from "../../api/digitalBooksApi";
 import BookCard from "../../components/BookCard";
+import CategoryFilter from "../../components/ui/CategoryFilter";
 import Loader from "../../components/ui/Loader";
 
 export default function DigitalBooks() {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState("");
 
   useEffect(() => {
     async function loadBooks() {
@@ -27,6 +29,14 @@ export default function DigitalBooks() {
     loadBooks();
   }, []);
 
+  // Filtrer les livres par catégorie
+  const filteredBooks = useMemo(() => {
+    if (!selectedCategory) {
+      return books;
+    }
+    return books.filter((book) => book.thematique === selectedCategory);
+  }, [books, selectedCategory]);
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
       {/* Header */}
@@ -38,6 +48,15 @@ export default function DigitalBooks() {
           Vos livres numériques et votre collection personnelle
         </p>
       </div>
+
+      {/* Filter */}
+      {!loading && !error && books.length > 0 && (
+        <CategoryFilter 
+          items={books} 
+          onFilterChange={setSelectedCategory}
+          filterKey="thematique"
+        />
+      )}
 
       {/* Loading State */}
       {loading && (
@@ -63,10 +82,17 @@ export default function DigitalBooks() {
         </div>
       )}
 
+      {/* No Results State */}
+      {!loading && !error && books.length > 0 && filteredBooks.length === 0 && (
+        <div className="bg-yellow-50 border-l-4 border-yellow-500 p-6 rounded-lg text-center">
+          <p className="text-yellow-700 font-medium">Aucun livre trouvé pour cette catégorie</p>
+        </div>
+      )}
+
       {/* Books Grid */}
-      {!loading && !error && books.length > 0 && (
+      {!loading && !error && filteredBooks.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-          {books.map((book) => (
+          {filteredBooks.map((book) => (
             <BookCard 
               key={book.id} 
               book={{

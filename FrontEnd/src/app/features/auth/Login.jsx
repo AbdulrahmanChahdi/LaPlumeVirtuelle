@@ -5,10 +5,12 @@ import Button from "../../components/ui/Button"
 import Card from "../../components/ui/Card"
 import { login as apiLogin } from "../../api/authApi"
 import { getRedirectDestination } from "../../utils/navigation"
+import { useAuth } from "../../hooks/useAuth"
 
 export default function Login() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
+  const { login } = useAuth()
   const [form, setForm] = useState({ adresseMail: "", motDePasse: "" })
   const [error, setError] = useState("")
 
@@ -25,11 +27,9 @@ export default function Login() {
     }
     try {
       const data = await apiLogin({ adresseMail: form.adresseMail.trim().toLowerCase(), motDePasse: form.motDePasse })
-      try {
-        localStorage.setItem("authToken", data?.token || "")
-        localStorage.setItem("currentUser", JSON.stringify(data?.user || null))
-        localStorage.setItem("authTokenTime", Date.now().toString())
-      } catch {}
+      
+      // Utiliser la fonction login du contexte au lieu de manipuler localStorage
+      login(data?.token || "", data?.user || null)
 
       // Déterminer la destination après connexion avec fallbacks intelligents
       // Priorise l'onboarding si pas encore fait
@@ -94,7 +94,7 @@ export default function Login() {
         <div className="mt-6 pt-6 border-t border-borderSoft text-center">
           <p className="text-sm text-inkSoft">
             Pas de compte ?{" "}
-            <Link to="/register" className="text-accent font-semibold hover:text-accentHover focus:outline-none focus:ring-2 focus:ring-accent focus:rounded px-1 transition-colors">
+            <Link to="/auth/register" className="text-accent font-semibold hover:text-accentHover focus:outline-none focus:ring-2 focus:ring-accent focus:rounded px-1 transition-colors">
               Créer un compte
             </Link>
           </p>

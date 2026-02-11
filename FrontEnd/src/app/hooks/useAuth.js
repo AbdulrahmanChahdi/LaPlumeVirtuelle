@@ -1,14 +1,16 @@
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
+
 /**
- * Hook pour vérifier l'état d'authentification
- * @returns {Object} { isAuthenticated: boolean, user: Object|null }
+ * Hook pour accéder au contexte d'authentification
+ * @returns {Object} { isAuthenticated, token, user, loading, login, logout, updateUser }
  */
 export function useAuth() {
-  const token = localStorage.getItem("authToken");
-  const user = localStorage.getItem("currentUser");
+  const context = useContext(AuthContext);
   
-  return {
-    isAuthenticated: !!token && token !== "undefined",
-    token: token || null,
-    user: user ? JSON.parse(user) : null
-  };
+  if (!context) {
+    throw new Error("useAuth doit être utilisé à l'intérieur d'un AuthProvider");
+  }
+  
+  return context;
 }

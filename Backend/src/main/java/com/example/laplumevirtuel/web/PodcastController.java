@@ -8,7 +8,7 @@ import com.example.laplumevirtuel.services.PodcastService;
 
 @RestController
 @RequestMapping("/api/podcasts")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:5173"})
 public class PodcastController {
 
 	@Autowired

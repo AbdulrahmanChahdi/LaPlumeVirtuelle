@@ -231,7 +231,7 @@ export default function BookDetail() {
                     <Button
                       onClick={() => {
                         saveIntendedDestination(location.pathname);
-                        navigate("/login");
+                        navigate("/auth/login");
                       }}
                       className="w-full"
                     >
@@ -240,7 +240,7 @@ export default function BookDetail() {
                     <Button
                       onClick={() => {
                         saveIntendedDestination(location.pathname);
-                        navigate("/register");
+                        navigate("/auth/register");
                       }}
                       variant="secondary"
                       className="w-full"

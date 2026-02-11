@@ -92,7 +92,7 @@ export default function Register() {
           localStorage.setItem("registrationComplete", "true")
           localStorage.removeItem("onboardingDone")
         } catch {}
-        navigate("/login", { replace: true })
+        navigate("/auth/login", { replace: true })
       })
       .catch((err) => {
         setError(typeof err?.message === "string" ? err.message : "Erreur lors de l'inscription.")
@@ -224,7 +224,7 @@ export default function Register() {
         <div className="mt-6 pt-6 border-t border-borderSoft text-center">
           <p className="text-sm text-inkSoft">
             Déjà un compte ?{" "}
-            <Link to="/login" className="text-accent font-semibold hover:text-accentHover transition-colors">
+            <Link to="/auth/login" className="text-accent font-semibold hover:text-accentHover transition-colors">
               Se connecter
             </Link>
           </p>

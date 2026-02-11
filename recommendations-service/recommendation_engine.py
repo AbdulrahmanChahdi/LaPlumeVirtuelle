@@ -5,6 +5,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 import os
 
 class RecommendationEngine:
+    
     """
     Moteur de recommandations basé sur TF-IDF (Term Frequency-Inverse Document Frequency)
     

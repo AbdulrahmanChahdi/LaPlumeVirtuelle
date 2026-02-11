@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useMemo } from "react"
+import CategoryFilter from "../../components/ui/CategoryFilter"
 
 export default function AudiobooksPublic() {
   const [audiobooks, setAudiobooks] = useState([])
   const [loading, setLoading] = useState(true)
+  const [selectedCategory, setSelectedCategory] = useState("")
 
   useEffect(() => {
     fetch("http://localhost:8080/api/livres-audio")
@@ -17,21 +19,43 @@ export default function AudiobooksPublic() {
       })
   }, [])
 
+  // Filtrer par thématique si disponible
+  const filteredAudiobooks = useMemo(() => {
+    if (!selectedCategory) {
+      return audiobooks;
+    }
+    return audiobooks.filter((audio) => 
+      audio.livre?.thematique === selectedCategory
+    );
+  }, [audiobooks, selectedCategory]);
+
   return (
-    <div className="max-w-5xl mx-auto px-6 py-12">
-      <h1 className="text-3xl font-bold mb-2">Livres Audio</h1>
-      <p className="text-inkSoft mb-8">Connectez-vous pour accéder à notre sélection complète de livres audio.</p>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+      <h1 className="text-3xl sm:text-4xl font-bold text-ink mb-3">Livres Audio</h1>
+      <p className="text-base sm:text-lg text-gray-600 mb-8">Connectez-vous pour accéder à notre sélection complète de livres audio.</p>
+
+      {/* Filter */}
+      {!loading && audiobooks.length > 0 && (
+        <CategoryFilter 
+          items={audiobooks.map(a => a.livre).filter(Boolean)} 
+          onFilterChange={setSelectedCategory}
+          filterKey="thematique"
+        />
+      )}
 
       {loading ? (
         <p>Chargement...</p>
       ) : audiobooks.length === 0 ? (
         <p className="text-inkSoft">Aucun livre audio disponible pour le moment.</p>
+      ) : filteredAudiobooks.length === 0 ? (
+        <p className="text-inkSoft">Aucun livre audio trouvé pour cette catégorie.</p>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {audiobooks.map((audio) => (
-            <div key={audio.id} className="bg-white rounded-lg shadow p-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+          {filteredAudiobooks.map((audio) => (
+            <div key={audio.id} className="bg-white rounded-lg shadow p-4 hover:shadow-lg transition-shadow">
               <h3 className="font-bold text-lg mb-2">{audio.livre?.titre}</h3>
-              <p className="text-sm text-inkSoft mb-4">{audio.livre?.auteur?.nom}</p>
+              <p className="text-sm text-inkSoft mb-2">{audio.livre?.auteur?.nom}</p>
+              <p className="text-xs text-gray-500 mb-2">Thématique: {audio.livre?.thematique}</p>
               <p className="text-xs text-gray-500">Durée: {audio.duree} min</p>
             </div>
           ))}
