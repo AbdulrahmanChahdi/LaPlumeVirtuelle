@@ -4,27 +4,28 @@ export default function BookCard({ book, progress }) {
   // Support both Google Books (externalId) and internal DB books (id)
   const bookId = book.externalId || book.id;
   const isInternalBook = !!book.id && !book.externalId;
-  const detailLink = isInternalBook 
-    ? `/library/digital-books/${bookId}` 
-    : `/library/books/${bookId}`;
+  const encodedBookId = bookId ? encodeURIComponent(bookId) : "";
+  const detailLink = isInternalBook
+    ? `/library/digital-books/${encodedBookId}`
+    : `/library/books/${encodedBookId}`;
 
   // Handle different field names for internal vs external books
   const title = book.title || book.titre;
   const imageUrl = book.coverUrl || book.imageUrl;
   const description = book.description || book.resume;
-  
+
   // Format authors - can be array or single author object
   let authors = "Auteur inconnu";
   if (book.authors) {
-    authors = Array.isArray(book.authors) 
-      ? book.authors.join(", ") 
+    authors = Array.isArray(book.authors)
+      ? book.authors.join(", ")
       : "Auteur inconnu";
   } else if (book.auteur) {
     authors = book.auteur.nom || "Auteur inconnu";
   }
 
   // Calculate progress percentage if available
-  const progressPercentage = progress && progress.totalPages 
+  const progressPercentage = progress && progress.totalPages
     ? Math.round((progress.currentPage / progress.totalPages) * 100)
     : 0;
 
@@ -83,9 +84,9 @@ export default function BookCard({ book, progress }) {
         {/* Progress bar at the bottom of cover */}
         {progress && !progress.isFinished && (
           <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-gray-200">
-            <div 
+            <div
               className="h-full bg-gradient-to-r from-accent to-gold transition-all duration-300"
-              style={{width: `${Math.min(progressPercentage, 100)}%`}}
+              style={{ width: `${Math.min(progressPercentage, 100)}%` }}
             />
           </div>
         )}

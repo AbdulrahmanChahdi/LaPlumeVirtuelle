@@ -63,8 +63,8 @@ export async function getDigitalBookById(id) {
 }
 
 /**
- * Add a book from Google Books to user's personal library
- * @param {string} externalId - Google Books volume ID
+ * Add a book from Open Library to user's personal library
+ * @param {string} externalId - Open Library work key (e.g., /works/OL46125W)
  * @returns {Promise<Object>} Added book
  */
 export async function addBookToLibrary(externalId) {
@@ -76,7 +76,7 @@ export async function addBookToLibrary(externalId) {
 
   const encodedExternalId = encodeURIComponent(externalId ?? "");
 
-  const res = await fetch(`${API_BASE}/api/livres/add-from-external/${encodedExternalId}`, {
+  const res = await fetch(`${API_BASE}/api/livres/add-from-external?externalId=${encodedExternalId}`, {
     method: "POST",
     headers: {
       "Authorization": `Bearer ${token}`

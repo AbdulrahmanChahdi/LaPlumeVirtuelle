@@ -10,6 +10,7 @@ import Button from "../../components/ui/Button";
 
 export default function BookDetail() {
   const { externalId } = useParams();
+  const decodedExternalId = externalId ? decodeURIComponent(externalId) : externalId;
   const navigate = useNavigate();
   const location = useLocation();
   const { isAuthenticated } = useAuth();
@@ -37,7 +38,7 @@ export default function BookDetail() {
         setLoading(true);
         setError(null);
 
-        const bookData = await getBookByExternalId(externalId);
+        const bookData = await getBookByExternalId(decodedExternalId);
         setBook(bookData);
 
         // Charger les stats uniquement si l'utilisateur est connecté
@@ -59,7 +60,7 @@ export default function BookDetail() {
     }
 
     loadBookAndStats();
-  }, [externalId, isAuthenticated]);
+  }, [decodedExternalId, isAuthenticated]);
 
   const handleDownload = async () => {
     if (!downloadStats) return;
@@ -74,7 +75,7 @@ export default function BookDetail() {
       setDownloading(true);
 
       // Appel API pour enregistrer le téléchargement
-      await downloadBook(externalId);
+      await downloadBook(decodedExternalId);
 
       // Simuler un téléchargement (créer un lien de téléchargement factice)
       const blob = new Blob(
@@ -111,7 +112,7 @@ export default function BookDetail() {
   const handleAddToLibrary = async () => {
     try {
       setAddingToLibrary(true);
-      await addBookToLibrary(externalId);
+      await addBookToLibrary(decodedExternalId);
       setNotification({
         type: 'success',
         message: `"${book.title}" a été ajouté à votre bibliothèque !`

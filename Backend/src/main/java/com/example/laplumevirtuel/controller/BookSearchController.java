@@ -101,8 +101,8 @@ public class BookSearchController {
      * @param externalId Open Library work key (e.g., /works/OL46125W)
      * @return Book details
      */
-    @GetMapping("/external/{externalId}")
-    public ResponseEntity<BookSearchResultDTO> getBookByExternalId(@PathVariable String externalId) {
+    @GetMapping("/external")
+    public ResponseEntity<BookSearchResultDTO> getBookByExternalId(@RequestParam String externalId) {
         log.info("Get book by external ID: {}", externalId);
 
         BookSearchResultDTO book = externalBookService.getBookById(externalId);

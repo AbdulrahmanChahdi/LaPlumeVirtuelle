@@ -23,13 +23,14 @@ export async function getUserDownloadStats() {
 
 /**
  * Download a book
- * @param {string} externalId - Google Books volume ID
+ * @param {string} externalId - Open Library work key (e.g., /works/OL46125W)
  * @returns {Promise<Blob>} Book file
  */
 export async function downloadBook(externalId) {
   const token = localStorage.getItem("authToken");
+  const encodedExternalId = externalId ? encodeURIComponent(externalId) : "";
   
-  const res = await fetch(`${API_BASE}/api/downloads/book/${externalId}`, {
+  const res = await fetch(`${API_BASE}/api/downloads/book?externalId=${encodedExternalId}`, {
     headers: {
       "Authorization": `Bearer ${token}`
     }

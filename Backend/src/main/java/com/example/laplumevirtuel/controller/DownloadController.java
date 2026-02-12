@@ -52,9 +52,9 @@ public class DownloadController {
      * @param authentication Spring Security authentication
      * @return Response indicating download status
      */
-    @GetMapping("/book/{externalId}")
+    @GetMapping("/book")
     public ResponseEntity<String> downloadBook(
-            @PathVariable String externalId,
+            @RequestParam String externalId,
             Authentication authentication) {
         if (authentication == null || authentication.getPrincipal() == null) {
             log.warn("Unauthorized download attempt for book: {}", externalId);

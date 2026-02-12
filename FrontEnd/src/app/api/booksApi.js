@@ -30,11 +30,12 @@ export async function searchBooks(query, maxResults = 20) {
 
 /**
  * Get book details by external ID
- * @param {string} externalId - Google Books volume ID
+ * @param {string} externalId - Open Library work key (e.g., /works/OL46125W)
  * @returns {Promise<Object>} Book details
  */
 export async function getBookByExternalId(externalId) {
-  const res = await fetch(`${API_BASE}/api/books/external/${externalId}`);
+  const encodedExternalId = externalId ? encodeURIComponent(externalId) : "";
+  const res = await fetch(`${API_BASE}/api/books/external?externalId=${encodedExternalId}`);
   
   if (!res.ok) {
     throw new Error(`Erreur lors de la récupération du livre: ${res.statusText}`);

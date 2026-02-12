@@ -7,8 +7,10 @@ import CategoryFilter from "../../components/ui/CategoryFilter";
 import Loader from "../../components/ui/Loader";
 import UnifiedSearchBar from "../../components/ui/UnifiedSearchBar";
 import { enrichBookWithCategories } from "../../utils/categoryMapping";
+import { useAuth } from "../../hooks/useAuth";
 
 export default function BooksPublic() {
+  const { isAuthenticated } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const [books, setBooks] = useState([]);
   const [allBooks, setAllBooks] = useState([]); // Tous les livres chargés (pour chercher dedans)
@@ -111,9 +113,9 @@ export default function BooksPublic() {
       setSearchType("simple");
 
       console.log("🔍 RECHERCHE TITRE:", query);
-      
+
       const queryLower = query.toLowerCase();
-      
+
       // 1. CHERCHER D'ABORD dans les livres déjà chargés (recherche live - COMMENCE par uniquement)
       const localResults = allBooks.filter(book => {
         const title = (book.title || "").toLowerCase();
@@ -121,9 +123,9 @@ export default function BooksPublic() {
         // STRICTEMENT commence par la recherche (pas au milieu)
         return title.startsWith(queryLower) || authors.startsWith(queryLower);
       });
-      
+
       console.log("📋 TROUVÉS LOCALEMENT:", localResults.length);
-      
+
       if (localResults.length > 0) {
         // Trouvé dans les livres déjà chargés !
         console.log("✅ AFFICHAGE RÉSULTATS LOCAUX:", localResults.map(b => b.title));
@@ -131,25 +133,25 @@ export default function BooksPublic() {
         setError(null);
         return;
       }
-      
+
       // 2. Si pas trouvé localement, chercher via API
       console.log("🌍 PAS TROUVÉ LOCALEMENT - APPEL API");
       setLoading(true);
       setIsSearching(true);
-      
+
       const results = await searchBooks(query, 40);
-      
+
       console.log("✅ RÉSULTATS API:", results.length);
-      
+
       // Filtrer strictement les résultats API (commence par uniquement)
       const filteredResults = results.filter(book => {
         const title = (book.title || "").toLowerCase();
         const authors = (book.authors || []).join(" ").toLowerCase();
         return title.startsWith(queryLower) || authors.startsWith(queryLower);
       });
-      
+
       console.log("✅ RÉSULTATS FILTRÉS:", filteredResults.length);
-      
+
       if (filteredResults.length === 0) {
         setBooks([]);
         setError(`Aucun livre trouvé pour "${query}".`);
@@ -187,11 +189,11 @@ export default function BooksPublic() {
 
       console.log("🎯 RECHERCHE AVEC FILTRES:", filters);
       console.log("📚 LIVRES DISPONIBLES:", allBooks.length);
-      
+
       // 1. CHERCHER D'ABORD localement avec filtres
       const localResults = allBooks.filter(book => {
         let match = true;
-        
+
         if (filters.author) {
           const authors = (book.authors || []).join(" ").toLowerCase().trim();
           const authorLower = filters.author.toLowerCase().trim();
@@ -199,7 +201,7 @@ export default function BooksPublic() {
           console.log(`  Auteur "${book.title}": authors="${authors}" cherché="${authorLower}" match=${authorMatch}`);
           match = match && authorMatch;
         }
-        
+
         if (filters.subject) {
           const category = (book.category || "").toLowerCase().trim();
           const normalizedCategories = (book.normalizedCategories || []).join(" ").toLowerCase().trim();
@@ -208,7 +210,7 @@ export default function BooksPublic() {
           console.log(`  Genre "${book.title}": category="${category}" normalized="${normalizedCategories}" cherché="${subjectLower}" match=${subjectMatch}`);
           match = match && subjectMatch;
         }
-        
+
         if (filters.keyword) {
           const title = (book.title || "").toLowerCase().trim();
           const keywordLower = filters.keyword.toLowerCase().trim();
@@ -217,31 +219,31 @@ export default function BooksPublic() {
           console.log(`  Titre "${book.title}": title="${title}" cherché="${keywordLower}" match=${titleMatch}`);
           match = match && titleMatch;
         }
-        
+
         return match;
       });
-      
+
       console.log("📋 TROUVÉS LOCALEMENT:", localResults.length);
       if (localResults.length > 0) {
         console.log("✅ LIVRES TROUVÉS:", localResults.map(b => `"${b.title}" par ${b.authors?.join(", ")}`));
       }
-      
+
       if (localResults.length > 0) {
         console.log("✅ AFFICHAGE RÉSULTATS LOCAUX");
         setBooks(localResults);
         setError(null);
         return;
       }
-      
+
       // 2. Si pas trouvé localement, chercher via API
       console.log("🌍 PAS TROUVÉ LOCALEMENT - APPEL API");
       setLoading(true);
       setIsSearching(true);
-      
+
       const results = await advancedSearchBooks(filters, 40);
-      
+
       console.log("✅ RÉSULTATS API:", results.length);
-      
+
       if (results.length === 0) {
         setBooks([]);
         setError(`Aucun livre trouvé avec ces critères.`);
@@ -314,17 +316,20 @@ export default function BooksPublic() {
           Livres Numériques
         </h1>
         <p className="text-base sm:text-lg text-gray-600">
-          Découvrez notre sélection de bestsellers. Connectez-vous pour accéder aux détails complets.
+          {isAuthenticated
+            ? "Découvrez notre sélection de bestsellers et accédez aux détails complets."
+            : "Découvrez notre sélection de bestsellers. Connectez-vous pour accéder aux détails complets."
+          }
         </p>
       </div>
 
       {/* Unified Search Bar */}
       <div className="mb-5">
-        <UnifiedSearchBar 
+        <UnifiedSearchBar
           onSearch={handleUnifiedSearch}
           loading={isSearching}
         />
-        
+
         {/* Active search indicator */}
         {(searchQuery || activeFilters) && (
           <div className="mt-2.5 flex flex-wrap items-center gap-2 text-sm">

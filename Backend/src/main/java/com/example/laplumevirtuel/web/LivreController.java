@@ -55,9 +55,9 @@ public class LivreController {
 	/**
 	 * Add a book from Open Library to user's personal library
 	 */
-	@PostMapping("/add-from-external/{externalId}")
+	@PostMapping("/add-from-external")
 	public ResponseEntity<?> addBookFromExternal(
-			@PathVariable String externalId,
+			@RequestParam String externalId,
 			Authentication authentication) {
 
 		if (externalId == null || externalId.trim().isEmpty()) {
