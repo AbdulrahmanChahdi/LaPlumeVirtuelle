@@ -45,3 +45,17 @@ target/
 # ======================
 .DS_Store
 Thumbs.db
+# ======================
+# Python / Virtual Environment
+# ======================
+venv/
+env/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.env
