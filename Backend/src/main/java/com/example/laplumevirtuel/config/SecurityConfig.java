@@ -28,6 +28,7 @@ public class SecurityConfig {
     private static final String[] PUBLIC_URLS = {
         // Livres publics - endpoints de découverte
         "/api/books/search",
+        "/api/books/search/**",
         "/api/books/external/**",
         // Autres ressources publiques
         "/api/categories/**",

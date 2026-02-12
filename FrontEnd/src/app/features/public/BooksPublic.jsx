@@ -1,53 +1,43 @@
 import { useEffect, useState, useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
 import { searchBooks } from "../../api/booksApi";
+import { advancedSearchBooks } from "../../api/advancedBooksApi";
 import BookCard from "../../components/BookCard";
 import CategoryFilter from "../../components/ui/CategoryFilter";
 import Loader from "../../components/ui/Loader";
+import UnifiedSearchBar from "../../components/ui/UnifiedSearchBar";
 import { enrichBookWithCategories } from "../../utils/categoryMapping";
 
 export default function BooksPublic() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [books, setBooks] = useState([]);
+  const [allBooks, setAllBooks] = useState([]); // Tous les livres chargés (pour chercher dedans)
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
+  const [activeFilters, setActiveFilters] = useState(null);
+  const [searchType, setSearchType] = useState(null); // "simple" ou "advanced"
 
   useEffect(() => {
-    async function loadBooks() {
-      try {
-        setLoading(true);
-        setError(null);
-
-        // Charger plusieurs catégories pour avoir plus de diversité dès le départ
-        const queries = ["bestseller", "fiction", "science", "technology"];
-        const allBooks = [];
-        const seenIds = new Set();
-
-        for (const query of queries) {
-          const results = await searchBooks(query, 40);
-
-          // Filtrer les doublons et enrichir avec catégories normalisées
-          results.forEach(book => {
-            if (!seenIds.has(book.externalId)) {
-              seenIds.add(book.externalId);
-              allBooks.push(enrichBookWithCategories(book));
-            }
-          });
-        }
-
-        setBooks(allBooks);
-        setHasMore(true);
-      } catch (err) {
-        console.error("Erreur chargement livres:", err);
-        setError("Impossible de charger les livres. Veuillez réessayer plus tard.");
-      } finally {
-        setLoading(false);
-      }
-    }
-
     loadBooks();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Gérer la recherche depuis les paramètres URL (depuis page d'accueil)
+  useEffect(() => {
+    const searchFromUrl = searchParams.get("search");
+    if (searchFromUrl && allBooks.length > 0) {
+      // Déclencher recherche automatiquement
+      handleSearch(searchFromUrl);
+      // Nettoyer le paramètre URL après utilisation
+      setSearchParams({});
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, allBooks.length]);
 
   const loadMoreBooks = async () => {
     if (loadingMore || !hasMore) return;
@@ -62,17 +52,247 @@ export default function BooksPublic() {
       const moreResults = await searchBooks(randomQuery, 40);
 
       // Filtrer les doublons par externalId et enrichir avec catégories
-      const existingIds = new Set(books.map(b => b.externalId));
+      const existingIds = new Set(allBooks.map(b => b.externalId));
       const newBooks = moreResults
         .filter(b => !existingIds.has(b.externalId))
         .map(b => enrichBookWithCategories(b));
 
-      setBooks([...books, ...newBooks]);
+      const updatedAllBooks = [...allBooks, ...newBooks];
+      setAllBooks(updatedAllBooks); // Mettre à jour tous les livres
+      setBooks(updatedAllBooks);     // Afficher tous les livres
       setHasMore(newBooks.length > 0);
     } catch (err) {
       console.error("Erreur chargement plus de livres:", err);
     } finally {
       setLoadingMore(false);
+    }
+  };
+
+  // Fonction de recherche unifiée
+  const handleUnifiedSearch = async (searchData) => {
+    if (!searchData) {
+      // Reset
+      setSearchQuery("");
+      setSelectedCategory("");
+      setActiveFilters(null);
+      setSearchType(null);
+      setBooks(allBooks);
+      return;
+    }
+
+    if (searchData.type === "simple") {
+      // Recherche simple
+      await handleSearch(searchData.query);
+    } else if (searchData.type === "advanced") {
+      // Recherche avancée
+      await handleAdvancedSearch(searchData.filters);
+    }
+  };
+
+  // Fonction de recherche personnalisée - Chercher d'abord dans les livres chargés
+  const handleSearch = async (query) => {
+    if (!query || query.trim() === "") {
+      setSearchQuery("");
+      setSelectedCategory("");
+      setActiveFilters(null);
+      setSearchType(null);
+      setBooks(allBooks); // Afficher tous les livres
+      return;
+    }
+
+    // Minimum 3 caractères pour lancer la recherche
+    if (query.trim().length < 3) {
+      return;
+    }
+
+    try {
+      setSearchQuery(query);
+      setActiveFilters(null);
+      setSearchType("simple");
+
+      console.log("🔍 RECHERCHE TITRE:", query);
+      
+      const queryLower = query.toLowerCase();
+      
+      // 1. CHERCHER D'ABORD dans les livres déjà chargés (recherche live - COMMENCE par uniquement)
+      const localResults = allBooks.filter(book => {
+        const title = (book.title || "").toLowerCase();
+        const authors = (book.authors || []).join(" ").toLowerCase();
+        // STRICTEMENT commence par la recherche (pas au milieu)
+        return title.startsWith(queryLower) || authors.startsWith(queryLower);
+      });
+      
+      console.log("📋 TROUVÉS LOCALEMENT:", localResults.length);
+      
+      if (localResults.length > 0) {
+        // Trouvé dans les livres déjà chargés !
+        console.log("✅ AFFICHAGE RÉSULTATS LOCAUX:", localResults.map(b => b.title));
+        setBooks(localResults);
+        setError(null);
+        return;
+      }
+      
+      // 2. Si pas trouvé localement, chercher via API
+      console.log("🌍 PAS TROUVÉ LOCALEMENT - APPEL API");
+      setLoading(true);
+      setIsSearching(true);
+      
+      const results = await searchBooks(query, 40);
+      
+      console.log("✅ RÉSULTATS API:", results.length);
+      
+      // Filtrer strictement les résultats API (commence par uniquement)
+      const filteredResults = results.filter(book => {
+        const title = (book.title || "").toLowerCase();
+        const authors = (book.authors || []).join(" ").toLowerCase();
+        return title.startsWith(queryLower) || authors.startsWith(queryLower);
+      });
+      
+      console.log("✅ RÉSULTATS FILTRÉS:", filteredResults.length);
+      
+      if (filteredResults.length === 0) {
+        setBooks([]);
+        setError(`Aucun livre trouvé pour "${query}".`);
+      } else {
+        const enrichedResults = filteredResults.map(book => enrichBookWithCategories(book));
+        setBooks(enrichedResults);
+        setError(null);
+      }
+      setHasMore(false);
+    } catch (err) {
+      console.error("❌ ERREUR:", err);
+      setError(`Erreur: ${err.message}`);
+      setBooks([]);
+    } finally {
+      setLoading(false);
+      setIsSearching(false);
+    }
+  };
+
+  // Fonction de recherche avancée - Chercher avec filtres
+  const handleAdvancedSearch = async (filters) => {
+    if (!filters) {
+      setSearchQuery("");
+      setSelectedCategory("");
+      setActiveFilters(null);
+      setSearchType(null);
+      setBooks(allBooks);
+      return;
+    }
+
+    try {
+      setSearchQuery("");
+      setActiveFilters(filters);
+      setSearchType("advanced");
+
+      console.log("🎯 RECHERCHE AVEC FILTRES:", filters);
+      console.log("📚 LIVRES DISPONIBLES:", allBooks.length);
+      
+      // 1. CHERCHER D'ABORD localement avec filtres
+      const localResults = allBooks.filter(book => {
+        let match = true;
+        
+        if (filters.author) {
+          const authors = (book.authors || []).join(" ").toLowerCase().trim();
+          const authorLower = filters.author.toLowerCase().trim();
+          const authorMatch = authors.includes(authorLower);
+          console.log(`  Auteur "${book.title}": authors="${authors}" cherché="${authorLower}" match=${authorMatch}`);
+          match = match && authorMatch;
+        }
+        
+        if (filters.subject) {
+          const category = (book.category || "").toLowerCase().trim();
+          const normalizedCategories = (book.normalizedCategories || []).join(" ").toLowerCase().trim();
+          const subjectLower = filters.subject.toLowerCase().trim();
+          const subjectMatch = category.includes(subjectLower) || normalizedCategories.includes(subjectLower);
+          console.log(`  Genre "${book.title}": category="${category}" normalized="${normalizedCategories}" cherché="${subjectLower}" match=${subjectMatch}`);
+          match = match && subjectMatch;
+        }
+        
+        if (filters.keyword) {
+          const title = (book.title || "").toLowerCase().trim();
+          const keywordLower = filters.keyword.toLowerCase().trim();
+          // Chercher SEULEMENT dans le titre (pas dans description)
+          const titleMatch = title.includes(keywordLower);
+          console.log(`  Titre "${book.title}": title="${title}" cherché="${keywordLower}" match=${titleMatch}`);
+          match = match && titleMatch;
+        }
+        
+        return match;
+      });
+      
+      console.log("📋 TROUVÉS LOCALEMENT:", localResults.length);
+      if (localResults.length > 0) {
+        console.log("✅ LIVRES TROUVÉS:", localResults.map(b => `"${b.title}" par ${b.authors?.join(", ")}`));
+      }
+      
+      if (localResults.length > 0) {
+        console.log("✅ AFFICHAGE RÉSULTATS LOCAUX");
+        setBooks(localResults);
+        setError(null);
+        return;
+      }
+      
+      // 2. Si pas trouvé localement, chercher via API
+      console.log("🌍 PAS TROUVÉ LOCALEMENT - APPEL API");
+      setLoading(true);
+      setIsSearching(true);
+      
+      const results = await advancedSearchBooks(filters, 40);
+      
+      console.log("✅ RÉSULTATS API:", results.length);
+      
+      if (results.length === 0) {
+        setBooks([]);
+        setError(`Aucun livre trouvé avec ces critères.`);
+      } else {
+        const enrichedResults = results.map(book => enrichBookWithCategories(book));
+        setBooks(enrichedResults);
+        setError(null);
+      }
+      setHasMore(false);
+    } catch (err) {
+      console.error("❌ ERREUR RECHERCHE AVANCÉE:", err);
+      setError(`Erreur: ${err.message}`);
+      setBooks([]);
+    } finally {
+      setLoading(false);
+      setIsSearching(false);
+    }
+  };
+
+  // Fonction de chargement par défaut
+  const loadBooks = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Charger plusieurs catégories pour avoir plus de diversité dès le départ
+      const queries = ["bestseller", "fiction", "science", "technology"];
+      const allBooksLoaded = [];
+      const seenIds = new Set();
+
+      for (const query of queries) {
+        const results = await searchBooks(query, 40);
+
+        // Filtrer les doublons et enrichir avec catégories normalisées
+        results.forEach(book => {
+          if (!seenIds.has(book.externalId)) {
+            seenIds.add(book.externalId);
+            allBooksLoaded.push(enrichBookWithCategories(book));
+          }
+        });
+      }
+
+      console.log("📚 TOTAL LIVRES CHARGÉS:", allBooksLoaded.length);
+      setAllBooks(allBooksLoaded); // Sauvegarder TOUS les livres
+      setBooks(allBooksLoaded);     // Afficher tous les livres
+      setHasMore(true);
+    } catch (err) {
+      console.error("Erreur chargement livres:", err);
+      setError("Impossible de charger les livres. Veuillez réessayer plus tard.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -89,7 +309,7 @@ export default function BooksPublic() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
       {/* Header */}
-      <div className="mb-8 sm:mb-12">
+      <div className="mb-5">
         <h1 className="text-3xl sm:text-4xl font-bold text-ink mb-3">
           Livres Numériques
         </h1>
@@ -98,9 +318,49 @@ export default function BooksPublic() {
         </p>
       </div>
 
+      {/* Unified Search Bar */}
+      <div className="mb-5">
+        <UnifiedSearchBar 
+          onSearch={handleUnifiedSearch}
+          loading={isSearching}
+        />
+        
+        {/* Active search indicator */}
+        {(searchQuery || activeFilters) && (
+          <div className="mt-2.5 flex flex-wrap items-center gap-2 text-sm">
+            {searchQuery && (
+              <div className="flex items-center gap-2 bg-accent/10 px-3 py-1.5 rounded-lg">
+                <span className="text-gray-700">Recherche:</span>
+                <span className="font-semibold text-accent">"{searchQuery}"</span>
+              </div>
+            )}
+            {activeFilters && (
+              <>
+                <span className="text-gray-700">Filtres:</span>
+                {activeFilters.author && (
+                  <span className="bg-accent/10 text-accent px-2 py-1 rounded text-xs">
+                    Auteur: {activeFilters.author}
+                  </span>
+                )}
+                {activeFilters.subject && (
+                  <span className="bg-accent/10 text-accent px-2 py-1 rounded text-xs">
+                    Genre: {activeFilters.subject}
+                  </span>
+                )}
+                {activeFilters.keyword && (
+                  <span className="bg-accent/10 text-accent px-2 py-1 rounded text-xs">
+                    Titre: {activeFilters.keyword}
+                  </span>
+                )}
+              </>
+            )}
+          </div>
+        )}
+      </div>
+
       {/* Filter - Catégories normalisées depuis Google Books */}
       {!loading && !error && books.length > 0 && (
-        <div className="mb-6">
+        <div className="mb-5">
           <CategoryFilter
             items={books}
             categoryField="normalizedCategories"

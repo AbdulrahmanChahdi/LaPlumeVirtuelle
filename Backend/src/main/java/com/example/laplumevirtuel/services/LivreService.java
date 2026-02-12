@@ -16,4 +16,9 @@ public interface LivreService {
 	 Livre getLivreById (Long id);
 
 	 void deleteLivreById(Long id);
+	 
+	 /**
+	  * Search books by keyword (title, author, year)
+	  */
+	 List<Livre> searchLivres(String keyword);
 }
