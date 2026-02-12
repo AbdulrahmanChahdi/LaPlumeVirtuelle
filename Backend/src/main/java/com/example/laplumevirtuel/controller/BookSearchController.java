@@ -50,10 +50,57 @@ public class BookSearchController {
     }
 
     /**
+     * Advanced search endpoint with filters
+     * No authentication required
+     *
+     * @param author Author name (optional)
+     * @param subject Genre/category (optional)
+     * @param keyword General keyword (optional)
+     * @param maxResults Maximum number of results (optional, default: 20, max: 40)
+     * @return List of book search results
+     */
+    @GetMapping("/search/advanced")
+    public ResponseEntity<List<BookSearchResultDTO>> advancedSearch(
+            @RequestParam(required = false) String author,
+            @RequestParam(required = false) String subject,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false, defaultValue = "20") Integer maxResults
+    ) {
+        log.info("Advanced search - author: '{}', subject: '{}', keyword: '{}', maxResults: {}",
+                author, subject, keyword, maxResults);
+
+        // Build Open Library API query
+        StringBuilder queryBuilder = new StringBuilder();
+        
+        if (author != null && !author.trim().isEmpty()) {
+            queryBuilder.append("inauthor:").append(author.trim()).append(" ");
+        }
+        if (subject != null && !subject.trim().isEmpty()) {
+            queryBuilder.append("subject:").append(subject.trim()).append(" ");
+        }
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            queryBuilder.append(keyword.trim()).append(" ");
+        }
+
+        String finalQuery = queryBuilder.toString().trim();
+        
+        if (finalQuery.isEmpty()) {
+            log.warn("No search criteria provided for advanced search");
+            return ResponseEntity.badRequest().build();
+        }
+
+        log.info("Final Open Library query: '{}'", finalQuery);
+        List<BookSearchResultDTO> results = externalBookService.searchBooks(finalQuery, maxResults);
+        
+        log.info("Returning {} results for advanced search", results.size());
+        return ResponseEntity.ok(results);
+    }
+
+    /**
      * Get book details by external ID
      * No authentication required for preview
      *
-     * @param externalId Google Books volume ID
+     * @param externalId Open Library work key (e.g., /works/OL46125W)
      * @return Book details
      */
     @GetMapping("/external/{externalId}")

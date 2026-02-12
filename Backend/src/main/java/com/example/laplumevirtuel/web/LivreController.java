@@ -28,6 +28,14 @@ public class LivreController {
 	public List<Livre> getAllLivres() {
 		return livreService.getAllLivres();
 	}
+	
+	/**
+	 * Search books by keyword (searches in title, author, year)
+	 */
+	@GetMapping("/search")
+	public List<Livre> searchLivres(@RequestParam String keyword) {
+		return livreService.searchLivres(keyword);
+	}
 
 	@GetMapping("/{id}")
 	public Livre getLivreById(@PathVariable Long id) {
@@ -45,7 +53,7 @@ public class LivreController {
 	}
 	
 	/**
-	 * Add a book from Google Books to user's personal library
+	 * Add a book from Open Library to user's personal library
 	 */
 	@PostMapping("/add-from-external/{externalId}")
 	public ResponseEntity<?> addBookFromExternal(
@@ -62,7 +70,7 @@ public class LivreController {
 		
 		String email = (String) authentication.getPrincipal();
 		
-		// Get book details from Google Books
+		// Get book details from Open Library
 		BookSearchResultDTO externalBook = externalBookService.getBookById(externalId);
 		
 		if (externalBook == null) {

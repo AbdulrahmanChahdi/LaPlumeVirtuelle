@@ -1,9 +1,9 @@
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
 
 /**
- * Search books using external API (Google Books)
+ * Search books using external API (Open Library)
  * @param {string} query - Search query (title, author, keyword)
- * @param {number} maxResults - Maximum results (default: 20, max: 40)
+ * @param {number} maxResults - Maximum results (default: 20, max: 100)
  * @returns {Promise<Array>} List of books
  */
 export async function searchBooks(query, maxResults = 20) {
@@ -12,13 +12,20 @@ export async function searchBooks(query, maxResults = 20) {
     maxResults: maxResults.toString()
   });
 
-  const res = await fetch(`${API_BASE}/api/books/search?${params}`);
+  const url = `${API_BASE}/api/books/search?${params}`;
+  console.log("📡 URL APPELÉE:", url);
+  
+  const res = await fetch(url);
   
   if (!res.ok) {
-    throw new Error(`Erreur lors de la recherche: ${res.statusText}`);
+    const errorText = await res.text();
+    console.error("❌ ERREUR HTTP:", res.status, errorText);
+    throw new Error(`Erreur ${res.status}: ${res.statusText}`);
   }
   
-  return res.json();
+  const data = await res.json();
+  console.log("✅ DONNÉES REÇUES:", data.length, "livres");
+  return data;
 }
 
 /**

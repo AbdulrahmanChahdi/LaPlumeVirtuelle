@@ -37,7 +37,7 @@ public class Livre {
     private int nombreDePage;
     @Column(length = 1024)
     private String imageUrl;
-    private String externalId; // Google Books volume ID
+    private String externalId; // Open Library work key (e.g., /works/OL46125W)
 
     @ManyToOne
     @JoinColumn(name = "categorie_id")

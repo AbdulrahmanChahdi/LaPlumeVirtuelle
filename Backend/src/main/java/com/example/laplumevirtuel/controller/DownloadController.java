@@ -46,7 +46,7 @@ public class DownloadController {
 
     /**
      * Download a book (placeholder - actual download implementation needed)
-     * @param externalId Google Books volume ID
+     * @param externalId Open Library work key (e.g., /works/OL46125W)
      * @param authentication Spring Security authentication
      * @return Response indicating download status
      */
@@ -70,7 +70,7 @@ public class DownloadController {
         }
 
         try {
-            // TODO: Implement actual book download from Google Books or internal storage
+            // TODO: Implement actual book download from Open Library or internal storage
             // For now, just record the download
             downloadService.recordDownloadByEmail(email, externalId, "Book Title - " + externalId);
 
