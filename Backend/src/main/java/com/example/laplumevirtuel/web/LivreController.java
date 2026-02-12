@@ -28,6 +28,14 @@ public class LivreController {
 	public List<Livre> getAllLivres() {
 		return livreService.getAllLivres();
 	}
+	
+	/**
+	 * Search books by keyword (searches in title, author, year)
+	 */
+	@GetMapping("/search")
+	public List<Livre> searchLivres(@RequestParam String keyword) {
+		return livreService.searchLivres(keyword);
+	}
 
 	@GetMapping("/{id}")
 	public Livre getLivreById(@PathVariable Long id) {
