@@ -22,7 +22,7 @@ import lombok.ToString;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = {"auteur", "editeurs"})
+@ToString(exclude = { "auteur", "editeurs" })
 public class Livre {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,24 +42,16 @@ public class Livre {
     @ManyToOne
     @JoinColumn(name = "categorie_id")
     private Categorie categorie;
-   
+
     @ManyToOne
     @JoinColumn(name = "auteur_id")
     private Auteur auteur;
-    
+
     @ManyToMany
-    @JoinTable(
-        name = "livre_editeur",
-        joinColumns = @JoinColumn(name = "livre_id"),
-        inverseJoinColumns = @JoinColumn(name = "editeur_id")
-    )
+    @JoinTable(name = "livre_editeur", joinColumns = @JoinColumn(name = "livre_id"), inverseJoinColumns = @JoinColumn(name = "editeur_id"))
     private Set<Editeur> editeurs;
 
     @ManyToMany
-    @JoinTable(
-        name = "categorie_livre",
-        joinColumns = @JoinColumn(name = "livre_id"),
-        inverseJoinColumns = @JoinColumn(name = "categorie_id")
-    )
+    @JoinTable(name = "categorie_livre", joinColumns = @JoinColumn(name = "livre_id"), inverseJoinColumns = @JoinColumn(name = "categorie_id"))
     private Set<Categorie> categories;
 }

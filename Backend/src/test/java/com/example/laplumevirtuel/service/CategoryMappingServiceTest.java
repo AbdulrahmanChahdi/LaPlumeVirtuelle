@@ -23,9 +23,8 @@ class CategoryMappingServiceTest {
         List<String> subjects = Arrays.asList(
                 "Science",
                 "Physics",
-                "Popular science"
-        );
-        
+                "Popular science");
+
         String result = categoryMappingService.mapToFrenchCategory(subjects);
         assertEquals("science", result);
     }
@@ -35,9 +34,8 @@ class CategoryMappingServiceTest {
         List<String> subjects = Arrays.asList(
                 "Mystery",
                 "Detective stories",
-                "Crime fiction"
-        );
-        
+                "Crime fiction");
+
         String result = categoryMappingService.mapToFrenchCategory(subjects);
         assertEquals("policier", result);
     }
@@ -47,9 +45,8 @@ class CategoryMappingServiceTest {
         List<String> subjects = Arrays.asList(
                 "Fantasy fiction",
                 "Magic",
-                "Epic fantasy"
-        );
-        
+                "Epic fantasy");
+
         String result = categoryMappingService.mapToFrenchCategory(subjects);
         assertEquals("fantasy", result);
     }
@@ -59,9 +56,8 @@ class CategoryMappingServiceTest {
         List<String> subjects = Arrays.asList(
                 "Science fiction",
                 "Mystery",
-                "Thriller"
-        );
-        
+                "Thriller");
+
         List<String> results = categoryMappingService.mapToMultipleCategories(subjects, 3);
         assertFalse(results.isEmpty());
         assertTrue(results.size() <= 3);
@@ -72,9 +68,8 @@ class CategoryMappingServiceTest {
         List<String> subjects = Arrays.asList(
                 "Biography",
                 "History",
-                "World War II"
-        );
-        
+                "World War II");
+
         List<String> results = categoryMappingService.mapToMultipleCategories(subjects, 3);
         assertTrue(results.contains("biographie") || results.contains("histoire"));
     }
@@ -89,9 +84,8 @@ class CategoryMappingServiceTest {
     void testNoMatchingCategory() {
         List<String> subjects = Arrays.asList(
                 "Unknown category",
-                "Random subject"
-        );
-        
+                "Random subject");
+
         // Should return null if no matching category found
         String result = categoryMappingService.mapToFrenchCategory(subjects);
         // Could be null or some default category depending on implementation

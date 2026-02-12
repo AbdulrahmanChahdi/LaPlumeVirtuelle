@@ -35,7 +35,7 @@ public class ExternalBookService {
     /**
      * Search books from Open Library API
      *
-     * @param query Search query (title, author, keyword)
+     * @param query      Search query (title, author, keyword)
      * @param maxResults Maximum number of results (default: 20, max: 100)
      * @return List of book search results in unified format
      */
@@ -110,7 +110,8 @@ public class ExternalBookService {
         return UriComponentsBuilder.fromHttpUrl(openLibraryApiUrl)
                 .queryParam("q", query)
                 .queryParam("limit", maxResults)
-                .queryParam("fields", "key,title,author_name,first_publish_year,isbn,publisher,subject,language,cover_i,number_of_pages_median,first_sentence,publish_date")
+                .queryParam("fields",
+                        "key,title,author_name,first_publish_year,isbn,publisher,subject,language,cover_i,number_of_pages_median,first_sentence,publish_date")
                 .toUriString();
     }
 

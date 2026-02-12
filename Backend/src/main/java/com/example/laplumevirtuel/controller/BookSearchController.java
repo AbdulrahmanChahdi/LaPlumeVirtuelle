@@ -13,7 +13,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/books")
-@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:5173"})
+@CrossOrigin(origins = { "http://localhost:4200", "http://localhost:5173" })
 @Slf4j
 public class BookSearchController {
 
@@ -27,15 +27,14 @@ public class BookSearchController {
      * Public endpoint for searching books
      * No authentication required
      *
-     * @param query Search query (title, author, keyword)
+     * @param query      Search query (title, author, keyword)
      * @param maxResults Maximum number of results (optional, default: 20, max: 40)
      * @return List of book search results
      */
     @GetMapping("/search")
     public ResponseEntity<List<BookSearchResultDTO>> searchBooks(
             @RequestParam String query,
-            @RequestParam(required = false, defaultValue = "20") Integer maxResults
-    ) {
+            @RequestParam(required = false, defaultValue = "20") Integer maxResults) {
         log.info("Public book search request - query: '{}', maxResults: {}", query, maxResults);
 
         if (query == null || query.trim().isEmpty()) {
@@ -44,7 +43,7 @@ public class BookSearchController {
         }
 
         List<BookSearchResultDTO> results = externalBookService.searchBooks(query, maxResults);
-        
+
         log.info("Returning {} search results for query: '{}'", results.size(), query);
         return ResponseEntity.ok(results);
     }
@@ -53,9 +52,9 @@ public class BookSearchController {
      * Advanced search endpoint with filters
      * No authentication required
      *
-     * @param author Author name (optional)
-     * @param subject Genre/category (optional)
-     * @param keyword General keyword (optional)
+     * @param author     Author name (optional)
+     * @param subject    Genre/category (optional)
+     * @param keyword    General keyword (optional)
      * @param maxResults Maximum number of results (optional, default: 20, max: 40)
      * @return List of book search results
      */
@@ -64,14 +63,13 @@ public class BookSearchController {
             @RequestParam(required = false) String author,
             @RequestParam(required = false) String subject,
             @RequestParam(required = false) String keyword,
-            @RequestParam(required = false, defaultValue = "20") Integer maxResults
-    ) {
+            @RequestParam(required = false, defaultValue = "20") Integer maxResults) {
         log.info("Advanced search - author: '{}', subject: '{}', keyword: '{}', maxResults: {}",
                 author, subject, keyword, maxResults);
 
         // Build Open Library API query
         StringBuilder queryBuilder = new StringBuilder();
-        
+
         if (author != null && !author.trim().isEmpty()) {
             queryBuilder.append("inauthor:").append(author.trim()).append(" ");
         }
@@ -83,7 +81,7 @@ public class BookSearchController {
         }
 
         String finalQuery = queryBuilder.toString().trim();
-        
+
         if (finalQuery.isEmpty()) {
             log.warn("No search criteria provided for advanced search");
             return ResponseEntity.badRequest().build();
@@ -91,7 +89,7 @@ public class BookSearchController {
 
         log.info("Final Open Library query: '{}'", finalQuery);
         List<BookSearchResultDTO> results = externalBookService.searchBooks(finalQuery, maxResults);
-        
+
         log.info("Returning {} results for advanced search", results.size());
         return ResponseEntity.ok(results);
     }
