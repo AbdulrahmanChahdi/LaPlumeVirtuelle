@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { AuthProvider } from "./app/context/AuthContext"
+import ErrorBoundary from "./app/components/ErrorBoundary"
 import AppRouter from "./app/router/Approuter"
 
 export default function App() {
@@ -17,14 +18,13 @@ export default function App() {
       }
 
       try {
-        // Vérifier si le token a plus de 30 minutes
-        // (temps limite court en dev pour forcer le re-login après redémarrage du backend)
+        // Vérifier si le token a dépassé l'expiration JWT backend (24h par défaut)
         const tokenTimestamp = localStorage.getItem("authTokenTime")
         if (tokenTimestamp) {
           const createdAt = parseInt(tokenTimestamp)
           const now = Date.now()
           const age = now - createdAt
-          const maxAge = 30 * 60 * 1000 // 30 min en ms
+          const maxAge = 24 * 60 * 60 * 1000 // 24 h en ms
 
           if (age > maxAge) {
             console.warn("Token trop ancien, nettoyage du localStorage")
@@ -77,9 +77,11 @@ export default function App() {
   }
 
   return (
-    <AuthProvider>
-      <AppRouter />
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <AppRouter />
+      </AuthProvider>
+    </ErrorBoundary>
   )
 }
 

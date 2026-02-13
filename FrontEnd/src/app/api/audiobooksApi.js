@@ -1,19 +1,18 @@
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
+import { getAuthToken } from "./authToken"
+
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080"
 
 /**
  * Get all audiobooks (for authenticated users)
+ * @param {string} token - Optional auth token, if not provided will retry from localStorage
  * @returns {Promise<Array>} List of audiobooks
  */
-export async function getAudiobooks() {
-  const token = localStorage.getItem("authToken");
-  
-  if (!token || token === "undefined") {
-    throw new Error("Vous devez être connecté pour accéder à vos audiobooks.");
-  }
+export async function getAudiobooks(token) {
+  const authToken = token || await getAuthToken()
   
   const res = await fetch(`${API_BASE}/api/livres-audio`, {
     headers: {
-      "Authorization": `Bearer ${token}`,
+      "Authorization": `Bearer ${authToken}`,
       "Content-Type": "application/json"
     }
   });
@@ -37,11 +36,7 @@ export async function getAudiobooks() {
  * @returns {Promise<Object>} Audiobook details
  */
 export async function getAudiobookById(id) {
-  const token = localStorage.getItem("authToken");
-  
-  if (!token || token === "undefined") {
-    throw new Error("Vous devez être connecté pour accéder à cet audiobook.");
-  }
+  const token = await getAuthToken()
   
   const res = await fetch(`${API_BASE}/api/livres-audio/${id}`, {
     headers: {
@@ -68,11 +63,7 @@ export async function getAudiobookById(id) {
  * @returns {Promise<Array>} Filtered audiobooks
  */
 export async function searchAudiobooks(searchTerm) {
-  const token = localStorage.getItem("authToken");
-  
-  if (!token || token === "undefined") {
-    throw new Error("Vous devez être connecté pour effectuer une recherche.");
-  }
+  const token = await getAuthToken()
   
   const res = await fetch(`${API_BASE}/api/livres-audio/search?term=${encodeURIComponent(searchTerm)}`, {
     headers: {

@@ -1,19 +1,18 @@
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
+import { getAuthToken } from "./authToken"
+
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080"
 
 /**
  * Get all podcasts (for authenticated users)
+ * @param {string} token - Optional auth token, if not provided will retry from localStorage
  * @returns {Promise<Array>} List of podcasts
  */
-export async function getPodcasts() {
-  const token = localStorage.getItem("authToken");
-  
-  if (!token || token === "undefined") {
-    throw new Error("Vous devez être connecté pour accéder à vos podcasts.");
-  }
+export async function getPodcasts(token) {
+  const authToken = token || await getAuthToken()
   
   const res = await fetch(`${API_BASE}/api/podcasts`, {
     headers: {
-      "Authorization": `Bearer ${token}`,
+      "Authorization": `Bearer ${authToken}`,
       "Content-Type": "application/json"
     }
   });
@@ -37,7 +36,7 @@ export async function getPodcasts() {
  * @returns {Promise<Object>} Podcast details
  */
 export async function getPodcastById(id) {
-  const token = localStorage.getItem("authToken");
+  const token = await getAuthToken()
   
   if (!token || token === "undefined") {
     throw new Error("Vous devez être connecté pour accéder à ce podcast.");
@@ -68,7 +67,7 @@ export async function getPodcastById(id) {
  * @returns {Promise<Array>} Filtered podcasts
  */
 export async function searchPodcasts(searchTerm) {
-  const token = localStorage.getItem("authToken");
+  const token = await getAuthToken()
   
   if (!token || token === "undefined") {
     throw new Error("Vous devez être connecté pour effectuer une recherche.");

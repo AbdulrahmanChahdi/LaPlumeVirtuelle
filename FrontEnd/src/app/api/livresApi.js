@@ -1,3 +1,5 @@
+import { getAuthToken } from "./authToken"
+
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
 
 /**
@@ -45,6 +47,33 @@ export async function getLivreById(id) {
   
   if (!res.ok) {
     throw new Error(`Erreur lors de la récupération du livre: ${res.statusText}`);
+  }
+  
+  return res.json();
+}
+
+/**
+ * Get user's reading collection (books with reading progress)
+ * @param {string} token - Optional auth token, if not provided will retry from localStorage
+ * @returns {Promise<Array>} List of books in user's collection
+ */
+export async function getUserLivres(token) {
+  const authToken = token || await getAuthToken()
+  
+  const res = await fetch(`${API_BASE}/api/reading-progress/all`, {
+    headers: {
+      "Authorization": `Bearer ${authToken}`,
+      "Content-Type": "application/json"
+    }
+  });
+  
+  if (!res.ok) {
+    if (res.status === 401) {
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("currentUser");
+      throw new Error("Votre session a expiré. Veuillez vous reconnecter.");
+    }
+    throw new Error(`Erreur lors de la récupération de votre collection: ${res.statusText}`);
   }
   
   return res.json();

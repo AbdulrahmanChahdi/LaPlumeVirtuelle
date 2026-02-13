@@ -1,6 +1,7 @@
 export default function Card({ 
   children, 
   className = "",
+  bgClass = "bg-paper",
   as = "div",
   role
 }) {
@@ -10,7 +11,7 @@ export default function Card({
     <Component
       role={role}
       className={`
-        bg-white
+        ${bgClass}
         border border-borderSoft
         rounded-lg
         p-4 sm:p-6

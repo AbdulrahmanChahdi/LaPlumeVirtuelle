@@ -28,10 +28,10 @@ export default function SearchBar({ onSearch, placeholder = "Rechercher...", loa
     <form onSubmit={handleSubmit} className="w-full">
       <div className="relative flex items-center">
         {/* Search Icon */}
-        <div className="absolute left-4 text-gray-400">
+        <div className="absolute left-3 text-gray-400">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
+            className="h-4 w-4 sm:h-5 sm:w-5"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -52,7 +52,7 @@ export default function SearchBar({ onSearch, placeholder = "Rechercher...", loa
           onChange={(e) => setQuery(e.target.value)}
           placeholder={placeholder}
           disabled={loading}
-          className="w-full pl-12 pr-24 py-3 border border-gray-300 rounded-lg 
+          className="w-full pl-9 sm:pl-12 pr-18 sm:pr-24 py-1.5 sm:py-2.5 border border-gray-300 rounded-lg text-xs sm:text-sm
                    focus:ring-2 focus:ring-accent focus:border-accent 
                    disabled:bg-gray-100 disabled:cursor-not-allowed
                    text-ink placeholder-gray-400
@@ -64,13 +64,13 @@ export default function SearchBar({ onSearch, placeholder = "Rechercher...", loa
           <button
             type="button"
             onClick={handleClear}
-            className="absolute right-20 text-gray-400 hover:text-gray-600 
+            className="absolute right-14 sm:right-20 text-gray-400 hover:text-gray-600 
                      transition duration-200"
             aria-label="Effacer"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
+              className="h-4 w-4 sm:h-5 sm:w-5"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -89,9 +89,9 @@ export default function SearchBar({ onSearch, placeholder = "Rechercher...", loa
         <button
           type="submit"
           disabled={!query.trim() || loading}
-          className="absolute right-2 px-4 py-1.5 bg-accent text-white rounded-md
+          className="absolute right-1 px-2 sm:px-4 py-0.5 sm:py-1 bg-accent text-white rounded-md text-[10px] sm:text-xs
                    hover:bg-accent/90 disabled:bg-gray-300 disabled:cursor-not-allowed
-                   transition duration-200 font-medium text-sm"
+                   transition duration-200 font-medium"
         >
           {loading ? (
             <span className="flex items-center gap-2">

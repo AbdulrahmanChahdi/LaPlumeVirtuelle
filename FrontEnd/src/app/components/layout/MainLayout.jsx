@@ -11,9 +11,9 @@ export default function MainLayout() {
   }
 
   return (
-    <div className="main-layout">
+    <div className="min-h-screen flex flex-col bg-paper">
       {onboardingDone && <HeaderConnected />}
-      <main>
+      <main className="flex-1">
         <Outlet />
       </main>
       <Footer />

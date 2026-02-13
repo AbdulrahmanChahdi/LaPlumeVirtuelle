@@ -46,11 +46,15 @@ export default function AudiobooksPublic() {
       {loading ? (
         <p>Chargement...</p>
       ) : audiobooks.length === 0 ? (
-        <p className="text-inkSoft">Aucun livre audio disponible pour le moment.</p>
+        <div className="flex flex-col items-center justify-center py-16 px-4 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-lg border-2 border-dashed border-blue-200">
+          <div className="text-6xl mb-4">🎧</div>
+          <h3 className="text-xl font-bold text-ink mb-2">Aucun audiobook disponible</h3>
+          <p className="text-inkSoft text-center max-w-md">Notre collection d'audiobooks arrive bientôt. Revenez pour découvrir une sélection curatée!</p>
+        </div>
       ) : filteredAudiobooks.length === 0 ? (
         <p className="text-inkSoft">Aucun livre audio trouvé pour cette catégorie.</p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
           {filteredAudiobooks.map((audio) => (
             <div key={audio.id} className="bg-white rounded-lg shadow p-4 hover:shadow-lg transition-shadow">
               <h3 className="font-bold text-lg mb-2">{audio.livre?.titre}</h3>

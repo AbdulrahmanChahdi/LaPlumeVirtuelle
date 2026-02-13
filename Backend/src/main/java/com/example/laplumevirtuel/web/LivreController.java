@@ -9,13 +9,16 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.laplumevirtuel.entities.Livre;
+import com.example.laplumevirtuel.entities.Utilisateur;
 import com.example.laplumevirtuel.services.LivreService;
 import com.example.laplumevirtuel.service.ExternalBookService;
+import com.example.laplumevirtuel.service.ReadingProgressService;
+import com.example.laplumevirtuel.repository.UtilisateurRepository;
 import com.example.laplumevirtuel.dto.BookSearchResultDTO;
 
 @RestController
 @RequestMapping("/api/livres")
-@CrossOrigin(origins = { "http://localhost:4200", "http://localhost:5173" })
+@CrossOrigin(origins = { "http://localhost:4200", "http://localhost:5173", "http://localhost:5174" })
 public class LivreController {
 
 	@Autowired
@@ -23,6 +26,12 @@ public class LivreController {
 
 	@Autowired
 	private ExternalBookService externalBookService;
+
+	@Autowired
+	private ReadingProgressService readingProgressService;
+
+	@Autowired
+	private UtilisateurRepository utilisateurRepository;
 
 	@GetMapping
 	public List<Livre> getAllLivres() {
@@ -91,6 +100,12 @@ public class LivreController {
 		try {
 			// Save to database
 			Livre savedBook = livreService.saveLivre(livre);
+
+			// Create reading progress for this user
+			Utilisateur user = utilisateurRepository.findByAdresseMail(email)
+					.orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+			readingProgressService.getOrCreateProgress(user, savedBook);
+
 			return ResponseEntity.ok(savedBook);
 		} catch (RuntimeException ex) {
 			return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));

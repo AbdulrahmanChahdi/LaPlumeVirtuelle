@@ -13,7 +13,7 @@ export default function BookDetail() {
   const decodedExternalId = externalId ? decodeURIComponent(externalId) : externalId;
   const navigate = useNavigate();
   const location = useLocation();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, token } = useAuth();
   const [book, setBook] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -53,7 +53,7 @@ export default function BookDetail() {
           }
 
           try {
-            const libraryBooks = await getDigitalBooks();
+            const libraryBooks = await getDigitalBooks(token);
             const alreadyInLibrary = Array.isArray(libraryBooks)
               && libraryBooks.some((b) => b.externalId && b.externalId === decodedExternalId);
             setIsInLibrary(alreadyInLibrary);
@@ -122,11 +122,12 @@ export default function BookDetail() {
   const handleAddToLibrary = async () => {
     try {
       setAddingToLibrary(true);
-      await addBookToLibrary(decodedExternalId);
+      await addBookToLibrary(decodedExternalId, token);
       setNotification({
         type: 'success',
         message: `"${book.title}" a été ajouté à votre bibliothèque !`
       });
+      setIsInLibrary(true);
       // Optionnel: rediriger vers la bibliothèque
       // navigate("/library/digital-books");
     } catch (err) {
@@ -167,8 +168,13 @@ export default function BookDetail() {
     <>
       {/* Notification Toast */}
       {notification && (
-        <div className={`fixed top-4 right-4 z-50 px-6 py-4 rounded-lg shadow-lg transform transition-all duration-300 ${notification.type === 'success' ? 'bg-accent' : 'bg-red-600'
-          } text-white animate-slide-in`}>
+        <div
+          role="alert"
+          aria-live="polite"
+          aria-atomic="true"
+          className={`fixed top-4 right-4 z-50 px-6 py-4 rounded-lg shadow-lg transform transition-all duration-300 ${notification.type === 'success' ? 'bg-accent' : 'bg-red-600'
+            } text-white animate-slide-in`}
+        >
           <div className="flex items-center gap-3">
             {notification.type === 'success' ? (
               <svg className="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">

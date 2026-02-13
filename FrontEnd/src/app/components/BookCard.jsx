@@ -37,10 +37,10 @@ export default function BookCard({ book, progress }) {
   return (
     <Link
       to={detailLink}
-      className="bg-paper border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden group flex flex-col h-full"
+      className="bg-paper border border-gray-200 rounded-lg shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden group flex flex-col h-full"
     >
       {/* Cover Image */}
-      <div className="relative aspect-[2/3] bg-gradient-to-br from-gray-50 to-white overflow-hidden flex items-center justify-center p-4">
+      <div className="relative aspect-[2/3] bg-gradient-to-br from-gray-50 to-white overflow-hidden flex items-center justify-center p-3 sm:p-4">
         {imageUrl ? (
           <img
             src={imageUrl}
@@ -93,26 +93,26 @@ export default function BookCard({ book, progress }) {
       </div>
 
       {/* Book Info */}
-      <div className="p-4 sm:p-5 flex flex-col flex-grow border-t border-gray-100">
+      <div className="p-3 sm:p-5 flex flex-col flex-grow border-t border-gray-100">
         {/* Title */}
-        <h3 className="font-bold text-lg sm:text-xl text-ink mb-2 line-clamp-2 group-hover:text-accent transition-colors">
+        <h3 className="font-bold text-base sm:text-xl text-ink mb-2 line-clamp-2 group-hover:text-accent transition-colors">
           {title}
         </h3>
 
         {/* Author */}
-        <p className="text-sm sm:text-base text-gray-600 mb-3">
+        <p className="text-xs sm:text-base text-gray-600 mb-3">
           {authors}
         </p>
 
         {/* Description */}
         {description && (
-          <p className="text-xs sm:text-sm text-gray-500 mb-4 line-clamp-3">
+          <p className="hidden sm:block text-xs sm:text-sm text-gray-500 mb-4 line-clamp-3">
             {truncateText(description, 150)}
           </p>
         )}
 
         {/* Metadata */}
-        <div className="flex flex-wrap gap-2 text-xs text-gray-500">
+        <div className="flex flex-wrap gap-2 text-[11px] sm:text-xs text-gray-500">
           {book.publishedDate && (
             <span className="bg-gray-100 px-2 py-1 rounded">
               {new Date(book.publishedDate).getFullYear()}

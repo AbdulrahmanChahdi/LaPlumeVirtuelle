@@ -28,8 +28,17 @@ export default function Login() {
     try {
       const data = await apiLogin({ adresseMail: form.adresseMail.trim().toLowerCase(), motDePasse: form.motDePasse })
 
+      // Vérifier que le backend retourne bien un token
+      if (!data || !data.token) {
+        setError("Erreur serveur: token manquant. Veuillez réessayer.")
+        return
+      }
+
       // Utiliser la fonction login du contexte au lieu de manipuler localStorage
-      login(data?.token || "", data?.user || null)
+      login(data.token, data.user || null)
+
+      // Petite pause pour s'assurer que localStorage est enregistré avant la redirection
+      await new Promise(resolve => setTimeout(resolve, 100))
 
       // Déterminer la destination après connexion avec fallbacks intelligents
       // Priorise l'onboarding si pas encore fait

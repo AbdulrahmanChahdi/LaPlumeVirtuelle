@@ -1,33 +1,33 @@
-import { useEffect, useState, useMemo } from "react";
-import { getAudiobooks } from "../../api/audiobooksApi";
-import BookCard from "../../components/BookCard";
-import CategoryFilter from "../../components/ui/CategoryFilter";
-import Loader from "../../components/ui/Loader";
+import { useEffect, useState, useMemo } from "react"
+import { getAudiobooks } from "../../api/audiobooksApi"
+import { useAuth } from "../../hooks/useAuth"
+import BookCard from "../../components/BookCard"
+import CategoryFilter from "../../components/ui/CategoryFilter"
+import Loader from "../../components/ui/Loader"
 
 export default function Audiobooks() {
-  const [audiobooks, setAudiobooks] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [selectedCategory, setSelectedCategory] = useState("");
+  const { token } = useAuth()
+  const [audiobooks, setAudiobooks] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [selectedCategory, setSelectedCategory] = useState("")
 
   useEffect(() => {
-    async function loadAudiobooks() {
+    const loadAudiobooks = async () => {
       try {
-        setLoading(true);
-        setError(null);
-
-        const audiobooksData = await getAudiobooks();
-        setAudiobooks(audiobooksData || []);
+        setLoading(true)
+        setError(null)
+        const audiobooksData = await getAudiobooks(token)
+        setAudiobooks(audiobooksData || [])
       } catch (err) {
-        console.error("Erreur chargement audiobooks:", err);
-        setError("Impossible de charger vos audiobooks. Veuillez réessayer plus tard.");
+        console.error("Erreur chargement audiobooks:", err)
+        setError("Impossible de charger vos audiobooks. Veuillez réessayer plus tard.")
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
     }
-
-    loadAudiobooks();
-  }, []);
+    loadAudiobooks()
+  }, [token])
 
   // Filtrer les audiobooks par catégorie
   const filteredAudiobooks = useMemo(() => {
@@ -74,11 +74,10 @@ export default function Audiobooks() {
 
       {/* Empty State */}
       {!loading && !error && audiobooks.length === 0 && (
-        <div className="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-lg text-center">
-          <p className="text-blue-700 font-medium mb-2">Vous n'avez pas d'audiobooks</p>
-          <p className="text-blue-600 text-sm">
-            Explorez nos audiobooks publics pour en ajouter à votre collection
-          </p>
+        <div className="flex flex-col items-center justify-center py-16 px-4 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-lg border-2 border-dashed border-blue-200">
+          <div className="text-6xl mb-4">🎧</div>
+          <h3 className="text-xl font-bold text-ink mb-2">Vous n'avez pas d'audiobooks</h3>
+          <p className="text-inkSoft text-center max-w-md mb-4">Explorez notre collection pour en ajouter à votre bibliothèque personnelle</p>
         </div>
       )}
 
@@ -91,7 +90,7 @@ export default function Audiobooks() {
 
       {/* Audiobooks Grid */}
       {!loading && !error && filteredAudiobooks.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
           {filteredAudiobooks.map((audiobook) => (
             <BookCard
               key={audiobook.id}

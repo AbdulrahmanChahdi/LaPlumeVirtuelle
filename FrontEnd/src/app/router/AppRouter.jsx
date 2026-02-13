@@ -40,15 +40,6 @@ export default function AppRouter() {
         <Route path="/discover/podcasts" element={<PodcastsPublic />} />
         {/* Book detail - accessible to all users */}
         <Route path="/library/books/:externalId" element={<BookDetail />} />
-        {/* Preferences form - now at root home after registration */}
-        <Route
-          path="/onboarding/preferences"
-          element={
-            <RequireRegistration>
-              <PreferencesSignupForm />
-            </RequireRegistration>
-          }
-        />
       </Route>
 
       {/* ================= APPLICATION (connecté) ================= */}
