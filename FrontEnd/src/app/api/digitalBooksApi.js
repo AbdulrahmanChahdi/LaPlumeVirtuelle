@@ -34,10 +34,11 @@ export async function getDigitalBooks(token) {
 /**
  * Get a single digital book by ID
  * @param {number} id - Book ID
+ * @param {string} token - Optional auth token, if not provided will retry from localStorage
  * @returns {Promise<Object>} Book details
  */
-export async function getDigitalBookById(id) {
-  const token = await getAuthToken()
+export async function getDigitalBookById(id, token) {
+  const authToken = token || await getAuthToken()
   
   const res = await fetch(`${API_BASE}/api/livres/${id}`, {
     headers: {

@@ -1,18 +1,22 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getDigitalBookById } from "../../api/digitalBooksApi";
-import { getUserDownloadStats } from "../../api/downloadApi";
+import { getUserDownloadStats, downloadBook } from "../../api/downloadApi";
+import { useAuth } from "../../context/AuthContext";
 import Loader from "../../components/ui/Loader";
 import Button from "../../components/ui/Button";
+import ConfirmModal from "../../components/ui/ConfirmModal";
 
 export default function DigitalBookDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { token } = useAuth();
   const [book, setBook] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [downloadStats, setDownloadStats] = useState(null);
   const [downloading, setDownloading] = useState(false);
+  const [showDownloadConfirm, setShowDownloadConfirm] = useState(false);
 
   useEffect(() => {
     async function loadBookAndStats() {
@@ -21,8 +25,8 @@ export default function DigitalBookDetail() {
         setError(null);
 
         const [bookData, statsData] = await Promise.all([
-          getDigitalBookById(id),
-          getUserDownloadStats()
+          getDigitalBookById(id, token),
+          getUserDownloadStats(token)
         ]);
 
         setBook(bookData);
@@ -36,9 +40,9 @@ export default function DigitalBookDetail() {
     }
 
     loadBookAndStats();
-  }, [id]);
+  }, [id, token]);
 
-  const handleDownload = async () => {
+  const handleDownload = () => {
     if (!downloadStats) return;
 
     if (!downloadStats.isSubscriber && downloadStats.remainingDownloads <= 0) {
@@ -46,11 +50,42 @@ export default function DigitalBookDetail() {
       return;
     }
 
+    // Ouvrir la modale de confirmation
+    setShowDownloadConfirm(true);
+  };
+
+  const confirmDownload = async () => {
     try {
       setDownloading(true);
-      alert(`Téléchargement de "${book.titre}" - Fonctionnalité en cours de développement`);
       
-      const updatedStats = await getUserDownloadStats();
+      // Créer un fichier de démo
+      const blob = new Blob(
+        [`Démo - "${book.titre}"
+
+Ceci est une démo de téléchargement.
+
+Dans une version production, le fichier ebook serait téléchargé ici.
+
+Auteur: ${book.auteur || 'N/A'}
+ISBN: ${book.isbn || 'N/A'}
+Catégorie: ${book.categorie?.nom || 'N/A'}`],
+        { type: 'text/plain' }
+      );
+
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${book.titre.replace(/[^a-z0-9]/gi, '_')}_demo.txt`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      // Enregistrer le téléchargement (utiliser externalBookId si disponible)
+      const externalId = book.externalBookId || `internal-${book.id}`;
+      await downloadBook(externalId, token);
+      
+      const updatedStats = await getUserDownloadStats(token);
       setDownloadStats(updatedStats);
     } catch (err) {
       console.error("Erreur téléchargement:", err);
@@ -266,6 +301,20 @@ export default function DigitalBookDetail() {
           </div>
         </div>
       </div>
+
+      {/* Download Confirmation Modal */}
+      <ConfirmModal
+        isOpen={showDownloadConfirm}
+        onClose={() => setShowDownloadConfirm(false)}
+        onConfirm={confirmDownload}
+        title="Télécharger ce livre"
+        message={`${book.titre}\n\n${downloadStats?.isSubscriber 
+          ? "✨ Téléchargement illimité (compte Premium)" 
+          : `📥 Il vous reste ${downloadStats?.remainingDownloads} téléchargement(s) ce mois-ci`}`}
+        confirmText="Télécharger"
+        cancelText="Annuler"
+        type="default"
+      />
     </div>
   );
 }

@@ -7,6 +7,7 @@ import { useAuth } from "../../hooks/useAuth";
 import { saveIntendedDestination } from "../../utils/navigation";
 import Loader from "../../components/ui/Loader";
 import Button from "../../components/ui/Button";
+import ConfirmModal from "../../components/ui/ConfirmModal";
 
 export default function BookDetail() {
   const { externalId } = useParams();
@@ -22,6 +23,7 @@ export default function BookDetail() {
   const [addingToLibrary, setAddingToLibrary] = useState(false);
   const [isInLibrary, setIsInLibrary] = useState(false);
   const [notification, setNotification] = useState(null);
+  const [showDownloadConfirm, setShowDownloadConfirm] = useState(false);
 
   // Auto-hide notification after 3 seconds
   useEffect(() => {
@@ -45,7 +47,7 @@ export default function BookDetail() {
         // Charger les stats uniquement si l'utilisateur est connecté
         if (isAuthenticated) {
           try {
-            const statsData = await getUserDownloadStats();
+            const statsData = await getUserDownloadStats(token);
             setDownloadStats(statsData);
           } catch (err) {
             console.error("Erreur chargement stats:", err);
@@ -70,9 +72,9 @@ export default function BookDetail() {
     }
 
     loadBookAndStats();
-  }, [decodedExternalId, isAuthenticated]);
+  }, [decodedExternalId, isAuthenticated, token]);
 
-  const handleDownload = async () => {
+  const handleDownload = () => {
     if (!downloadStats) return;
 
     // Vérifier les droits de téléchargement
@@ -81,13 +83,15 @@ export default function BookDetail() {
       return;
     }
 
+    // Ouvrir la modale de confirmation
+    setShowDownloadConfirm(true);
+  };
+
+  const confirmDownload = async () => {
     try {
       setDownloading(true);
 
-      // Appel API pour enregistrer le téléchargement
-      await downloadBook(decodedExternalId);
-
-      // Simuler un téléchargement (créer un lien de téléchargement factice)
+      // Simuler un téléchargement (créer un fichier de démo)
       const blob = new Blob(
         [`Démo - "${book.title}"\n\nCeci est une démo de téléchargement.\n\nDans une version production, le fichier ebook serait téléchargé ici.\n\nAuteur(s): ${book.authors?.join(', ') || 'N/A'}\nÉditeur: ${book.publisher || 'N/A'}\nISBN: ${book.isbn || 'N/A'}`],
         { type: 'text/plain' }
@@ -102,8 +106,11 @@ export default function BookDetail() {
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
 
+      // Enregistrer le téléchargement dans le backend (après le déclenchement)
+      await downloadBook(decodedExternalId, token);
+
       // Recharger les stats après le téléchargement
-      const updatedStats = await getUserDownloadStats();
+      const updatedStats = await getUserDownloadStats(token);
       setDownloadStats(updatedStats);
 
       // Show success notification
@@ -446,6 +453,20 @@ export default function BookDetail() {
           </div>
         </div>
       </div>
+
+      {/* Download Confirmation Modal */}
+      <ConfirmModal
+        isOpen={showDownloadConfirm}
+        onClose={() => setShowDownloadConfirm(false)}
+        onConfirm={confirmDownload}
+        title="Télécharger ce livre"
+        message={`${book.title}\n\n${downloadStats?.isSubscriber 
+          ? "✨ Téléchargement illimité (compte Premium)" 
+          : `📥 Il vous reste ${downloadStats?.remainingDownloads} téléchargement(s) ce mois-ci`}`}
+        confirmText="Télécharger"
+        cancelText="Annuler"
+        type="default"
+      />
     </>
   );
 }
