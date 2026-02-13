@@ -85,7 +85,12 @@ public class ExternalBookService {
         try {
             // Open Library work API: https://openlibrary.org/works/{key}.json
             String workId = externalId.replace("/works/", "");
-            String url = "https://openlibrary.org/search.json?q=key:/works/" + workId;
+            String url = UriComponentsBuilder.fromHttpUrl("https://openlibrary.org/search.json")
+                    .queryParam("q", "key:/works/" + workId)
+                    .queryParam("limit", 1)
+                    .queryParam("fields",
+                            "key,title,author_name,first_publish_year,isbn,publisher,subject,language,cover_i,number_of_pages_median,first_sentence,publish_date")
+                    .toUriString();
             log.info("Fetching book details from Open Library API: {}", url);
 
             OpenLibraryResponse response = restTemplate.getForObject(url, OpenLibraryResponse.class);

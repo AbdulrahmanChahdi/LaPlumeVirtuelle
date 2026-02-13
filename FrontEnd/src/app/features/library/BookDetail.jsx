@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { getBookByExternalId } from "../../api/booksApi";
 import { getUserDownloadStats, downloadBook } from "../../api/downloadApi";
-import { addBookToLibrary } from "../../api/digitalBooksApi";
+import { addBookToLibrary, getDigitalBooks } from "../../api/digitalBooksApi";
 import { useAuth } from "../../hooks/useAuth";
 import { saveIntendedDestination } from "../../utils/navigation";
 import Loader from "../../components/ui/Loader";
@@ -20,6 +20,7 @@ export default function BookDetail() {
   const [downloadStats, setDownloadStats] = useState(null);
   const [downloading, setDownloading] = useState(false);
   const [addingToLibrary, setAddingToLibrary] = useState(false);
+  const [isInLibrary, setIsInLibrary] = useState(false);
   const [notification, setNotification] = useState(null);
 
   // Auto-hide notification after 3 seconds
@@ -49,6 +50,15 @@ export default function BookDetail() {
           } catch (err) {
             console.error("Erreur chargement stats:", err);
             // Continuer sans stats si erreur
+          }
+
+          try {
+            const libraryBooks = await getDigitalBooks();
+            const alreadyInLibrary = Array.isArray(libraryBooks)
+              && libraryBooks.some((b) => b.externalId && b.externalId === decodedExternalId);
+            setIsInLibrary(alreadyInLibrary);
+          } catch (err) {
+            console.error("Erreur chargement bibliothèque:", err);
           }
         }
       } catch (err) {
@@ -277,29 +287,31 @@ export default function BookDetail() {
 
                 {isAuthenticated && (
                   <>
-                    <Button
-                      onClick={handleAddToLibrary}
-                      disabled={addingToLibrary}
-                      variant="tertiary"
-                      className="w-full"
-                    >
-                      {addingToLibrary ? (
-                        <>
-                          <svg className="animate-spin -ml-1 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                          </svg>
-                          Ajout...
-                        </>
-                      ) : (
-                        <>
-                          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                          </svg>
-                          Ajouter à ma bibliothèque
-                        </>
-                      )}
-                    </Button>
+                    {!isInLibrary && (
+                      <Button
+                        onClick={handleAddToLibrary}
+                        disabled={addingToLibrary}
+                        variant="tertiary"
+                        className="w-full"
+                      >
+                        {addingToLibrary ? (
+                          <>
+                            <svg className="animate-spin -ml-1 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                            </svg>
+                            Ajout...
+                          </>
+                        ) : (
+                          <>
+                            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                            </svg>
+                            Ajouter à ma bibliothèque
+                          </>
+                        )}
+                      </Button>
+                    )}
 
                     <Button
                       onClick={handleDownload}
