@@ -38,17 +38,7 @@ public class LivreController {
 		return livreService.getAllLivres();
 	}
 	
-	/**
-	 * Search books by keyword (searches in title, author, year)
-	 */
-	@GetMapping("/search")
-	public List<Livre> searchLivres(@RequestParam String keyword) {
-		return livreService.searchLivres(keyword);
-	}
 
-	/**
-	 * Search books by keyword (searches in title, author, year)
-	 */
 	@GetMapping("/search")
 	public List<Livre> searchLivres(@RequestParam String keyword) {
 		return livreService.searchLivres(keyword);
