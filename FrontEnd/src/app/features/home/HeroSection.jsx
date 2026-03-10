@@ -258,13 +258,13 @@ export default function HeroSection() {
         {/* Boutons d'action */}
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Button
-            onClick={() => navigate(isAuthenticated ? "/library/digital-books" : "/public/livres")}
-            ariaLabel={isAuthenticated ? "Accéder à votre bibliothèque" : "Découvrir le catalogue"}
+            onClick={() => navigate(isConnected ? "/library/digital-books" : "/public/livres")}
+            ariaLabel={isConnected ? "Accéder à votre bibliothèque" : "Découvrir le catalogue"}
           >
-            {isAuthenticated ? "Ma Bibliothèque" : "Découvrir le catalogue complet"}
+            {isConnected ? "Ma Bibliothèque" : "Découvrir le catalogue complet"}
           </Button>
 
-          {isAuthenticated && (
+          {isConnected && (
             <Button
               onClick={() => navigate("/discover/books")}
               className="bg-accent/10 text-accent hover:bg-accent/20"
