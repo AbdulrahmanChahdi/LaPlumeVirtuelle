@@ -41,17 +41,17 @@ export default function AdvancedSearchBar({ onSearch, loading = false }) {
   const hasActiveFilters = Object.values(filters).some(val => val.trim() !== "");
 
   return (
-    <div className="w-full border border-gray-300 rounded-lg bg-white shadow-sm">
+    <div className="w-full bg-white border border-gray-300 rounded-lg shadow-sm">
       {/* Header - Always visible */}
       <button
         type="button"
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 transition"
+        className="flex items-center justify-between w-full px-4 py-3 transition hover:bg-gray-50"
       >
         <div className="flex items-center gap-2">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5 text-accent"
+            className="w-5 h-5 text-accent"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -90,11 +90,11 @@ export default function AdvancedSearchBar({ onSearch, loading = false }) {
 
       {/* Expanded filters form */}
       {isExpanded && (
-        <form onSubmit={handleSubmit} className="px-4 pb-4 pt-2 border-t border-gray-200">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        <form onSubmit={handleSubmit} className="px-4 pt-2 pb-4 border-t border-gray-200">
+          <div className="grid grid-cols-1 gap-4 mb-4 md:grid-cols-3">
             {/* Author */}
             <div>
-              <label htmlFor="author" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="author" className="block mb-1 text-sm font-medium text-gray-700">
                 Auteur
               </label>
               <input
@@ -104,16 +104,13 @@ export default function AdvancedSearchBar({ onSearch, loading = false }) {
                 onChange={(e) => handleChange("author", e.target.value)}
                 placeholder="Ex: J.K. Rowling"
                 disabled={loading}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg 
-                         focus:ring-2 focus:ring-accent focus:border-accent 
-                         disabled:bg-gray-100 disabled:cursor-not-allowed
-                         text-ink placeholder-gray-400"
+                className="w-full px-3 py-2 placeholder-gray-400 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-accent disabled:bg-gray-100 disabled:cursor-not-allowed text-ink"
               />
             </div>
 
             {/* Genre/Subject */}
             <div>
-              <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="subject" className="block mb-1 text-sm font-medium text-gray-700">
                 Genre / Catégorie
               </label>
               <input
@@ -123,16 +120,13 @@ export default function AdvancedSearchBar({ onSearch, loading = false }) {
                 onChange={(e) => handleChange("subject", e.target.value)}
                 placeholder="Ex: Fiction, Science, History"
                 disabled={loading}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg 
-                         focus:ring-2 focus:ring-accent focus:border-accent 
-                         disabled:bg-gray-100 disabled:cursor-not-allowed
-                         text-ink placeholder-gray-400"
+                className="w-full px-3 py-2 placeholder-gray-400 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-accent disabled:bg-gray-100 disabled:cursor-not-allowed text-ink"
               />
             </div>
 
             {/* Keyword */}
             <div>
-              <label htmlFor="keyword" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="keyword" className="block mb-1 text-sm font-medium text-gray-700">
                 Mot-clé général
               </label>
               <input
@@ -142,37 +136,30 @@ export default function AdvancedSearchBar({ onSearch, loading = false }) {
                 onChange={(e) => handleChange("keyword", e.target.value)}
                 placeholder="Ex: magic, adventure"
                 disabled={loading}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg 
-                         focus:ring-2 focus:ring-accent focus:border-accent 
-                         disabled:bg-gray-100 disabled:cursor-not-allowed
-                         text-ink placeholder-gray-400"
+                className="w-full px-3 py-2 placeholder-gray-400 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-accent disabled:bg-gray-100 disabled:cursor-not-allowed text-ink"
               />
             </div>
           </div>
 
           {/* Action buttons */}
-          <div className="flex gap-3 justify-end">
+          <div className="flex justify-end gap-3">
             <button
               type="button"
               onClick={handleClear}
               disabled={!hasActiveFilters || loading}
-              className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg
-                       hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed
-                       transition duration-200"
+              className="px-4 py-2 text-gray-700 transition duration-200 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Effacer
             </button>
             <button
               type="submit"
               disabled={!hasActiveFilters || loading}
-              className="px-6 py-2 bg-accent text-white rounded-lg
-                       hover:bg-accent/90 disabled:bg-gray-300 disabled:cursor-not-allowed
-                       transition duration-200 font-medium"
+              className="px-6 py-2 font-medium text-white transition duration-200 rounded-lg bg-accent hover:bg-accent/90 disabled:bg-gray-300 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <span className="flex items-center gap-2">
                   <svg
-                    className="animate-spin h-4 w-4"
+                    className="w-4 h-4 animate-spin"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"

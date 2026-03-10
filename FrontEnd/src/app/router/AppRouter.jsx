@@ -1,8 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom"
 
 import Home from "../features/home/Home"
-import Login from "../features/auth/Login"
-import Register from "../features/auth/Register"
+import AuthPage from "../features/auth/AuthPage"
 
 import PublicLayout from "../components/layout/PublicLayout"
 import MainLayout from "../components/layout/MainLayout"
@@ -28,8 +27,8 @@ export default function AppRouter() {
       {/* ================= PAGES PUBLIQUES ================= */}
       <Route element={<PublicLayout />}>
         <Route path="/" element={<Home />} />
-        <Route path="/auth/login" element={<Login />} />
-        <Route path="/auth/register" element={<Register />} />
+        <Route path="/auth/login" element={<AuthPage />} />
+        <Route path="/auth/register" element={<AuthPage />} />
         <Route path="/catalogue" element={<BooksPublic />} />
         <Route path="/public/livres" element={<BooksPublic />} />
         <Route path="/public/audiobooks" element={<AudiobooksPublic />} />
