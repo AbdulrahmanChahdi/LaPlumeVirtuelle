@@ -1,12 +1,15 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom"
 import HeaderConnected from "./HeaderConnected"
 import Footer from "./Footer"
+import { useAuth } from "../../hooks/useAuth"
 
 export default function MainLayout() {
+  const { user } = useAuth()
+  const isAdmin = user?.role === "ADMIN"
   const location = useLocation()
   const onboardingDone = typeof window !== "undefined" && localStorage.getItem("onboardingDone") === "true"
 
-  if (!onboardingDone && location.pathname !== "/onboarding/preferences") {
+  if (!isAdmin && !onboardingDone && location.pathname !== "/onboarding/preferences") {
     return <Navigate to="/onboarding/preferences" replace />
   }
 

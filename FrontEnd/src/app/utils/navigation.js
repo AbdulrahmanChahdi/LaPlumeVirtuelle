@@ -38,6 +38,11 @@ export function getAndClearIntendedDestination() {
  * @returns {string} The final destination
  */
 export function getRedirectDestination(queryRedirect, defaultDestination = "/dashboard", user = null) {
+  // Admin users always land in dedicated admin workspace
+  if (user?.role === "ADMIN") {
+    return "/admin"
+  }
+
   // HIGHEST PRIORITY: Check if user needs onboarding
   if (user) {
     const onboardingDone = localStorage.getItem("onboardingDone") === "true"

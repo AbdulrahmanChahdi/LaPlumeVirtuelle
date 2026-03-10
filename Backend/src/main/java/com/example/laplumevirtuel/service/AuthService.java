@@ -28,7 +28,7 @@ public class AuthService {
     }
 
     public Map<String, Object> login(String email, String password) {
-        Optional<Utilisateur> utilisateur = utilisateurRepository.findByAdresseMail(email);
+        Optional<Utilisateur> utilisateur = utilisateurRepository.findByAdresseMailIgnoreCase(email == null ? null : email.trim());
 
         if (utilisateur.isEmpty() || !passwordEncoder.matches(password, utilisateur.get().getMotDePasse())) {
             log.warn("Login attempt failed for email: {}", email);
@@ -43,7 +43,7 @@ public class AuthService {
     }
 
     public Utilisateur register(Utilisateur utilisateur) {
-        if (utilisateurRepository.findByAdresseMail(utilisateur.getAdresseMail()).isPresent()) {
+        if (utilisateurRepository.findByAdresseMailIgnoreCase(utilisateur.getAdresseMail()).isPresent()) {
             log.warn("Registration failed - email already exists: {}", utilisateur.getAdresseMail());
             throw new RuntimeException("Un utilisateur avec cet email existe déjà");
         }

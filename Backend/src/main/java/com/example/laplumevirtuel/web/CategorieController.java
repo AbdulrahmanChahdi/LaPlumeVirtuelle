@@ -10,7 +10,7 @@ import com.example.laplumevirtuel.services.CategorieService;
 
 @RestController
 @RequestMapping("/api/categories")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = { "http://localhost:4200", "http://localhost:5173", "http://localhost:5174" })
 public class CategorieController {
 	
 	@Autowired

@@ -7,6 +7,7 @@ import Register from "../features/auth/Register"
 import PublicLayout from "../components/layout/PublicLayout"
 import MainLayout from "../components/layout/MainLayout"
 import LibraryLayout from "../components/layout/LibraryLayout"
+import AdminLayout from "../components/layout/AdminLayout"
 import RequireRegistration from "../guards/RequireRegistration"
 import RequireAuth from "../guards/RequireAuth"
 import PreferencesSignupForm from "../components/PreferencesSignupForm"
@@ -17,6 +18,7 @@ import Podcasts from "../features/library/Podcasts"
 import BookDetail from "../features/library/BookDetail"
 import DigitalBookDetail from "../features/library/DigitalBookDetail"
 import Dashboard from "../features/dashboard/Dashboard"
+import AdminDashboard from "../features/admin/AdminDashboard"
 import BooksPublic from "../features/public/BooksPublic"
 import AudiobooksPublic from "../features/public/AudiobooksPublic"
 import PodcastsPublic from "../features/public/PodcastsPublic"
@@ -59,6 +61,16 @@ export default function AppRouter() {
           {/* Route pour les détails d'un livre numérique interne */}
           <Route path="digital-books/:id" element={<DigitalBookDetail />} />
         </Route>
+      </Route>
+
+      <Route
+        element={
+          <RequireAuth>
+            <AdminLayout />
+          </RequireAuth>
+        }
+      >
+        <Route path="/admin" element={<AdminDashboard />} />
       </Route>
 
       {/* ================= FALLBACK ================= */}

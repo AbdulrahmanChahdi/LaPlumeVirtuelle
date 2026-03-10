@@ -6,4 +6,5 @@ import java.util.Optional;
 
 public interface UtilisateurRepository extends JpaRepository<Utilisateur, Long> {
     Optional<Utilisateur> findByAdresseMail(String adresseMail);
+    Optional<Utilisateur> findByAdresseMailIgnoreCase(String adresseMail);
 }

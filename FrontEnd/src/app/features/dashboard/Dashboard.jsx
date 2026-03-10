@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Link, useLocation } from "react-router-dom"
+import { Link, Navigate, useLocation } from "react-router-dom"
 import { useAuth } from "../../hooks/useAuth"
 import { getUserLivres } from "../../api/livresApi"
 import { getAudiobooks } from "../../api/audiobooksApi"
@@ -7,6 +7,7 @@ import { getPodcasts } from "../../api/podcastsApi"
 
 export default function Dashboard() {
   const { user, token } = useAuth()
+  const isAdmin = user?.role === "ADMIN"
   const location = useLocation()
   const [stats, setStats] = useState({
     booksCount: 0,
@@ -44,6 +45,10 @@ export default function Dashboard() {
 
     loadStats()
   }, [token, location.key])
+
+  if (isAdmin) {
+    return <Navigate to="/admin" replace />
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-accent/10 to-transparent">

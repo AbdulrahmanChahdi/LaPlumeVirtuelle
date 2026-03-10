@@ -72,6 +72,16 @@ export default function UserMenu() {
                 Ma Bibliothèque
               </Link>
 
+              {user?.role === "ADMIN" && (
+                <Link
+                  to="/admin"
+                  className="block px-4 py-2 text-sm text-accent font-semibold hover:bg-gray-100"
+                  onClick={() => setOpen(false)}
+                >
+                  Espace Admin
+                </Link>
+              )}
+
               <hr className="my-1 border-borderSoft" />
 
               <button

@@ -1,7 +1,9 @@
 package com.example.laplumevirtuel.config;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,10 @@ import com.example.laplumevirtuel.service.ReadingProgressService;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
+
+    private static final String ADMIN_EMAIL = "admin@LPV.fr";
+    private static final String ADMIN_PASSWORD = "123456789";
+    private static final String ADMIN_NAME = "nom d'utilisateur";
 
     private static final Logger logger = LoggerFactory.getLogger(DataInitializer.class);
 
@@ -63,24 +69,57 @@ public class DataInitializer implements CommandLineRunner {
     public void run(String... args) throws Exception {
         logger.info("Début de l'initialisation des données...");
 
-        // Vérification si des données existent déjà
-        if (utilisateurRepository.count() > 0) {
-            logger.info("La base de données n'est pas vide. Pas d'initialisation nécessaire.");
+        ensureAdminAccount();
+        Utilisateur user = ensureDefaultUser();
+
+        // Vérification ciblée: on seed le catalogue seulement s'il est vide
+        if (categorieRepository.count() > 0 || auteurRepository.count() > 0 || livreRepository.count() > 0) {
+            logger.info("Catalogue déjà présent. Initialisation du catalogue ignorée.");
             return;
         }
 
         try {
             // Création des catégories
             logger.info("Création des catégories...");
-            Categorie roman = new Categorie();
-            roman.setNom("Roman");
-            roman.setDescription("Romans et fictions");
-            categorieRepository.save(roman);
+            String[] categoryNames = {
+                    "Fantasy",
+                    "Science-Fiction",
+                    "Policier / Thriller",
+                    "Roman Historique",
+                    "Romance",
+                    "Horreur / Épouvante",
+                    "Littérature Classique",
+                    "Conte et Légende",
+                    "Aventure",
+                    "Young Adult",
+                    "Biographie / Autobiographie",
+                    "Essai",
+                    "Développement Personnel",
+                    "Histoire",
+                    "Sciences",
+                    "Philosophie",
+                    "Religion et Spiritualité",
+                    "Bande Dessinée / Manga",
+                    "Poésie",
+                    "Théâtre",
+                    "Cuisine",
+                    "Voyage",
+                    "Art / Photographie",
+                    "Psychologie",
+                    "Économie"
+            };
 
-            Categorie science = new Categorie();
-            science.setNom("Science");
-            science.setDescription("Livres scientifiques");
-            categorieRepository.save(science);
+            Map<String, Categorie> categoriesByName = new HashMap<>();
+            for (String categoryName : categoryNames) {
+                Categorie categorie = new Categorie();
+                categorie.setNom(categoryName);
+                categorie.setDescription("Catégorie: " + categoryName);
+                Categorie saved = categorieRepository.save(categorie);
+                categoriesByName.put(categoryName, saved);
+            }
+
+            Categorie romanHistorique = categoriesByName.get("Roman Historique");
+            Categorie sciences = categoriesByName.get("Sciences");
 
             // Création des éditeurs
             logger.info("Création des éditeurs...");
@@ -108,25 +147,8 @@ public class DataInitializer implements CommandLineRunner {
             verne.setBiographie("Écrivain français, pionnier du roman d'aventures");
             auteurRepository.save(verne);
 
-            // Création des utilisateurs
-            logger.info("Création des utilisateurs...");
-            Utilisateur admin = new Utilisateur();
-            admin.setNom("Admin");
-            admin.setAdresseMail("admin@example.com");
-            admin.setMotDePasse(passwordEncoder.encode("admin123"));
-            admin.setAdressePostal("123 rue Admin, 75001 Paris");
-            admin.setTel("0123456789");
-            admin.setRole("ADMIN");
-            utilisateurRepository.save(admin);
-
-            Utilisateur user = new Utilisateur();
-            user.setNom("User");
-            user.setAdresseMail("user@example.com");
-            user.setMotDePasse(passwordEncoder.encode("user123"));
-            user.setAdressePostal("456 rue User, 75002 Paris");
-            user.setTel("9876543210");
-            user.setRole("USER");
-            utilisateurRepository.save(user);
+            // Les utilisateurs admin/user par défaut sont gérés hors du bloc catalogue
+            logger.info("Comptes utilisateurs par défaut prêts.");
 
             // Création des livres
             logger.info("Création des livres...");
@@ -138,7 +160,7 @@ public class DataInitializer implements CommandLineRunner {
             lesMiserables.setDisponible(true);
             lesMiserables.setNombreDePage(1500);
             lesMiserables.setImageUrl("https://m.media-amazon.com/images/I/71W4ZP0-RQL._AC_UF1000,1000_QL80_.jpg");
-            lesMiserables.setCategorie(roman);
+            lesMiserables.setCategorie(romanHistorique);
             lesMiserables.setAuteur(hugo);
             lesMiserables.setEditeurs(new HashSet<>(Arrays.asList(gallimard)));
             livreRepository.save(lesMiserables);
@@ -151,7 +173,7 @@ public class DataInitializer implements CommandLineRunner {
             tourDuMonde.setDisponible(true);
             tourDuMonde.setNombreDePage(300);
             tourDuMonde.setImageUrl("https://m.media-amazon.com/images/I/81WvnYY9ZxL._AC_UF1000,1000_QL80_.jpg");
-            tourDuMonde.setCategorie(roman);
+            tourDuMonde.setCategorie(sciences);
             tourDuMonde.setAuteur(verne);
             tourDuMonde.setEditeurs(new HashSet<>(Arrays.asList(flammarion)));
             livreRepository.save(tourDuMonde);
@@ -216,5 +238,36 @@ public class DataInitializer implements CommandLineRunner {
             logger.error("Erreur lors de l'initialisation des données : ", e);
             throw e;
         }
+    }
+
+    private void ensureAdminAccount() {
+        Utilisateur admin = utilisateurRepository.findByAdresseMailIgnoreCase(ADMIN_EMAIL)
+                .orElseGet(Utilisateur::new);
+
+        admin.setNom(ADMIN_NAME);
+        admin.setAdresseMail(ADMIN_EMAIL);
+        admin.setMotDePasse(passwordEncoder.encode(ADMIN_PASSWORD));
+        admin.setAdressePostal("123 rue Admin, 75001 Paris");
+        admin.setTel("0123456789");
+        admin.setRole("ADMIN");
+
+        utilisateurRepository.save(admin);
+        logger.info("Compte admin prêt: {}", ADMIN_EMAIL);
+    }
+
+    private Utilisateur ensureDefaultUser() {
+        Utilisateur user = utilisateurRepository.findByAdresseMailIgnoreCase("user@example.com")
+                .orElseGet(Utilisateur::new);
+
+        user.setNom("User");
+        user.setAdresseMail("user@example.com");
+        user.setMotDePasse(passwordEncoder.encode("user123"));
+        user.setAdressePostal("456 rue User, 75002 Paris");
+        user.setTel("9876543210");
+        user.setRole("USER");
+
+        Utilisateur saved = utilisateurRepository.save(user);
+        logger.info("Compte user prêt: {}", saved.getAdresseMail());
+        return saved;
     }
 }

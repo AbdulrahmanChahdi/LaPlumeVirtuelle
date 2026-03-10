@@ -1,9 +1,12 @@
 import { useState } from "react"
 import { Link } from "react-router-dom"
 import UserMenu from "./UserMenu"
+import { useAuth } from "../../hooks/useAuth"
 
 export default function HeaderConnected() {
   const [mobileOpen, setMobileOpen] = useState(false)
+  const { user } = useAuth()
+  const isAdmin = user?.role === "ADMIN"
 
   return (
     <header className="bg-paperSoft border-b border-borderSoft">
@@ -21,6 +24,11 @@ export default function HeaderConnected() {
           <Link to="/library/digital-books" className="hover:text-accent transition">
             Ma Bibliothèque
           </Link>
+          {isAdmin && (
+            <Link to="/admin" className="hover:text-accent transition">
+              Admin
+            </Link>
+          )}
 
           {/* Découvrir */}
           <div className="border-l border-borderSoft pl-6 flex items-center gap-4">
@@ -70,6 +78,11 @@ export default function HeaderConnected() {
             <Link to="/library/digital-books" className="hover:text-accent transition" onClick={() => setMobileOpen(false)}>
               Ma Bibliothèque
             </Link>
+            {isAdmin && (
+              <Link to="/admin" className="hover:text-accent transition" onClick={() => setMobileOpen(false)}>
+                Admin
+              </Link>
+            )}
             <div className="pt-3 border-t border-borderSoft flex flex-col gap-2">
               <span className="text-inkMuted text-xs uppercase tracking-wide">Découvrir</span>
               <Link to="/discover/books" className="hover:text-accent transition" onClick={() => setMobileOpen(false)}>
