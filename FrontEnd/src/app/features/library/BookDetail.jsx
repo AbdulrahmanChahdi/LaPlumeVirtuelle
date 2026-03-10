@@ -2,24 +2,28 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { getBookByExternalId } from "../../api/booksApi";
 import { getUserDownloadStats, downloadBook } from "../../api/downloadApi";
-import { addBookToLibrary } from "../../api/digitalBooksApi";
+import { addBookToLibrary, getDigitalBooks } from "../../api/digitalBooksApi";
 import { useAuth } from "../../hooks/useAuth";
 import { saveIntendedDestination } from "../../utils/navigation";
 import Loader from "../../components/ui/Loader";
 import Button from "../../components/ui/Button";
+import ConfirmModal from "../../components/ui/ConfirmModal";
 
 export default function BookDetail() {
   const { externalId } = useParams();
+  const decodedExternalId = externalId ? decodeURIComponent(externalId) : externalId;
   const navigate = useNavigate();
   const location = useLocation();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, token } = useAuth();
   const [book, setBook] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [downloadStats, setDownloadStats] = useState(null);
   const [downloading, setDownloading] = useState(false);
   const [addingToLibrary, setAddingToLibrary] = useState(false);
+  const [isInLibrary, setIsInLibrary] = useState(false);
   const [notification, setNotification] = useState(null);
+  const [showDownloadConfirm, setShowDownloadConfirm] = useState(false);
 
   // Auto-hide notification after 3 seconds
   useEffect(() => {
@@ -37,17 +41,26 @@ export default function BookDetail() {
         setLoading(true);
         setError(null);
 
-        const bookData = await getBookByExternalId(externalId);
+        const bookData = await getBookByExternalId(decodedExternalId);
         setBook(bookData);
 
         // Charger les stats uniquement si l'utilisateur est connecté
         if (isAuthenticated) {
           try {
-            const statsData = await getUserDownloadStats();
+            const statsData = await getUserDownloadStats(token);
             setDownloadStats(statsData);
           } catch (err) {
             console.error("Erreur chargement stats:", err);
             // Continuer sans stats si erreur
+          }
+
+          try {
+            const libraryBooks = await getDigitalBooks(token);
+            const alreadyInLibrary = Array.isArray(libraryBooks)
+              && libraryBooks.some((b) => b.externalId && b.externalId === decodedExternalId);
+            setIsInLibrary(alreadyInLibrary);
+          } catch (err) {
+            console.error("Erreur chargement bibliothèque:", err);
           }
         }
       } catch (err) {
@@ -59,9 +72,9 @@ export default function BookDetail() {
     }
 
     loadBookAndStats();
-  }, [externalId, isAuthenticated]);
+  }, [decodedExternalId, isAuthenticated, token]);
 
-  const handleDownload = async () => {
+  const handleDownload = () => {
     if (!downloadStats) return;
 
     // Vérifier les droits de téléchargement
@@ -70,13 +83,15 @@ export default function BookDetail() {
       return;
     }
 
+    // Ouvrir la modale de confirmation
+    setShowDownloadConfirm(true);
+  };
+
+  const confirmDownload = async () => {
     try {
       setDownloading(true);
 
-      // Appel API pour enregistrer le téléchargement
-      await downloadBook(externalId);
-
-      // Simuler un téléchargement (créer un lien de téléchargement factice)
+      // Simuler un téléchargement (créer un fichier de démo)
       const blob = new Blob(
         [`Démo - "${book.title}"\n\nCeci est une démo de téléchargement.\n\nDans une version production, le fichier ebook serait téléchargé ici.\n\nAuteur(s): ${book.authors?.join(', ') || 'N/A'}\nÉditeur: ${book.publisher || 'N/A'}\nISBN: ${book.isbn || 'N/A'}`],
         { type: 'text/plain' }
@@ -91,8 +106,11 @@ export default function BookDetail() {
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
 
+      // Enregistrer le téléchargement dans le backend (après le déclenchement)
+      await downloadBook(decodedExternalId, token);
+
       // Recharger les stats après le téléchargement
-      const updatedStats = await getUserDownloadStats();
+      const updatedStats = await getUserDownloadStats(token);
       setDownloadStats(updatedStats);
 
       // Show success notification
@@ -111,11 +129,12 @@ export default function BookDetail() {
   const handleAddToLibrary = async () => {
     try {
       setAddingToLibrary(true);
-      await addBookToLibrary(externalId);
+      await addBookToLibrary(decodedExternalId, token);
       setNotification({
         type: 'success',
         message: `"${book.title}" a été ajouté à votre bibliothèque !`
       });
+      setIsInLibrary(true);
       // Optionnel: rediriger vers la bibliothèque
       // navigate("/library/digital-books");
     } catch (err) {
@@ -156,8 +175,13 @@ export default function BookDetail() {
     <>
       {/* Notification Toast */}
       {notification && (
-        <div className={`fixed top-4 right-4 z-50 px-6 py-4 rounded-lg shadow-lg transform transition-all duration-300 ${notification.type === 'success' ? 'bg-accent' : 'bg-red-600'
-          } text-white animate-slide-in`}>
+        <div
+          role="alert"
+          aria-live="polite"
+          aria-atomic="true"
+          className={`fixed top-4 right-4 z-50 px-6 py-4 rounded-lg shadow-lg transform transition-all duration-300 ${notification.type === 'success' ? 'bg-accent' : 'bg-red-600'
+            } text-white animate-slide-in`}
+        >
           <div className="flex items-center gap-3">
             {notification.type === 'success' ? (
               <svg className="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -276,29 +300,31 @@ export default function BookDetail() {
 
                 {isAuthenticated && (
                   <>
-                    <Button
-                      onClick={handleAddToLibrary}
-                      disabled={addingToLibrary}
-                      variant="tertiary"
-                      className="w-full"
-                    >
-                      {addingToLibrary ? (
-                        <>
-                          <svg className="animate-spin -ml-1 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                          </svg>
-                          Ajout...
-                        </>
-                      ) : (
-                        <>
-                          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                          </svg>
-                          Ajouter à ma bibliothèque
-                        </>
-                      )}
-                    </Button>
+                    {!isInLibrary && (
+                      <Button
+                        onClick={handleAddToLibrary}
+                        disabled={addingToLibrary}
+                        variant="tertiary"
+                        className="w-full"
+                      >
+                        {addingToLibrary ? (
+                          <>
+                            <svg className="animate-spin -ml-1 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                            </svg>
+                            Ajout...
+                          </>
+                        ) : (
+                          <>
+                            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                            </svg>
+                            Ajouter à ma bibliothèque
+                          </>
+                        )}
+                      </Button>
+                    )}
 
                     <Button
                       onClick={handleDownload}
@@ -427,6 +453,20 @@ export default function BookDetail() {
           </div>
         </div>
       </div>
+
+      {/* Download Confirmation Modal */}
+      <ConfirmModal
+        isOpen={showDownloadConfirm}
+        onClose={() => setShowDownloadConfirm(false)}
+        onConfirm={confirmDownload}
+        title="Télécharger ce livre"
+        message={`${book.title}\n\n${downloadStats?.isSubscriber 
+          ? "✨ Téléchargement illimité (compte Premium)" 
+          : `📥 Il vous reste ${downloadStats?.remainingDownloads} téléchargement(s) ce mois-ci`}`}
+        confirmText="Télécharger"
+        cancelText="Annuler"
+        type="default"
+      />
     </>
   );
 }

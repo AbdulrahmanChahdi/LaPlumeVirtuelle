@@ -1,7 +1,9 @@
 import { Link } from "react-router-dom"
+import { useAuth } from "../../hooks/useAuth"
 
 export default function Footer() {
   const currentYear = new Date().getFullYear()
+  const { isAuthenticated } = useAuth()
 
   return (
     <footer className="bg-paperSoft border-t border-borderSoft mt-auto">
@@ -54,27 +56,29 @@ export default function Footer() {
           </nav>
 
           {/* Account */}
-          <nav aria-label="Compte">
-            <h4 className="font-semibold mb-2 sm:mb-3 text-sm sm:text-base">Compte</h4>
-            <ul className="space-y-2 text-sm text-inkSoft">
-              <li>
-                <Link
-                  to="/auth/login"
-                  className="hover:text-accent focus:outline-none focus:ring-2 focus:ring-accent focus:rounded px-1 transition"
-                >
-                  Se connecter
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/auth/register"
-                  className="hover:text-accent focus:outline-none focus:ring-2 focus:ring-accent focus:rounded px-1 transition"
-                >
-                  S'inscrire
-                </Link>
-              </li>
-            </ul>
-          </nav>
+          {!isAuthenticated && (
+            <nav aria-label="Compte">
+              <h4 className="font-semibold mb-2 sm:mb-3 text-sm sm:text-base">Compte</h4>
+              <ul className="space-y-2 text-sm text-inkSoft">
+                <li>
+                  <Link
+                    to="/auth/login"
+                    className="hover:text-accent focus:outline-none focus:ring-2 focus:ring-accent focus:rounded px-1 transition"
+                  >
+                    Se connecter
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/auth/register"
+                    className="hover:text-accent focus:outline-none focus:ring-2 focus:ring-accent focus:rounded px-1 transition"
+                  >
+                    S'inscrire
+                  </Link>
+                </li>
+              </ul>
+            </nav>
+          )}
 
         </div>
 

@@ -1,33 +1,33 @@
-import { useEffect, useState, useMemo } from "react";
-import { getPodcasts } from "../../api/podcastsApi";
-import BookCard from "../../components/BookCard";
-import CategoryFilter from "../../components/ui/CategoryFilter";
-import Loader from "../../components/ui/Loader";
+import { useEffect, useState, useMemo } from "react"
+import { getPodcasts } from "../../api/podcastsApi"
+import { useAuth } from "../../hooks/useAuth"
+import BookCard from "../../components/BookCard"
+import CategoryFilter from "../../components/ui/CategoryFilter"
+import Loader from "../../components/ui/Loader"
 
 export default function Podcasts() {
-  const [podcasts, setPodcasts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [selectedCategory, setSelectedCategory] = useState("");
+  const { token } = useAuth()
+  const [podcasts, setPodcasts] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [selectedCategory, setSelectedCategory] = useState("")
 
   useEffect(() => {
-    async function loadPodcasts() {
+    const loadPodcasts = async () => {
       try {
-        setLoading(true);
-        setError(null);
-
-        const podcastsData = await getPodcasts();
-        setPodcasts(podcastsData || []);
+        setLoading(true)
+        setError(null)
+        const podcastsData = await getPodcasts(token)
+        setPodcasts(podcastsData || [])
       } catch (err) {
-        console.error("Erreur chargement podcasts:", err);
-        setError("Impossible de charger vos podcasts. Veuillez réessayer plus tard.");
+        console.error("Erreur chargement podcasts:", err)
+        setError("Impossible de charger vos podcasts. Veuillez réessayer plus tard.")
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
     }
-
-    loadPodcasts();
-  }, []);
+    loadPodcasts()
+  }, [token])
 
   // Filtrer les podcasts par catégorie
   const filteredPodcasts = useMemo(() => {
@@ -74,11 +74,10 @@ export default function Podcasts() {
 
       {/* Empty State */}
       {!loading && !error && podcasts.length === 0 && (
-        <div className="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-lg text-center">
-          <p className="text-blue-700 font-medium mb-2">Vous n'avez pas de podcasts</p>
-          <p className="text-blue-600 text-sm">
-            Explorez nos podcasts publics pour en ajouter à votre collection
-          </p>
+        <div className="flex flex-col items-center justify-center py-16 px-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg border-2 border-dashed border-purple-200">
+          <div className="text-6xl mb-4">🎙️</div>
+          <h3 className="text-xl font-bold text-ink mb-2">Vous n'avez pas de podcasts</h3>
+          <p className="text-inkSoft text-center max-w-md mb-4">Explorez notre collection pour en ajouter à votre bibliothèque personnelle</p>
         </div>
       )}
 
@@ -91,7 +90,7 @@ export default function Podcasts() {
 
       {/* Podcasts Grid */}
       {!loading && !error && filteredPodcasts.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
           {filteredPodcasts.map((podcast) => (
             <BookCard
               key={podcast.id}

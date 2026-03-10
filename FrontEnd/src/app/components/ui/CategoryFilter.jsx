@@ -63,7 +63,7 @@ export default function CategoryFilter({
         id="category-filter"
         value={selectedCategory}
         onChange={(e) => handleChange(e.target.value)}
-        className="px-4 py-2 border border-gray-300 rounded-lg font-medium text-ink bg-white hover:border-accent focus:outline-none focus:ring-2 focus:ring-accent transition-all cursor-pointer"
+        className="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-lg font-medium text-ink bg-white hover:border-accent focus:outline-none focus:ring-2 focus:ring-accent transition-all cursor-pointer"
       >
         <option value="">
           Toutes les catégories ({displayTotalCount})

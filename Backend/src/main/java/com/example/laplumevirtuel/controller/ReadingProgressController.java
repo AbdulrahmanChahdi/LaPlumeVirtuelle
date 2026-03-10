@@ -4,6 +4,7 @@ import com.example.laplumevirtuel.dto.ReadingProgressDTO;
 import com.example.laplumevirtuel.entities.Livre;
 import com.example.laplumevirtuel.entities.Utilisateur;
 import com.example.laplumevirtuel.repository.LivreRepository;
+import com.example.laplumevirtuel.repository.UtilisateurRepository;
 import com.example.laplumevirtuel.service.ReadingProgressService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -24,10 +25,14 @@ public class ReadingProgressController {
 
     private final ReadingProgressService readingProgressService;
     private final LivreRepository livreRepository;
+    private final UtilisateurRepository utilisateurRepository;
 
-    public ReadingProgressController(ReadingProgressService readingProgressService, LivreRepository livreRepository) {
+    public ReadingProgressController(ReadingProgressService readingProgressService, 
+                                    LivreRepository livreRepository,
+                                    UtilisateurRepository utilisateurRepository) {
         this.readingProgressService = readingProgressService;
         this.livreRepository = livreRepository;
+        this.utilisateurRepository = utilisateurRepository;
     }
 
     /**
@@ -38,11 +43,14 @@ public class ReadingProgressController {
             @PathVariable Long bookId,
             Authentication authentication
     ) {
-        if (authentication == null || !(authentication.getPrincipal() instanceof Utilisateur)) {
+        if (authentication == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        Utilisateur user = (Utilisateur) authentication.getPrincipal();
+        String email = (String) authentication.getPrincipal();
+        Utilisateur user = utilisateurRepository.findByAdresseMail(email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        
         Livre book = livreRepository.findById(bookId)
                 .orElseThrow(() -> new IllegalArgumentException("Book not found"));
 
@@ -61,11 +69,14 @@ public class ReadingProgressController {
             @RequestParam Integer currentPage,
             Authentication authentication
     ) {
-        if (authentication == null || !(authentication.getPrincipal() instanceof Utilisateur)) {
+        if (authentication == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        Utilisateur user = (Utilisateur) authentication.getPrincipal();
+        String email = (String) authentication.getPrincipal();
+        Utilisateur user = utilisateurRepository.findByAdresseMail(email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        
         Livre book = livreRepository.findById(bookId)
                 .orElseThrow(() -> new IllegalArgumentException("Book not found"));
 
@@ -81,11 +92,14 @@ public class ReadingProgressController {
             @PathVariable Long bookId,
             Authentication authentication
     ) {
-        if (authentication == null || !(authentication.getPrincipal() instanceof Utilisateur)) {
+        if (authentication == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        Utilisateur user = (Utilisateur) authentication.getPrincipal();
+        String email = (String) authentication.getPrincipal();
+        Utilisateur user = utilisateurRepository.findByAdresseMail(email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        
         Livre book = livreRepository.findById(bookId)
                 .orElseThrow(() -> new IllegalArgumentException("Book not found"));
 
@@ -100,11 +114,14 @@ public class ReadingProgressController {
      */
     @GetMapping("/all")
     public ResponseEntity<List<ReadingProgressDTO>> getAllProgress(Authentication authentication) {
-        if (authentication == null || !(authentication.getPrincipal() instanceof Utilisateur)) {
+        if (authentication == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        Utilisateur user = (Utilisateur) authentication.getPrincipal();
+        String email = (String) authentication.getPrincipal();
+        Utilisateur user = utilisateurRepository.findByAdresseMail(email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        
         List<ReadingProgressDTO> progress = readingProgressService.getAllProgress(user);
 
         return ResponseEntity.ok(progress);
@@ -115,11 +132,14 @@ public class ReadingProgressController {
      */
     @GetMapping("/unfinished")
     public ResponseEntity<List<ReadingProgressDTO>> getUnfinishedBooks(Authentication authentication) {
-        if (authentication == null || !(authentication.getPrincipal() instanceof Utilisateur)) {
+        if (authentication == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        Utilisateur user = (Utilisateur) authentication.getPrincipal();
+        String email = (String) authentication.getPrincipal();
+        Utilisateur user = utilisateurRepository.findByAdresseMail(email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        
         List<ReadingProgressDTO> progress = readingProgressService.getUnfinishedBooks(user);
 
         return ResponseEntity.ok(progress);
@@ -130,11 +150,14 @@ public class ReadingProgressController {
      */
     @GetMapping("/finished")
     public ResponseEntity<List<ReadingProgressDTO>> getFinishedBooks(Authentication authentication) {
-        if (authentication == null || !(authentication.getPrincipal() instanceof Utilisateur)) {
+        if (authentication == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        Utilisateur user = (Utilisateur) authentication.getPrincipal();
+        String email = (String) authentication.getPrincipal();
+        Utilisateur user = utilisateurRepository.findByAdresseMail(email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        
         List<ReadingProgressDTO> progress = readingProgressService.getFinishedBooks(user);
 
         return ResponseEntity.ok(progress);

@@ -201,11 +201,11 @@ export default function HeroSection() {
 
         {/* Unified Search Bar */}
         <div className="max-w-4xl mx-auto mb-8">
-          <UnifiedSearchBar 
+          <UnifiedSearchBar
             onSearch={handleUnifiedSearch}
             loading={isSearching}
           />
-          
+
           {/* Active search indicator */}
           {(searchQuery || activeFilters) && (
             <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
@@ -257,15 +257,15 @@ export default function HeroSection() {
 
         {/* Boutons d'action */}
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <Button 
-            onClick={() => navigate(isConnected ? "/library/digital-books" : "/public/livres")}
-            ariaLabel={isConnected ? "Accéder à votre bibliothèque" : "Découvrir le catalogue"}
+          <Button
+            onClick={() => navigate(isAuthenticated ? "/library/digital-books" : "/public/livres")}
+            ariaLabel={isAuthenticated ? "Accéder à votre bibliothèque" : "Découvrir le catalogue"}
           >
-            {isConnected ? "Ma Bibliothèque" : "Découvrir le catalogue complet"}
+            {isAuthenticated ? "Ma Bibliothèque" : "Découvrir le catalogue complet"}
           </Button>
 
-          {isConnected && (
-            <Button 
+          {isAuthenticated && (
+            <Button
               onClick={() => navigate("/discover/books")}
               className="bg-accent/10 text-accent hover:bg-accent/20"
               ariaLabel="Découvrir de nouveaux livres"

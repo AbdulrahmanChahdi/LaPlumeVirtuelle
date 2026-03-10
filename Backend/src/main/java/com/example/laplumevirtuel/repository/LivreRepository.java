@@ -10,18 +10,18 @@ import java.util.List;
 import java.util.Optional;
 
 public interface LivreRepository extends JpaRepository<Livre, Long> {
-    
+
     /**
-     * Find a book by its external API ID (Google Books volume ID)
+     * Find a book by its external API ID (Open Library work key)
      */
     Optional<Livre> findByExternalId(String externalId);
-    
+
     /**
      * Search books by title, author name, or year
      */
     @Query("SELECT l FROM Livre l LEFT JOIN l.auteur a WHERE " +
-           "LOWER(l.titre) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-           "LOWER(a.nom) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-           "LOWER(l.anneeEdition) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+            "LOWER(l.titre) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            "LOWER(a.nom) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            "LOWER(l.anneeEdition) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     List<Livre> searchByKeyword(@Param("keyword") String keyword);
 }

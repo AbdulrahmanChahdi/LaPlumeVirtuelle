@@ -7,6 +7,7 @@ import CategoryFilter from "../../components/ui/CategoryFilter";
 import Loader from "../../components/ui/Loader";
 import UnifiedSearchBar from "../../components/ui/UnifiedSearchBar";
 import { enrichBookWithCategories } from "../../utils/categoryMapping";
+import { useAuth } from "../../hooks/useAuth";
 
 export default function BooksPublic() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -314,7 +315,10 @@ export default function BooksPublic() {
           Livres Numériques
         </h1>
         <p className="text-base sm:text-lg text-gray-600">
-          Découvrez notre sélection de bestsellers. Connectez-vous pour accéder aux détails complets.
+          {isAuthenticated
+            ? "Découvrez notre sélection de bestsellers et accédez aux détails complets."
+            : "Découvrez notre sélection de bestsellers. Connectez-vous pour accéder aux détails complets."
+          }
         </p>
       </div>
 
@@ -402,11 +406,19 @@ export default function BooksPublic() {
             </div>
           ) : (
             <>
-              <div className="mb-4 text-sm text-gray-500">
-                {filteredBooks.length} livre{filteredBooks.length > 1 ? "s" : ""} trouvé{filteredBooks.length > 1 ? "s" : ""}
-                {selectedCategory && ` dans la catégorie "${selectedCategory}"`}
+              <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-accent/5 p-4 rounded-lg">
+                <div className="text-sm text-ink font-medium">
+                  <span className="text-accent font-bold">{filteredBooks.length}</span> livre{filteredBooks.length !== 1 ? "s" : ""} affiché{filteredBooks.length !== 1 ? "s" : ""}
+                  {selectedCategory && ` dans "${selectedCategory}"`}
+                  {books.length > 0 && filteredBooks.length < books.length && ` (sur ${books.length})`}
+                </div>
+                {searchQuery && (
+                  <div className="text-xs text-gray-500 italic">
+                    Résultats pour: <span className="font-semibold text-accent">  "{searchQuery}"</span>
+                  </div>
+                )}
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
                 {filteredBooks.map((book) => (
                   <BookCard key={book.externalId || book.title} book={book} />
                 ))}

@@ -46,11 +46,15 @@ export default function PodcastsPublic() {
       {loading ? (
         <p>Chargement...</p>
       ) : podcasts.length === 0 ? (
-        <p className="text-inkSoft">Aucun podcast disponible pour le moment.</p>
+        <div className="flex flex-col items-center justify-center py-16 px-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg border-2 border-dashed border-purple-200">
+          <div className="text-6xl mb-4">🎙️</div>
+          <h3 className="text-xl font-bold text-ink mb-2">Aucun podcast disponible</h3>
+          <p className="text-inkSoft text-center max-w-md">Notre collection de podcasts arrive bientôt. Revenez pour écouter une sélection passionnante!</p>
+        </div>
       ) : filteredPodcasts.length === 0 ? (
         <p className="text-inkSoft">Aucun podcast trouvé pour cette catégorie.</p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
           {filteredPodcasts.map((podcast) => (
             <div key={podcast.id} className="bg-white rounded-lg shadow p-4 hover:shadow-lg transition-shadow">
               <h3 className="font-bold text-lg mb-2">{podcast.titre}</h3>

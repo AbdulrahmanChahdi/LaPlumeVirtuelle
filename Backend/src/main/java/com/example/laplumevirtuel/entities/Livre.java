@@ -11,6 +11,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Column;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,11 +19,12 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = {"auteur", "editeurs"})
+@ToString(exclude = { "auteur", "editeurs" })
 public class Livre {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,29 +39,21 @@ public class Livre {
     private int nombreDePage;
     @Column(length = 1024)
     private String imageUrl;
-    private String externalId; // Google Books volume ID
+    private String externalId; // Open Library work key (e.g., /works/OL46125W)
 
     @ManyToOne
     @JoinColumn(name = "categorie_id")
     private Categorie categorie;
-   
+
     @ManyToOne
     @JoinColumn(name = "auteur_id")
     private Auteur auteur;
-    
+
     @ManyToMany
-    @JoinTable(
-        name = "livre_editeur",
-        joinColumns = @JoinColumn(name = "livre_id"),
-        inverseJoinColumns = @JoinColumn(name = "editeur_id")
-    )
+    @JoinTable(name = "livre_editeur", joinColumns = @JoinColumn(name = "livre_id"), inverseJoinColumns = @JoinColumn(name = "editeur_id"))
     private Set<Editeur> editeurs;
 
     @ManyToMany
-    @JoinTable(
-        name = "categorie_livre",
-        joinColumns = @JoinColumn(name = "livre_id"),
-        inverseJoinColumns = @JoinColumn(name = "categorie_id")
-    )
+    @JoinTable(name = "categorie_livre", joinColumns = @JoinColumn(name = "livre_id"), inverseJoinColumns = @JoinColumn(name = "categorie_id"))
     private Set<Categorie> categories;
 }

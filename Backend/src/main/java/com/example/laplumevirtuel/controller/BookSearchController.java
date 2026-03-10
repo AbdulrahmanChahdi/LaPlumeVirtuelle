@@ -13,7 +13,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/books")
-@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:5173"})
+@CrossOrigin(origins = { "http://localhost:4200", "http://localhost:5173" })
 @Slf4j
 public class BookSearchController {
 
@@ -27,15 +27,14 @@ public class BookSearchController {
      * Public endpoint for searching books
      * No authentication required
      *
-     * @param query Search query (title, author, keyword)
+     * @param query      Search query (title, author, keyword)
      * @param maxResults Maximum number of results (optional, default: 20, max: 40)
      * @return List of book search results
      */
     @GetMapping("/search")
     public ResponseEntity<List<BookSearchResultDTO>> searchBooks(
             @RequestParam String query,
-            @RequestParam(required = false, defaultValue = "20") Integer maxResults
-    ) {
+            @RequestParam(required = false, defaultValue = "20") Integer maxResults) {
         log.info("Public book search request - query: '{}', maxResults: {}", query, maxResults);
 
         if (query == null || query.trim().isEmpty()) {
@@ -44,7 +43,7 @@ public class BookSearchController {
         }
 
         List<BookSearchResultDTO> results = externalBookService.searchBooks(query, maxResults);
-        
+
         log.info("Returning {} search results for query: '{}'", results.size(), query);
         return ResponseEntity.ok(results);
     }
@@ -100,11 +99,11 @@ public class BookSearchController {
      * Get book details by external ID
      * No authentication required for preview
      *
-     * @param externalId Google Books volume ID
+     * @param externalId Open Library work key (e.g., /works/OL46125W)
      * @return Book details
      */
-    @GetMapping("/external/{externalId}")
-    public ResponseEntity<BookSearchResultDTO> getBookByExternalId(@PathVariable String externalId) {
+    @GetMapping("/external")
+    public ResponseEntity<BookSearchResultDTO> getBookByExternalId(@RequestParam String externalId) {
         log.info("Get book by external ID: {}", externalId);
 
         BookSearchResultDTO book = externalBookService.getBookById(externalId);

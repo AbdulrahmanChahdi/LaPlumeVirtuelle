@@ -1,19 +1,19 @@
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
+import { getAuthToken } from "./authToken"
+
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080"
 
 /**
  * Get all digital books (for authenticated users)
+ * @param {string} token - Optional auth token, if not provided will retry from localStorage
  * @returns {Promise<Array>} List of digital books
  */
-export async function getDigitalBooks() {
-  const token = localStorage.getItem("authToken");
-  
-  if (!token || token === "undefined") {
-    throw new Error("Vous devez être connecté pour accéder à votre bibliothèque.");
-  }
+export async function getDigitalBooks(token) {
+  // Use provided token or get from localStorage with retry
+  const authToken = token || await getAuthToken()
   
   const res = await fetch(`${API_BASE}/api/livres`, {
     headers: {
-      "Authorization": `Bearer ${token}`,
+      "Authorization": `Bearer ${authToken}`,
       "Content-Type": "application/json"
     }
   });
@@ -34,18 +34,15 @@ export async function getDigitalBooks() {
 /**
  * Get a single digital book by ID
  * @param {number} id - Book ID
+ * @param {string} token - Optional auth token, if not provided will retry from localStorage
  * @returns {Promise<Object>} Book details
  */
-export async function getDigitalBookById(id) {
-  const token = localStorage.getItem("authToken");
-  
-  if (!token || token === "undefined") {
-    throw new Error("Vous devez être connecté pour accéder à ce livre.");
-  }
+export async function getDigitalBookById(id, token) {
+  const authToken = token || await getAuthToken()
   
   const res = await fetch(`${API_BASE}/api/livres/${id}`, {
     headers: {
-      "Authorization": `Bearer ${token}`,
+      "Authorization": `Bearer ${authToken}`,
       "Content-Type": "application/json"
     }
   });
@@ -63,23 +60,24 @@ export async function getDigitalBookById(id) {
 }
 
 /**
- * Add a book from Google Books to user's personal library
- * @param {string} externalId - Google Books volume ID
+ * Add a book from Open Library to user's personal library
+ * @param {string} externalId - Open Library work key (e.g., /works/OL46125W)
+ * @param {string} token - Optional auth token, if not provided will retry from localStorage
  * @returns {Promise<Object>} Added book
  */
-export async function addBookToLibrary(externalId) {
-  const token = localStorage.getItem("authToken");
+export async function addBookToLibrary(externalId, token) {
+  const authToken = token || await getAuthToken()
 
-  if (!token || token === "undefined") {
+  if (!authToken || authToken === "undefined") {
     throw new Error("Vous devez être connecté pour ajouter un livre à votre bibliothèque.");
   }
 
   const encodedExternalId = encodeURIComponent(externalId ?? "");
 
-  const res = await fetch(`${API_BASE}/api/livres/add-from-external/${encodedExternalId}`, {
+  const res = await fetch(`${API_BASE}/api/livres/add-from-external?externalId=${encodedExternalId}`, {
     method: "POST",
     headers: {
-      "Authorization": `Bearer ${token}`
+      "Authorization": `Bearer ${authToken}`
     }
   });
 

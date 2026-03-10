@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("/api/downloads")
-@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:5173", "http://localhost:5174"})
+@CrossOrigin(origins = { "http://localhost:4200", "http://localhost:5173", "http://localhost:5174" })
 @Slf4j
 public class DownloadController {
 
@@ -25,6 +25,7 @@ public class DownloadController {
 
     /**
      * Get download statistics for authenticated user
+     * 
      * @param authentication Spring Security authentication
      * @return Download statistics
      */
@@ -38,7 +39,7 @@ public class DownloadController {
         String email = (String) authentication.getPrincipal();
         DownloadStatsDTO stats = downloadService.getDownloadStatsByEmail(email);
 
-        log.info("Download stats requested for user: {} - Subscriber: {}, Remaining: {}", 
+        log.info("Download stats requested for user: {} - Subscriber: {}, Remaining: {}",
                 email, stats.isSubscriber(), stats.getRemainingDownloads());
 
         return ResponseEntity.ok(stats);
@@ -46,15 +47,15 @@ public class DownloadController {
 
     /**
      * Download a book (placeholder - actual download implementation needed)
-     * @param externalId Google Books volume ID
+     * 
+     * @param externalId     Open Library work key (e.g., /works/OL46125W)
      * @param authentication Spring Security authentication
      * @return Response indicating download status
      */
-    @GetMapping("/book/{externalId}")
+    @GetMapping("/book")
     public ResponseEntity<String> downloadBook(
-            @PathVariable String externalId,
-            Authentication authentication
-    ) {
+            @RequestParam String externalId,
+            Authentication authentication) {
         if (authentication == null || authentication.getPrincipal() == null) {
             log.warn("Unauthorized download attempt for book: {}", externalId);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -70,12 +71,12 @@ public class DownloadController {
         }
 
         try {
-            // TODO: Implement actual book download from Google Books or internal storage
+            // TODO: Implement actual book download from Open Library or internal storage
             // For now, just record the download
             downloadService.recordDownloadByEmail(email, externalId, "Book Title - " + externalId);
 
             log.info("Download successful for user: {} - book: {}", email, externalId);
-            
+
             return ResponseEntity.ok("Download recorded successfully. Actual file download to be implemented.");
         } catch (IllegalStateException e) {
             log.error("Download failed for user: {} - {}", email, e.getMessage());

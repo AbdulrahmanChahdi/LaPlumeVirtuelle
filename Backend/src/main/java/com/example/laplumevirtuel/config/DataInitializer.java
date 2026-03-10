@@ -25,6 +25,7 @@ import com.example.laplumevirtuel.repository.LivreAudioRepository;
 import com.example.laplumevirtuel.repository.LivreRepository;
 import com.example.laplumevirtuel.repository.PodcastRepository;
 import com.example.laplumevirtuel.repository.UtilisateurRepository;
+import com.example.laplumevirtuel.service.ReadingProgressService;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
@@ -54,6 +55,9 @@ public class DataInitializer implements CommandLineRunner {
     
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private ReadingProgressService readingProgressService;
 
     @Override
     public void run(String... args) throws Exception {
@@ -200,6 +204,12 @@ public class DataInitializer implements CommandLineRunner {
             logger.info("Association des utilisateurs aux livres et podcasts...");
             user.setPodcastsEcoutes(new HashSet<>(Arrays.asList(podcastScience, podcastHistoire, podcastLitterature)));
             utilisateurRepository.save(user);
+
+            // Création des ReadingProgress pour l'utilisateur test
+            logger.info("Création des ReadingProgress pour les livres de l'utilisateur test...");
+            readingProgressService.getOrCreateProgress(user, lesMiserables);
+            readingProgressService.getOrCreateProgress(user, tourDuMonde);
+            logger.info("ReadingProgress créés pour 2 livres");
 
             logger.info("Initialisation des données terminée avec succès !");
         } catch (Exception e) {

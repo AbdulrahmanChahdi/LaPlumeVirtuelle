@@ -1,22 +1,25 @@
-import { useEffect, useState, useMemo } from "react";
-import { getDigitalBooks } from "../../api/digitalBooksApi";
-import BookCard from "../../components/BookCard";
-import CategoryFilter from "../../components/ui/CategoryFilter";
-import Loader from "../../components/ui/Loader";
+import { useEffect, useState, useMemo } from "react"
+import { getDigitalBooks } from "../../api/digitalBooksApi"
+import { useAuth } from "../../hooks/useAuth"
+import BookCard from "../../components/BookCard"
+import CategoryFilter from "../../components/ui/CategoryFilter"
+import Loader from "../../components/ui/Loader"
 
 export default function DigitalBooks() {
-  const [books, setBooks] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [selectedCategory, setSelectedCategory] = useState("");
+  const { token } = useAuth()
+  const [books, setBooks] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [selectedCategory, setSelectedCategory] = useState("")
 
   useEffect(() => {
     async function loadBooks() {
       try {
-        setLoading(true);
-        setError(null);
+        setLoading(true)
+        setError(null)
 
-        const booksData = await getDigitalBooks();
+        // Pass token from context
+        const booksData = await getDigitalBooks(token);
         setBooks(booksData || []);
       } catch (err) {
         console.error("Erreur chargement livres numériques:", err);
@@ -91,7 +94,7 @@ export default function DigitalBooks() {
 
       {/* Books Grid */}
       {!loading && !error && filteredBooks.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
           {filteredBooks.map((book) => (
             <BookCard
               key={book.id}

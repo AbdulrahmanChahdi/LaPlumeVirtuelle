@@ -9,26 +9,43 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.laplumevirtuel.entities.Livre;
+import com.example.laplumevirtuel.entities.Utilisateur;
 import com.example.laplumevirtuel.services.LivreService;
 import com.example.laplumevirtuel.service.ExternalBookService;
+import com.example.laplumevirtuel.service.ReadingProgressService;
+import com.example.laplumevirtuel.repository.UtilisateurRepository;
 import com.example.laplumevirtuel.dto.BookSearchResultDTO;
 
 @RestController
 @RequestMapping("/api/livres")
-@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:5173"})
+@CrossOrigin(origins = { "http://localhost:4200", "http://localhost:5173", "http://localhost:5174" })
 public class LivreController {
 
 	@Autowired
 	private LivreService livreService;
-	
+
 	@Autowired
 	private ExternalBookService externalBookService;
-	
+
+	@Autowired
+	private ReadingProgressService readingProgressService;
+
+	@Autowired
+	private UtilisateurRepository utilisateurRepository;
+
 	@GetMapping
 	public List<Livre> getAllLivres() {
 		return livreService.getAllLivres();
 	}
 	
+	/**
+	 * Search books by keyword (searches in title, author, year)
+	 */
+	@GetMapping("/search")
+	public List<Livre> searchLivres(@RequestParam String keyword) {
+		return livreService.searchLivres(keyword);
+	}
+
 	/**
 	 * Search books by keyword (searches in title, author, year)
 	 */
@@ -46,37 +63,37 @@ public class LivreController {
 	public Livre saveLivre(@RequestBody Livre livre) {
 		return livreService.saveLivre(livre);
 	}
-	
+
 	@DeleteMapping("/{id}")
 	public void deleteLivre(@PathVariable Long id) {
 		livreService.deleteLivreById(id);
 	}
-	
+
 	/**
-	 * Add a book from Google Books to user's personal library
+	 * Add a book from Open Library to user's personal library
 	 */
-	@PostMapping("/add-from-external/{externalId}")
+	@PostMapping("/add-from-external")
 	public ResponseEntity<?> addBookFromExternal(
-			@PathVariable String externalId,
+			@RequestParam String externalId,
 			Authentication authentication) {
 
 		if (externalId == null || externalId.trim().isEmpty()) {
 			return ResponseEntity.badRequest().body(Map.of("error", "External ID manquant."));
 		}
-		
+
 		if (authentication == null) {
 			return ResponseEntity.status(401).body(Map.of("error", "Non autorisé."));
 		}
-		
+
 		String email = (String) authentication.getPrincipal();
-		
-		// Get book details from Google Books
+
+		// Get book details from Open Library
 		BookSearchResultDTO externalBook = externalBookService.getBookById(externalId);
-		
+
 		if (externalBook == null) {
 			return ResponseEntity.notFound().build();
 		}
-		
+
 		// Create new Livre entity
 		Livre livre = new Livre();
 		livre.setTitre(externalBook.getTitle());
@@ -87,10 +104,16 @@ public class LivreController {
 		livre.setNombreDePage(externalBook.getPageCount() != null ? externalBook.getPageCount() : 0);
 		livre.setAnneeEdition(externalBook.getPublishedDate());
 		livre.setDisponible(true);
-		
+
 		try {
 			// Save to database
 			Livre savedBook = livreService.saveLivre(livre);
+
+			// Create reading progress for this user
+			Utilisateur user = utilisateurRepository.findByAdresseMail(email)
+					.orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+			readingProgressService.getOrCreateProgress(user, savedBook);
+
 			return ResponseEntity.ok(savedBook);
 		} catch (RuntimeException ex) {
 			return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));

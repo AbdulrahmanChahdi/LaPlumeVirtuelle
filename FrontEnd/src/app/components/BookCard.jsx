@@ -4,27 +4,28 @@ export default function BookCard({ book, progress }) {
   // Support both Google Books (externalId) and internal DB books (id)
   const bookId = book.externalId || book.id;
   const isInternalBook = !!book.id && !book.externalId;
-  const detailLink = isInternalBook 
-    ? `/library/digital-books/${bookId}` 
-    : `/library/books/${bookId}`;
+  const encodedBookId = bookId ? encodeURIComponent(bookId) : "";
+  const detailLink = isInternalBook
+    ? `/library/digital-books/${encodedBookId}`
+    : `/library/books/${encodedBookId}`;
 
   // Handle different field names for internal vs external books
   const title = book.title || book.titre;
   const imageUrl = book.coverUrl || book.imageUrl;
   const description = book.description || book.resume;
-  
+
   // Format authors - can be array or single author object
   let authors = "Auteur inconnu";
   if (book.authors) {
-    authors = Array.isArray(book.authors) 
-      ? book.authors.join(", ") 
+    authors = Array.isArray(book.authors)
+      ? book.authors.join(", ")
       : "Auteur inconnu";
   } else if (book.auteur) {
     authors = book.auteur.nom || "Auteur inconnu";
   }
 
   // Calculate progress percentage if available
-  const progressPercentage = progress && progress.totalPages 
+  const progressPercentage = progress && progress.totalPages
     ? Math.round((progress.currentPage / progress.totalPages) * 100)
     : 0;
 
@@ -36,10 +37,10 @@ export default function BookCard({ book, progress }) {
   return (
     <Link
       to={detailLink}
-      className="bg-paper border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden group flex flex-col h-full"
+      className="bg-paper border border-gray-200 rounded-lg shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden group flex flex-col h-full"
     >
       {/* Cover Image */}
-      <div className="relative aspect-[2/3] bg-gradient-to-br from-gray-50 to-white overflow-hidden flex items-center justify-center p-4">
+      <div className="relative aspect-[2/3] bg-gradient-to-br from-gray-50 to-white overflow-hidden flex items-center justify-center p-3 sm:p-4">
         {imageUrl ? (
           <img
             src={imageUrl}
@@ -83,35 +84,35 @@ export default function BookCard({ book, progress }) {
         {/* Progress bar at the bottom of cover */}
         {progress && !progress.isFinished && (
           <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-gray-200">
-            <div 
+            <div
               className="h-full bg-gradient-to-r from-accent to-gold transition-all duration-300"
-              style={{width: `${Math.min(progressPercentage, 100)}%`}}
+              style={{ width: `${Math.min(progressPercentage, 100)}%` }}
             />
           </div>
         )}
       </div>
 
       {/* Book Info */}
-      <div className="p-4 sm:p-5 flex flex-col flex-grow border-t border-gray-100">
+      <div className="p-3 sm:p-5 flex flex-col flex-grow border-t border-gray-100">
         {/* Title */}
-        <h3 className="font-bold text-lg sm:text-xl text-ink mb-2 line-clamp-2 group-hover:text-accent transition-colors">
+        <h3 className="font-bold text-base sm:text-xl text-ink mb-2 line-clamp-2 group-hover:text-accent transition-colors">
           {title}
         </h3>
 
         {/* Author */}
-        <p className="text-sm sm:text-base text-gray-600 mb-3">
+        <p className="text-xs sm:text-base text-gray-600 mb-3">
           {authors}
         </p>
 
         {/* Description */}
         {description && (
-          <p className="text-xs sm:text-sm text-gray-500 mb-4 line-clamp-3">
+          <p className="hidden sm:block text-xs sm:text-sm text-gray-500 mb-4 line-clamp-3">
             {truncateText(description, 150)}
           </p>
         )}
 
         {/* Metadata */}
-        <div className="flex flex-wrap gap-2 text-xs text-gray-500">
+        <div className="flex flex-wrap gap-2 text-[11px] sm:text-xs text-gray-500">
           {book.publishedDate && (
             <span className="bg-gray-100 px-2 py-1 rounded">
               {new Date(book.publishedDate).getFullYear()}
