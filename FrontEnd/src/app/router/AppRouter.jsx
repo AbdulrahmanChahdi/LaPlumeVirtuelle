@@ -10,6 +10,7 @@ import RequireRegistration from "../guards/RequireRegistration"
 import RequireAuth from "../guards/RequireAuth"
 import PreferencesSignupForm from "../components/PreferencesSignupForm"
 
+import MyLibrary from "../features/library/MyLibrary"
 import DigitalBooks from "../features/library/DigitalBooks"
 import Audiobooks from "../features/library/Audiobooks"
 import Podcasts from "../features/library/Podcasts"
@@ -19,6 +20,9 @@ import Dashboard from "../features/dashboard/Dashboard"
 import BooksPublic from "../features/public/BooksPublic"
 import AudiobooksPublic from "../features/public/AudiobooksPublic"
 import PodcastsPublic from "../features/public/PodcastsPublic"
+import Catalogue from "../features/catalogue/Catalogue"
+import AudiobookDetail from "../features/catalogue/AudiobookDetail"
+import PodcastDetail from "../features/catalogue/PodcastDetail"
 
 export default function AppRouter() {
   return (
@@ -29,7 +33,6 @@ export default function AppRouter() {
         <Route path="/" element={<Home />} />
         <Route path="/auth/login" element={<AuthPage />} />
         <Route path="/auth/register" element={<AuthPage />} />
-        <Route path="/catalogue" element={<BooksPublic />} />
         <Route path="/public/livres" element={<BooksPublic />} />
         <Route path="/public/audiobooks" element={<AudiobooksPublic />} />
         <Route path="/public/podcasts" element={<PodcastsPublic />} />
@@ -37,8 +40,6 @@ export default function AppRouter() {
         <Route path="/discover/books" element={<BooksPublic />} />
         <Route path="/discover/audiobooks" element={<AudiobooksPublic />} />
         <Route path="/discover/podcasts" element={<PodcastsPublic />} />
-        {/* Book detail - accessible to all users */}
-        <Route path="/library/books/:externalId" element={<BookDetail />} />
       </Route>
 
       {/* ================= APPLICATION (connecté) ================= */}
@@ -51,11 +52,23 @@ export default function AppRouter() {
       >
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/onboarding/preferences" element={<PreferencesSignupForm />} />
-        <Route path="/library" element={<LibraryLayout />}>
+
+        {/* Bibliothèque personnelle - tous types réunis */}
+        <Route path="/library" element={<MyLibrary />} />
+
+        {/* Catalogue à découvrir (connecté) */}
+        <Route path="/catalogue" element={<Catalogue />} />
+        <Route path="/catalogue/audiobooks/:id" element={<AudiobookDetail />} />
+        <Route path="/catalogue/podcasts/:id" element={<PodcastDetail />} />
+
+        {/* Détail livre (Open Library) */}
+        <Route path="/library/books/:externalId" element={<BookDetail />} />
+
+        {/* Anciennes routes détaillées */}
+        <Route path="/library/detail" element={<LibraryLayout />}>
           <Route path="digital-books" element={<DigitalBooks />} />
           <Route path="audiobooks" element={<Audiobooks />} />
           <Route path="podcasts" element={<Podcasts />} />
-          {/* Route pour les détails d'un livre numérique interne */}
           <Route path="digital-books/:id" element={<DigitalBookDetail />} />
         </Route>
       </Route>

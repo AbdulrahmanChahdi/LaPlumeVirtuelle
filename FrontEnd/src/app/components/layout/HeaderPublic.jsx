@@ -22,13 +22,22 @@ export default function HeaderPublic() {
 
         {/* Navigation centrale */}
         <nav className="hidden md:flex items-center gap-8">
-          <Link to="/public/livres" className="text-sm text-inkSoft hover:text-ink transition">
+          <Link
+            to={isAuthenticated ? "/catalogue?tab=books" : "/public/livres"}
+            className="text-sm text-inkSoft hover:text-ink transition"
+          >
             Livres
           </Link>
-          <Link to="/public/audiobooks" className="text-sm text-inkSoft hover:text-ink transition">
+          <Link
+            to={isAuthenticated ? "/catalogue?tab=audiobooks" : "/public/audiobooks"}
+            className="text-sm text-inkSoft hover:text-ink transition"
+          >
             Audiobooks
           </Link>
-          <Link to="/public/podcasts" className="text-sm text-inkSoft hover:text-ink transition">
+          <Link
+            to={isAuthenticated ? "/catalogue?tab=podcasts" : "/public/podcasts"}
+            className="text-sm text-inkSoft hover:text-ink transition"
+          >
             Podcasts
           </Link>
         </nav>

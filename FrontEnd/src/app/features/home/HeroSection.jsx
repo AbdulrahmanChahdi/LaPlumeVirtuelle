@@ -258,7 +258,7 @@ export default function HeroSection() {
         {/* Boutons d'action */}
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Button
-            onClick={() => navigate(isConnected ? "/library/digital-books" : "/public/livres")}
+            onClick={() => navigate(isConnected ? "/catalogue" : "/public/livres")}
             ariaLabel={isConnected ? "Accéder à votre bibliothèque" : "Découvrir le catalogue"}
           >
             {isConnected ? "Ma Bibliothèque" : "Découvrir le catalogue complet"}
@@ -266,7 +266,7 @@ export default function HeroSection() {
 
           {isConnected && (
             <Button
-              onClick={() => navigate("/discover/books")}
+              onClick={() => navigate("/public/livres")}
               className="bg-accent/10 text-accent hover:bg-accent/20"
               ariaLabel="Découvrir de nouveaux livres"
             >
