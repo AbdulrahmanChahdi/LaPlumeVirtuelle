@@ -10,6 +10,7 @@ import { enrichBookWithCategories } from "../../utils/categoryMapping";
 import { useAuth } from "../../hooks/useAuth";
 
 export default function BooksPublic() {
+  const { isAuthenticated } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const [books, setBooks] = useState([]);
   const [allBooks, setAllBooks] = useState([]); // Tous les livres chargés (pour chercher dedans)
