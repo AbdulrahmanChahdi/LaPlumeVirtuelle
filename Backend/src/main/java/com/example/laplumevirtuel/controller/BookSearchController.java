@@ -52,9 +52,9 @@ public class BookSearchController {
      * Advanced search endpoint with filters
      * No authentication required
      *
-     * @param author     Author name (optional)
-     * @param subject    Genre/category (optional)
-     * @param keyword    General keyword (optional)
+     * @param author Author name (optional)
+     * @param subject Genre/category (optional)
+     * @param keyword General keyword (optional)
      * @param maxResults Maximum number of results (optional, default: 20, max: 40)
      * @return List of book search results
      */
@@ -63,13 +63,14 @@ public class BookSearchController {
             @RequestParam(required = false) String author,
             @RequestParam(required = false) String subject,
             @RequestParam(required = false) String keyword,
-            @RequestParam(required = false, defaultValue = "20") Integer maxResults) {
+            @RequestParam(required = false, defaultValue = "20") Integer maxResults
+    ) {
         log.info("Advanced search - author: '{}', subject: '{}', keyword: '{}', maxResults: {}",
                 author, subject, keyword, maxResults);
 
-        // Build Open Library API query
+        // Build Google Books API query with special operators
         StringBuilder queryBuilder = new StringBuilder();
-
+        
         if (author != null && !author.trim().isEmpty()) {
             queryBuilder.append("inauthor:").append(author.trim()).append(" ");
         }
@@ -81,15 +82,15 @@ public class BookSearchController {
         }
 
         String finalQuery = queryBuilder.toString().trim();
-
+        
         if (finalQuery.isEmpty()) {
             log.warn("No search criteria provided for advanced search");
             return ResponseEntity.badRequest().build();
         }
 
-        log.info("Final Open Library query: '{}'", finalQuery);
+        log.info("Final Google Books query: '{}'", finalQuery);
         List<BookSearchResultDTO> results = externalBookService.searchBooks(finalQuery, maxResults);
-
+        
         log.info("Returning {} results for advanced search", results.size());
         return ResponseEntity.ok(results);
     }

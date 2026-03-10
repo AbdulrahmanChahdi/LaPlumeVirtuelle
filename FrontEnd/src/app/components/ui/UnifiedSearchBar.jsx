@@ -79,12 +79,12 @@ export default function UnifiedSearchBar({ onSearch, loading = false }) {
     <div className="w-full bg-white border border-gray-300 rounded-lg shadow-sm">
       <form onSubmit={handleSubmit}>
         {/* Barre de recherche principale */}
-        <div className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1 sm:py-3">
+        <div className="flex items-center gap-3 px-4 py-3">
           {/* Icône de recherche */}
           <div className="text-gray-400 flex-shrink-0">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4 sm:h-5 sm:w-5"
+              className="h-5 w-5"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -103,9 +103,9 @@ export default function UnifiedSearchBar({ onSearch, loading = false }) {
             type="text"
             value={simpleQuery}
             onChange={(e) => setSimpleQuery(e.target.value)}
-            placeholder="Rechercher..."
+            placeholder="Rechercher un livre par titre, auteur..."
             disabled={loading || isAdvancedOpen}
-            className="flex-1 outline-none text-xs sm:text-base text-ink placeholder-gray-400
+            className="flex-1 outline-none text-ink placeholder-gray-400
                      disabled:bg-gray-50 disabled:text-gray-500"
           />
 
@@ -113,13 +113,12 @@ export default function UnifiedSearchBar({ onSearch, loading = false }) {
           <button
             type="button"
             onClick={toggleAdvanced}
-            className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm text-accent 
+            className="flex items-center gap-2 px-3 py-1.5 text-sm text-accent 
                      hover:bg-accent/5 rounded-md transition-colors flex-shrink-0"
-            title={isAdvancedOpen ? "Recherche simple" : "Recherche avancée"}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4 sm:h-4 sm:w-4"
+              className="h-4 w-4"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -131,9 +130,7 @@ export default function UnifiedSearchBar({ onSearch, loading = false }) {
                 d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
               />
             </svg>
-            <span className="hidden sm:inline">
-              {isAdvancedOpen ? "Recherche simple" : "Recherche avancée"}
-            </span>
+            {isAdvancedOpen ? "Recherche simple" : "Recherche avancée"}
           </button>
 
           {/* Bouton Effacer */}
@@ -146,7 +143,7 @@ export default function UnifiedSearchBar({ onSearch, loading = false }) {
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4 sm:h-5 sm:w-5"
+                className="h-5 w-5"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"

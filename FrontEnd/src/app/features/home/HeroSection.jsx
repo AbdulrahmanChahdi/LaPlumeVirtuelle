@@ -6,11 +6,10 @@ import { searchBooks } from "../../api/booksApi"
 import { advancedSearchBooks } from "../../api/advancedBooksApi"
 import BookCard from "../../components/BookCard"
 import { enrichBookWithCategories } from "../../utils/categoryMapping"
-import { useAuth } from "../../hooks/useAuth"
 
 export default function HeroSection() {
   const navigate = useNavigate()
-  const { isAuthenticated } = useAuth()
+  const [isConnected, setIsConnected] = useState(false)
   const [books, setBooks] = useState([])
   const [allBooks, setAllBooks] = useState([])
   const [loading, setLoading] = useState(false)
@@ -19,6 +18,10 @@ export default function HeroSection() {
   const [activeFilters, setActiveFilters] = useState(null)
 
   useEffect(() => {
+    try {
+      const token = localStorage.getItem("authToken")
+      setIsConnected(!!token)
+    } catch {}
     loadInitialBooks()
   }, [])
 
@@ -75,32 +78,32 @@ export default function HeroSection() {
       setActiveFilters(null)
 
       const queryLower = query.toLowerCase()
-
+      
       // Recherche locale stricte (commence par)
       const localResults = allBooks.filter(book => {
         const title = (book.title || "").toLowerCase()
         const authors = (book.authors || []).join(" ").toLowerCase()
         return title.startsWith(queryLower) || authors.startsWith(queryLower)
       })
-
+      
       if (localResults.length > 0) {
         setBooks(localResults)
         return
       }
-
+      
       // Si pas trouvé localement, appel API
       setLoading(true)
       setIsSearching(true)
-
+      
       const results = await searchBooks(query, 40)
-
+      
       // Filtrer strictement les résultats API (commence par uniquement)
       const filteredResults = results.filter(book => {
         const title = (book.title || "").toLowerCase()
         const authors = (book.authors || []).join(" ").toLowerCase()
         return title.startsWith(queryLower) || authors.startsWith(queryLower)
       })
-
+      
       if (filteredResults.length === 0) {
         setBooks([])
       } else {
@@ -131,40 +134,40 @@ export default function HeroSection() {
       // Recherche locale avec filtres
       const localResults = allBooks.filter(book => {
         let match = true
-
+        
         if (filters.author) {
           const authors = (book.authors || []).join(" ").toLowerCase().trim()
           const authorLower = filters.author.toLowerCase().trim()
           match = match && authors.includes(authorLower)
         }
-
+        
         if (filters.subject) {
           const category = (book.category || "").toLowerCase().trim()
           const normalizedCategories = (book.normalizedCategories || []).join(" ").toLowerCase().trim()
           const subjectLower = filters.subject.toLowerCase().trim()
           match = match && (category.includes(subjectLower) || normalizedCategories.includes(subjectLower))
         }
-
+        
         if (filters.keyword) {
           const title = (book.title || "").toLowerCase().trim()
           const keywordLower = filters.keyword.toLowerCase().trim()
           match = match && title.includes(keywordLower)
         }
-
+        
         return match
       })
-
+      
       if (localResults.length > 0) {
         setBooks(localResults)
         return
       }
-
+      
       // Si pas trouvé localement, appel API
       setLoading(true)
       setIsSearching(true)
-
+      
       const results = await advancedSearchBooks(filters, 40)
-
+      
       if (results.length === 0) {
         setBooks([])
       } else {
@@ -185,11 +188,11 @@ export default function HeroSection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-8">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4">
-            {isAuthenticated ? "Bienvenue dans votre Bibliothèque" : "Votre Bibliothèque Multimédia en Ligne"}
+            {isConnected ? "Bienvenue dans votre Bibliothèque" : "Votre Bibliothèque Multimédia en Ligne"}
           </h1>
 
           <p className="text-sm sm:text-base md:text-lg text-inkSoft mb-6 max-w-2xl mx-auto">
-            {isAuthenticated
+            {isConnected 
               ? "Accédez à votre collection personnelle, découvrez de nouveaux livres et podcasts"
               : "Découvrez, lisez et écoutez une sélection de livres et de podcasts, adaptés à vos envies."
             }
