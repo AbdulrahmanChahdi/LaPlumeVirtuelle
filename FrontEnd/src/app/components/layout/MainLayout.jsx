@@ -12,7 +12,12 @@ export default function MainLayout() {
   const location = useLocation()
   const navigate = useNavigate()
   const { user, logout } = useAuth()
+  const isAdmin = (user?.role || "").toUpperCase() === "ADMIN"
   const onboardingDone = typeof window !== "undefined" && localStorage.getItem("onboardingDone") === "true"
+
+  const navLinks = isAdmin
+    ? [...NAV_LINKS, { label: "Administration", to: "/admin" }]
+    : NAV_LINKS
 
   if (!onboardingDone && location.pathname !== "/onboarding/preferences") {
     return <Navigate to="/onboarding/preferences" replace />
@@ -54,8 +59,8 @@ export default function MainLayout() {
 
           {/* Nav links */}
           <nav className="flex flex-col gap-1">
-            {NAV_LINKS.map((link, i) => {
-              const prevLink = NAV_LINKS[i - 1]
+            {navLinks.map((link, i) => {
+              const prevLink = navLinks[i - 1]
               const needsSeparator = link.group && (!prevLink || !prevLink.group)
               return (
                 <Fragment key={link.to}>
