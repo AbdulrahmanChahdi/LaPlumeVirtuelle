@@ -96,6 +96,9 @@ export default function Audiobooks() {
               key={audiobook.id}
               book={{
                 ...audiobook,
+                titre: audiobook.livre?.titre || audiobook.titre,
+                imageUrl: audiobook.livre?.imageUrl || audiobook.imageUrl,
+                categorie: audiobook.livre?.categorie || audiobook.categorie,
                 authors: audiobook.auteur ? [audiobook.auteur.nom] : []
               }}
             />

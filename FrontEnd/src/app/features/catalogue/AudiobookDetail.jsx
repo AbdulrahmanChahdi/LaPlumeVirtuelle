@@ -57,6 +57,7 @@ export default function AudiobookDetail() {
   const auteur = item.livre?.auteur?.nom || ""
   const thematique = item.livre?.thematique || item.thematique || ""
   const isbn = item.livre?.isbn || ""
+  const cover = item.livre?.imageUrl || item.imageUrl || ""
 
   return (
     <div className="min-h-screen">
@@ -77,7 +78,11 @@ export default function AudiobookDetail() {
         <div className="flex flex-col sm:flex-row gap-8 items-start max-w-4xl">
           {/* Cover */}
           <div className="shrink-0 w-36 sm:w-44 aspect-[3/4] bg-white/10 backdrop-blur rounded-2xl flex items-center justify-center shadow-xl">
-            <span className="text-7xl">🎧</span>
+            {cover ? (
+              <img src={cover} alt={titre} className="w-full h-full object-cover rounded-2xl" />
+            ) : (
+              <span className="text-7xl">🎧</span>
+            )}
           </div>
 
           {/* Titre + meta */}

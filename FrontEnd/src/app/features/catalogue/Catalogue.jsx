@@ -24,11 +24,16 @@ function buildAuthHeaders() {
 
 /* ── Cards ── */
 function AudioCard({ item }) {
+  const cover = item.livre?.imageUrl || item.imageUrl
   return (
     <Link to={`/catalogue/audiobooks/${item.id}`} className="block group">
       <div className="bg-white rounded-lg border border-borderSoft group-hover:shadow-md transition-shadow p-4 flex flex-col gap-2">
         <div className="w-full aspect-[3/4] bg-paper rounded flex items-center justify-center mb-2">
-          <span className="text-3xl">🎧</span>
+          {cover ? (
+            <img src={cover} alt={item.livre?.titre || item.titre || "Audiobook"} className="w-full h-full object-cover rounded" />
+          ) : (
+            <span className="text-3xl">🎧</span>
+          )}
         </div>
         <p className="text-sm font-semibold text-ink leading-tight line-clamp-2">
           {item.livre?.titre || item.titre || "Sans titre"}
