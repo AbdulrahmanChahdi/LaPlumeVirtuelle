@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate, useLocation } from "react-router-dom";
-import { getBookByExternalId } from "../../api/booksApi";
+import { useParams, useNavigate, useLocation, Link } from "react-router-dom";
+import { getBookByExternalId, searchBooks } from "../../api/booksApi";
 import { getUserDownloadStats, downloadBook } from "../../api/downloadApi";
 import { addBookToLibrary, getDigitalBooks } from "../../api/digitalBooksApi";
 import { useAuth } from "../../hooks/useAuth";
@@ -24,6 +24,8 @@ export default function BookDetail() {
   const [isInLibrary, setIsInLibrary] = useState(false);
   const [notification, setNotification] = useState(null);
   const [showDownloadConfirm, setShowDownloadConfirm] = useState(false);
+  const [similar, setSimilar] = useState([]);
+  const [loadingSimilar, setLoadingSimilar] = useState(false);
 
   // Auto-hide notification after 3 seconds
   useEffect(() => {
@@ -73,6 +75,23 @@ export default function BookDetail() {
 
     loadBookAndStats();
   }, [decodedExternalId, isAuthenticated, token]);
+
+  useEffect(() => {
+    if (!book) return;
+    async function loadSimilar() {
+      setLoadingSimilar(true);
+      try {
+        const query = book.category || book.authors?.[0] || book.title;
+        const results = await searchBooks(query, 10);
+        setSimilar(results.filter((b) => b.externalId !== decodedExternalId).slice(0, 6));
+      } catch {
+        // silently ignore
+      } finally {
+        setLoadingSimilar(false);
+      }
+    }
+    loadSimilar();
+  }, [book, decodedExternalId]);
 
   const handleDownload = () => {
     if (!downloadStats) return;
@@ -148,325 +167,265 @@ export default function BookDetail() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader />
-      </div>
-    );
-  }
+  if (loading) return <div className="flex justify-center py-20"><Loader /></div>
 
-  if (error || !book) {
-    return (
-      <div className="max-w-4xl mx-auto px-4 py-12">
-        <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg">
-          <p className="text-red-700 font-medium">{error || "Livre introuvable"}</p>
-        </div>
-        <Button onClick={() => navigate(-1)} className="mt-6">
-          Retour
-        </Button>
-      </div>
-    );
-  }
+  if (error || !book) return (
+    <div className="px-6 py-8">
+      <button type="button" onClick={() => navigate(-1)} className="flex items-center gap-2 text-inkMuted hover:text-ink text-sm mb-6 transition-colors">
+        ← Retour
+      </button>
+      <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded text-red-700 text-sm">{error || "Livre introuvable"}</div>
+    </div>
+  )
 
-  const canDownload = downloadStats?.isSubscriber || (downloadStats?.remainingDownloads > 0);
+  const canDownload = downloadStats?.isSubscriber || (downloadStats?.remainingDownloads > 0)
 
   return (
     <>
       {/* Notification Toast */}
       {notification && (
-        <div
-          role="alert"
-          aria-live="polite"
-          aria-atomic="true"
-          className={`fixed top-4 right-4 z-50 px-6 py-4 rounded-lg shadow-lg transform transition-all duration-300 ${notification.type === 'success' ? 'bg-accent' : 'bg-red-600'
-            } text-white animate-slide-in`}
+        <div role="alert" aria-live="polite"
+          className={`fixed top-4 right-4 z-50 flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-lg text-white text-sm font-medium ${
+            notification.type === 'success' ? 'bg-accent' : 'bg-red-600'
+          }`}
         >
-          <div className="flex items-center gap-3">
-            {notification.type === 'success' ? (
-              <svg className="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-            ) : (
-              <svg className="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            )}
-            <p className="font-medium text-sm sm:text-base">{notification.message}</p>
-            <button
-              onClick={() => setNotification(null)}
-              className="ml-2 hover:opacity-75 flex-shrink-0"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
+          <span>{notification.message}</span>
+          <button type="button" onClick={() => setNotification(null)} className="hover:opacity-75">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
       )}
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
-        {/* Breadcrumb */}
-        <button
-          onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-accent hover:text-accentHover mb-6 transition-colors"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-          Retour aux livres
-        </button>
+      <div className="min-h-screen">
+        {/* Hero banner */}
+        <div className="bg-gradient-to-br from-[#1a3d35] to-accent px-6 py-12 lg:px-10">
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            className="flex items-center gap-2 text-white/70 hover:text-white text-sm mb-8 transition-colors"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+            Retour
+          </button>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Colonne gauche - Image */}
-          <div className="lg:col-span-1">
-            <div className="sticky top-8">
-              <div className="aspect-[2/3] bg-gradient-to-br from-gray-50 to-white rounded-lg overflow-hidden shadow-lg border border-borderSoft">
-                {book.coverUrl ? (
-                  <img
-                    src={book.coverUrl}
-                    alt={book.title}
-                    className="w-full h-full object-contain p-4"
-                  />
-                ) : (
-                  <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-accent/10 to-accent/5 p-6">
-                    <svg className="w-20 h-20 text-accent/30 mb-4" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" />
-                    </svg>
-                    <p className="text-sm text-accent/50 text-center font-medium line-clamp-3">{book.title}</p>
-                  </div>
-                )}
-              </div>
-
-              {/* Download section */}
-              <div className="mt-6 p-4 bg-gradient-to-br from-accent/5 to-gold/5 rounded-lg border border-accent/20">
-                {!isAuthenticated ? (
-                  // CTA pour les non-connectés
-                  <div className="space-y-4">
-                    <div className="text-center">
-                      <svg className="w-12 h-12 text-accent/40 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                      </svg>
-                      <h3 className="font-semibold text-ink mb-2">Accès aux téléchargements</h3>
-                      <p className="text-sm text-inkSoft">Connectez-vous pour télécharger ce livre et accéder à votre bibliothèque.</p>
-                    </div>
-                    <div className="space-y-2">
-                      <Button
-                        onClick={() => {
-                          saveIntendedDestination(location.pathname);
-                          navigate("/auth/login");
-                        }}
-                        className="w-full"
-                      >
-                        Se connecter
-                      </Button>
-                      <Button
-                        onClick={() => {
-                          saveIntendedDestination(location.pathname);
-                          navigate("/auth/register");
-                        }}
-                        variant="secondary"
-                        className="w-full"
-                      >
-                        Créer un compte
-                      </Button>
-                    </div>
-                  </div>
-                ) : downloadStats?.isSubscriber ? (
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2 text-gold">
-                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                      </svg>
-                      <span className="font-semibold">Abonné Premium</span>
-                    </div>
-                    <p className="text-sm text-inkSoft">Téléchargements illimités</p>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-ink">Téléchargements restants</span>
-                      <span className="text-lg font-bold text-accent">{downloadStats?.remainingDownloads || 0} / 5</span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div
-                        className="bg-accent h-2 rounded-full transition-all"
-                        style={{ width: `${((downloadStats?.remainingDownloads || 0) / 5) * 100}%` }}
-                      />
-                    </div>
-                    <p className="text-xs text-inkMuted">Réinitialisation mensuelle</p>
-                  </div>
-                )}
-
-                {isAuthenticated && (
-                  <>
-                    {!isInLibrary && (
-                      <Button
-                        onClick={handleAddToLibrary}
-                        disabled={addingToLibrary}
-                        variant="tertiary"
-                        className="w-full"
-                      >
-                        {addingToLibrary ? (
-                          <>
-                            <svg className="animate-spin -ml-1 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24">
-                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                            </svg>
-                            Ajout...
-                          </>
-                        ) : (
-                          <>
-                            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                            </svg>
-                            Ajouter à ma bibliothèque
-                          </>
-                        )}
-                      </Button>
-                    )}
-
-                    <Button
-                      onClick={handleDownload}
-                      disabled={!downloadStats || !canDownload || downloading}
-                      className="w-full mt-4"
-                    >
-                      {downloading ? (
-                        <>
-                          <svg className="animate-spin -ml-1 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                          </svg>
-                          Téléchargement...
-                        </>
-                      ) : canDownload ? (
-                        <>
-                          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                          </svg>
-                          Télécharger
-                        </>
-                      ) : (
-                        "Limite atteinte"
-                      )}
-                    </Button>
-
-                    {!downloadStats?.isSubscriber && (
-                      <p className="text-xs text-center text-inkMuted mt-3">
-                        <a href="/subscription" className="text-accent hover:underline font-medium">
-                          Passez Premium
-                        </a>
-                        {" "}pour des téléchargements illimités
-                      </p>
-                    )}
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Colonne droite - Détails */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Titre et auteurs */}
-            <div>
-              <h1 className="text-3xl sm:text-4xl font-bold text-ink mb-3">
-                {book.title}
-              </h1>
-              {book.authors && book.authors.length > 0 && (
-                <p className="text-lg text-accent font-medium">
-                  Par {book.authors.join(", ")}
-                </p>
+          <div className="flex flex-col sm:flex-row gap-8 items-start max-w-4xl">
+            {/* Cover */}
+            <div className="shrink-0 w-32 sm:w-44 aspect-[2/3] bg-white/10 backdrop-blur rounded-2xl overflow-hidden shadow-xl flex items-center justify-center">
+              {book.coverUrl ? (
+                <img src={book.coverUrl} alt={book.title} className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-6xl">📖</span>
               )}
             </div>
 
-            {/* Métadonnées */}
-            <div className="flex flex-wrap gap-2">
-              {book.category && (
-                <span className="px-3 py-1 bg-accent/10 text-accent rounded-full text-sm font-medium">
-                  {book.category}
-                </span>
+            {/* Titre + meta */}
+            <div className="flex-1 pt-1">
+              <span className="inline-block text-[11px] uppercase tracking-widest text-emerald-200 font-semibold mb-3">Livre</span>
+              <h1 className="text-3xl sm:text-4xl font-bold text-white leading-tight mb-2">{book.title}</h1>
+              {book.authors?.length > 0 && (
+                <p className="text-emerald-100 text-base mb-5">{book.authors.join(", ")}</p>
               )}
-              {book.publishedDate && (
-                <span className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm">
-                  {new Date(book.publishedDate).getFullYear()}
-                </span>
-              )}
-              {book.pageCount && (
-                <span className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm">
-                  {book.pageCount} pages
-                </span>
-              )}
-              {book.language && (
-                <span className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm uppercase">
-                  {book.language}
-                </span>
-              )}
-            </div>
-
-            {/* Description */}
-            {book.description && (
-              <div className="prose max-w-none">
-                <h2 className="text-xl font-semibold text-ink mb-3">Description</h2>
-                <div
-                  className="text-inkSoft leading-relaxed"
-                  dangerouslySetInnerHTML={{ __html: book.description }}
-                />
+              <div className="flex flex-wrap gap-2">
+                {book.category && <span className="text-xs bg-white/20 text-white px-3 py-1 rounded-full backdrop-blur">{book.category}</span>}
+                {book.publishedDate && <span className="text-xs bg-white/20 text-white px-3 py-1 rounded-full backdrop-blur">{new Date(book.publishedDate).getFullYear()}</span>}
+                {book.pageCount && <span className="text-xs bg-white/20 text-white px-3 py-1 rounded-full backdrop-blur">📄 {book.pageCount} pages</span>}
+                {book.language && <span className="text-xs bg-white/20 text-white px-3 py-1 rounded-full backdrop-blur uppercase">{book.language}</span>}
               </div>
-            )}
-
-            {/* Informations éditoriales */}
-            <div className="bg-gradient-to-br from-paper to-paperSoft rounded-lg p-6 border border-borderSoft">
-              <h2 className="text-xl font-semibold text-ink mb-4">Informations éditoriales</h2>
-              <dl className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {book.publisher && (
-                  <div>
-                    <dt className="text-sm text-inkMuted mb-1">Éditeur</dt>
-                    <dd className="font-medium text-ink">{book.publisher}</dd>
-                  </div>
-                )}
-                {book.publishedDate && (
-                  <div>
-                    <dt className="text-sm text-inkMuted mb-1">Date de publication</dt>
-                    <dd className="font-medium text-ink">
-                      {new Date(book.publishedDate).toLocaleDateString('fr-FR', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                      })}
-                    </dd>
-                  </div>
-                )}
-                {book.isbn && (
-                  <div>
-                    <dt className="text-sm text-inkMuted mb-1">ISBN</dt>
-                    <dd className="font-medium text-ink font-mono text-sm">{book.isbn}</dd>
-                  </div>
-                )}
-                {book.pageCount && (
-                  <div>
-                    <dt className="text-sm text-inkMuted mb-1">Nombre de pages</dt>
-                    <dd className="font-medium text-ink">{book.pageCount} pages</dd>
-                  </div>
-                )}
-              </dl>
             </div>
           </div>
         </div>
+
+        {/* Corps */}
+        <div className="px-6 py-8 lg:px-10 max-w-7xl">
+          <div className="flex gap-8 items-start">
+
+          {/* Colonne principale */}
+          <div className="flex-1 min-w-0 space-y-5">
+
+          {/* Actions (connecté) */}
+          {isAuthenticated && (
+            <div className="bg-white rounded-2xl border border-borderSoft p-6 shadow-sm">
+              <h2 className="text-xs uppercase tracking-widest text-inkMuted font-semibold mb-5">Actions</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {/* Bouton bibliothèque */}
+                {isInLibrary ? (
+                  <div className="flex items-center gap-3 px-5 py-4 rounded-xl bg-emerald-50 border border-emerald-200">
+                    <span className="w-9 h-9 rounded-full bg-accent flex items-center justify-center shrink-0">
+                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </span>
+                    <div>
+                      <p className="text-sm font-semibold text-accent">Dans votre bibliothèque</p>
+                      <p className="text-xs text-emerald-600">Déjà ajouté</p>
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={handleAddToLibrary}
+                    disabled={addingToLibrary}
+                    className="flex items-center gap-3 px-5 py-4 rounded-xl border-2 border-accent text-accent hover:bg-accent hover:text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group"
+                  >
+                    <span className="w-9 h-9 rounded-full border-2 border-accent group-hover:border-white flex items-center justify-center shrink-0 transition-colors">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                      </svg>
+                    </span>
+                    <div className="text-left">
+                      <p className="text-sm font-semibold">{addingToLibrary ? "Ajout en cours..." : "Ajouter à ma bibliothèque"}</p>
+                      <p className="text-xs opacity-70">Sauvegarder pour plus tard</p>
+                    </div>
+                  </button>
+                )}
+
+                {/* Bouton téléchargement */}
+                <button
+                  type="button"
+                  onClick={handleDownload}
+                  disabled={!downloadStats || !canDownload || downloading}
+                  className="flex items-center gap-3 px-5 py-4 rounded-xl bg-accent text-white hover:bg-accentHover transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+                >
+                  <span className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+                    {downloading ? (
+                      <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                      </svg>
+                    ) : (
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                      </svg>
+                    )}
+                  </span>
+                  <div className="text-left">
+                    <p className="text-sm font-semibold">
+                      {downloading ? "Téléchargement..." : canDownload ? "Télécharger" : "Limite atteinte"}
+                    </p>
+                    <p className="text-xs opacity-70">Format ebook</p>
+                  </div>
+                </button>
+              </div>
+
+              {/* Quota */}
+              {downloadStats && (
+                <div className="mt-5 pt-5 border-t border-borderSoft">
+                  {downloadStats.isSubscriber ? (
+                    <div className="flex items-center gap-2">
+                      <span className="text-gold text-sm">★</span>
+                      <p className="text-xs font-semibold text-gold">Compte Premium — téléchargements illimités</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-1.5">
+                      <div className="flex justify-between text-xs text-inkMuted mb-1">
+                        <span>Téléchargements ce mois</span>
+                        <span className="font-semibold text-ink">{downloadStats.remainingDownloads} / 5 restants</span>
+                      </div>
+                      <div className="w-full bg-gray-100 rounded-full h-2">
+                        <div
+                          className="h-2 rounded-full transition-all"
+                          style={{
+                            width: `${((downloadStats.remainingDownloads || 0) / 5) * 100}%`,
+                            background: downloadStats.remainingDownloads > 1 ? '#2F5D50' : '#ef4444'
+                          }}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* CTA non connecté */}
+          {!isAuthenticated && (
+            <div className="bg-white rounded-2xl border border-borderSoft p-6 shadow-sm text-center">
+              <p className="text-inkSoft text-sm mb-4">Connectez-vous pour télécharger ce livre et l'ajouter à votre bibliothèque.</p>
+              <div className="flex gap-3 justify-center">
+                <Button onClick={() => { saveIntendedDestination(location.pathname); navigate("/auth/login") }}>Se connecter</Button>
+                <Button variant="secondary" onClick={() => { saveIntendedDestination(location.pathname); navigate("/auth/register") }}>Créer un compte</Button>
+              </div>
+            </div>
+          )}
+
+          {/* Description */}
+          {book.description && (
+            <div className="bg-white rounded-2xl border border-borderSoft p-6 shadow-sm">
+              <h2 className="text-xs uppercase tracking-widest text-inkMuted font-semibold mb-3">Description</h2>
+              <div className="text-ink text-sm leading-relaxed" dangerouslySetInnerHTML={{ __html: book.description }} />
+            </div>
+          )}
+
+          {/* Fiche */}
+          <div className="bg-white rounded-2xl border border-borderSoft p-6 shadow-sm">
+            <h2 className="text-xs uppercase tracking-widest text-inkMuted font-semibold mb-5">Informations éditoriales</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
+              {book.publisher && <div><p className="text-inkMuted text-xs uppercase tracking-wide mb-1">Éditeur</p><p className="text-ink font-semibold text-sm">{book.publisher}</p></div>}
+              {book.publishedDate && <div><p className="text-inkMuted text-xs uppercase tracking-wide mb-1">Publication</p><p className="text-ink font-semibold text-sm">{new Date(book.publishedDate).toLocaleDateString('fr-FR', { year: 'numeric', month: 'long' })}</p></div>}
+              {book.isbn && <div><p className="text-inkMuted text-xs uppercase tracking-wide mb-1">ISBN</p><p className="text-ink font-semibold text-sm font-mono">{book.isbn}</p></div>}
+              {book.pageCount && <div><p className="text-inkMuted text-xs uppercase tracking-wide mb-1">Pages</p><p className="text-ink font-semibold text-sm">{book.pageCount}</p></div>}
+            </div>
+          </div>
+
+          </div>{/* fin colonne principale */}
+
+          {/* Sidebar droite — Suggestions */}
+          {(loadingSimilar || similar.length > 0) && (
+            <aside className="hidden lg:block w-64 shrink-0 sticky top-6 self-start">
+              <h2 className="text-xs uppercase tracking-widest text-inkMuted font-semibold mb-4">Vous aimerez aussi</h2>
+              <div className="space-y-4">
+                {loadingSimilar
+                  ? [...Array(5)].map((_, i) => (
+                      <div key={i} className="flex gap-3 animate-pulse">
+                        <div className="w-12 h-16 bg-gray-200 rounded-lg shrink-0" />
+                        <div className="flex-1 pt-1 space-y-2">
+                          <div className="h-3 bg-gray-200 rounded w-full" />
+                          <div className="h-3 bg-gray-100 rounded w-3/4" />
+                        </div>
+                      </div>
+                    ))
+                  : similar.map((s) => (
+                      <Link
+                        key={s.externalId}
+                        to={`/library/books/${encodeURIComponent(s.externalId)}`}
+                        className="flex gap-3 group"
+                      >
+                        <div className="w-12 h-16 rounded-lg overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 shrink-0 shadow-sm group-hover:shadow-md transition-shadow flex items-center justify-center">
+                          {s.coverUrl
+                            ? <img src={s.coverUrl} alt={s.title} className="w-full h-full object-cover" />
+                            : <span className="text-xl">📖</span>}
+                        </div>
+                        <div className="flex-1 min-w-0 pt-0.5">
+                          <p className="text-ink text-xs font-semibold leading-snug line-clamp-2 group-hover:text-accent transition-colors">{s.title}</p>
+                          {s.authors?.length > 0 && (
+                            <p className="text-inkMuted text-[11px] mt-1 truncate">{s.authors[0]}</p>
+                          )}
+                        </div>
+                      </Link>
+                    ))
+                }
+              </div>
+            </aside>
+          )}
+
+          </div>{/* fin flex 2 colonnes */}
+        </div>
       </div>
 
-      {/* Download Confirmation Modal */}
       <ConfirmModal
         isOpen={showDownloadConfirm}
         onClose={() => setShowDownloadConfirm(false)}
         onConfirm={confirmDownload}
         title="Télécharger ce livre"
-        message={`${book.title}\n\n${downloadStats?.isSubscriber 
-          ? "✨ Téléchargement illimité (compte Premium)" 
-          : `📥 Il vous reste ${downloadStats?.remainingDownloads} téléchargement(s) ce mois-ci`}`}
+        message={`${book.title}\n\n${downloadStats?.isSubscriber ? "✨ Téléchargement illimité (compte Premium)" : `📥 Il vous reste ${downloadStats?.remainingDownloads} téléchargement(s) ce mois-ci`}`}
         confirmText="Télécharger"
         cancelText="Annuler"
         type="default"
       />
     </>
-  );
+  )
 }

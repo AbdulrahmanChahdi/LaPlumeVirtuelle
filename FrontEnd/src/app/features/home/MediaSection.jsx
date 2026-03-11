@@ -13,9 +13,9 @@ export default function MediaSection() {
     } catch {}
   }, [])
 
-  const booksLink = isConnected ? "/library/digital-books" : "/public/livres"
-  const audiobooksLink = isConnected ? "/library/audiobooks" : "/public/audiobooks"
-  const podcastsLink = isConnected ? "/library/podcasts" : "/public/podcasts"
+  const booksLink = isConnected ? "/catalogue?tab=books" : "/public/livres"
+  const audiobooksLink = isConnected ? "/catalogue?tab=audiobooks" : "/public/audiobooks"
+  const podcastsLink = isConnected ? "/catalogue?tab=podcasts" : "/public/podcasts"
 
   return (
     <Section

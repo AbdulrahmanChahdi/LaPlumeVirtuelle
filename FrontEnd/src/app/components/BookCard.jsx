@@ -6,7 +6,7 @@ export default function BookCard({ book, progress }) {
   const isInternalBook = !!book.id && !book.externalId;
   const encodedBookId = bookId ? encodeURIComponent(bookId) : "";
   const detailLink = isInternalBook
-    ? `/library/digital-books/${encodedBookId}`
+    ? `/library/detail/digital-books/${encodedBookId}`
     : `/library/books/${encodedBookId}`;
 
   // Handle different field names for internal vs external books

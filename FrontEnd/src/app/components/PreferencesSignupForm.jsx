@@ -214,11 +214,11 @@ export default function PreferencesSignupForm() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-paper to-paperSoft flex items-start justify-center py-12 px-4">
+    <div className="flex items-start justify-center min-h-screen px-4 py-12 bg-gradient-to-br from-paper to-paperSoft">
       <Card className="w-full max-w-4xl shadow-lg">
         {/* Barre de progression */}
         <div className="mb-6">
-          <div className="flex justify-between items-center mb-2">
+          <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium text-ink">Progression</span>
             <span className="text-sm font-semibold text-accent">{progress}%</span>
           </div>
@@ -232,33 +232,33 @@ export default function PreferencesSignupForm() {
 
         <form aria-labelledby="preferences-title" className="space-y-6" onSubmit={handleSubmit}>
           {/* Header avec step indicator */}
-          <div className="text-center space-y-3 pb-6 border-b border-borderSoft">
+          <div className="pb-6 space-y-3 text-center border-b border-borderSoft">
             <div className="text-sm font-medium text-accent">
               Étape {currentStep} sur {totalSteps}
             </div>
             <h1 id="preferences-title" className="text-3xl font-bold text-ink">
               {getStepLabel()}
             </h1>
-            <p className="text-base text-inkSoft max-w-2xl mx-auto">
+            <p className="max-w-2xl mx-auto text-base text-inkSoft">
               Aidez-nous à vous recommander les meilleurs contenus selon vos goûts et vos besoins.
             </p>
           </div>
 
           {error && (
-            <div className="p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded">
+            <div className="p-4 text-red-700 border-l-4 border-red-500 rounded bg-red-50">
               <p className="font-medium">{error}</p>
             </div>
           )}
 
           {stepError && (
-            <div className="p-4 bg-amber-50 border-l-4 border-amber-500 text-amber-700 rounded">
+            <div className="p-4 border-l-4 rounded bg-amber-50 border-amber-500 text-amber-700">
               <p className="font-medium">{stepError}</p>
             </div>
           )}
 
           {/* STEP 1: Tranche d'âge */}
           {currentStep === 1 && (
-            <fieldset className="space-y-4 p-5 bg-white border-l-4 border-accent rounded-lg shadow-sm">
+            <fieldset className="p-5 space-y-4 bg-white border-l-4 rounded-lg shadow-sm border-accent">
               <legend className="text-lg font-semibold text-ink">
                 Tranche d'âge <span className="text-red-500">*</span>
               </legend>
@@ -281,8 +281,8 @@ export default function PreferencesSignupForm() {
 
           {/* STEP 2: Objectifs */}
           {currentStep === 2 && (
-            <fieldset className="space-y-4 p-5 bg-white border-l-4 border-gold rounded-lg shadow-sm">
-              <div className="flex justify-between items-center">
+            <fieldset className="p-5 space-y-4 bg-white border-l-4 rounded-lg shadow-sm border-gold">
+              <div className="flex items-center justify-between">
                 <legend className="text-lg font-semibold text-ink">
                   Objectif principal <span className="text-red-500">*</span>
                 </legend>
@@ -297,7 +297,7 @@ export default function PreferencesSignupForm() {
                 </span>
               </div>
               <p className="text-sm text-inkMuted">Sélectionnez jusqu'à {maxObjectives} objectifs</p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-3">
                 {objectives.map((o) => {
                   const checked = selectedObjectives.includes(o.id);
                   const disabled = !checked && selectedObjectives.length >= maxObjectives;
@@ -328,7 +328,7 @@ export default function PreferencesSignupForm() {
                             }
                           }
                         }}
-                        className="w-5 h-5 text-accent accent-accent focus:ring-2 focus:ring-accent rounded"
+                        className="w-5 h-5 rounded text-accent accent-accent focus:ring-2 focus:ring-accent"
                       />
                       <span className="text-sm text-ink">{o.label}</span>
                     </label>
@@ -340,11 +340,11 @@ export default function PreferencesSignupForm() {
 
           {/* STEP 3: Formats */}
           {currentStep === 3 && (
-            <fieldset className="space-y-4 p-5 bg-white border-l-4 border-accent rounded-lg shadow-sm">
+            <fieldset className="p-5 space-y-4 bg-white border-l-4 rounded-lg shadow-sm border-accent">
               <legend className="text-lg font-semibold text-ink">
                 Format préféré <span className="text-red-500">*</span>
               </legend>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 sm:gap-3">
                 {formats.map((f) => {
                   const checked = selectedFormats.includes(f.id);
                   return (
@@ -369,7 +369,7 @@ export default function PreferencesSignupForm() {
                             setSelectedFormats([...selectedFormats, f.id])
                           }
                         }}
-                        className="w-5 h-5 text-accent accent-accent focus:ring-2 focus:ring-accent rounded"
+                        className="w-5 h-5 rounded text-accent accent-accent focus:ring-2 focus:ring-accent"
                       />
                       <span className="text-sm text-ink">{f.label}</span>
                     </label>
@@ -381,8 +381,8 @@ export default function PreferencesSignupForm() {
 
           {/* STEP 4: Thématiques */}
           {currentStep === 4 && (
-            <fieldset className="space-y-4 p-5 bg-white border-l-4 border-gold rounded-lg shadow-sm">
-              <div className="flex justify-between items-center">
+            <fieldset className="p-5 space-y-4 bg-white border-l-4 rounded-lg shadow-sm border-gold">
+              <div className="flex items-center justify-between">
                 <legend className="text-lg font-semibold text-ink">
                   Thématiques <span className="text-red-500">*</span>
                 </legend>
@@ -428,7 +428,7 @@ export default function PreferencesSignupForm() {
                             }
                           }
                         }}
-                        className="w-4 h-4 text-accent accent-accent focus:ring-2 focus:ring-accent rounded flex-shrink-0"
+                        className="flex-shrink-0 w-4 h-4 rounded text-accent accent-accent focus:ring-2 focus:ring-accent"
                       />
                       <span className="text-ink">{t.label}</span>
                     </label>
@@ -440,7 +440,7 @@ export default function PreferencesSignupForm() {
 
           {/* STEP 5: Niveau de lecture */}
           {currentStep === 5 && (
-            <fieldset className="space-y-4 p-5 bg-white border-l-4 border-accent rounded-lg shadow-sm">
+            <fieldset className="p-5 space-y-4 bg-white border-l-4 rounded-lg shadow-sm border-accent">
               <legend className="text-lg font-semibold text-ink">
                 Niveau de lecture <span className="text-red-500">*</span>
               </legend>
@@ -479,7 +479,7 @@ export default function PreferencesSignupForm() {
 
           {/* STEP 6: Temps disponible */}
           {currentStep === 6 && (
-            <fieldset className="space-y-4 p-5 bg-white border-l-4 border-accent rounded-lg shadow-sm">
+            <fieldset className="p-5 space-y-4 bg-white border-l-4 rounded-lg shadow-sm border-accent">
               <legend className="text-lg font-semibold text-ink">
                 Temps disponible <span className="text-red-500">*</span>
               </legend>
@@ -501,7 +501,7 @@ export default function PreferencesSignupForm() {
 
           {/* STEP 7: Moments de consommation */}
           {currentStep === 7 && (
-            <fieldset className="space-y-4 p-5 bg-white border-l-4 border-gold rounded-lg shadow-sm">
+            <fieldset className="p-5 space-y-4 bg-white border-l-4 rounded-lg shadow-sm border-gold">
               <legend className="text-lg font-semibold text-ink">
                 Moments de consommation
               </legend>
@@ -530,7 +530,7 @@ export default function PreferencesSignupForm() {
                             setSelectedMoments([...selectedMoments, m.id])
                           }
                         }}
-                        className="w-5 h-5 text-accent accent-accent focus:ring-2 focus:ring-accent rounded"
+                        className="w-5 h-5 rounded text-accent accent-accent focus:ring-2 focus:ring-accent"
                       />
                       <span className="text-sm text-ink">{m.label}</span>
                     </label>
@@ -542,9 +542,9 @@ export default function PreferencesSignupForm() {
 
           {/* STEP 8: Auteurs appréciés */}
           {currentStep === 8 && (
-            <fieldset className="space-y-4 p-5 bg-white border-l-4 border-gold rounded-lg shadow-sm">
+            <fieldset className="p-5 space-y-4 bg-white border-l-4 rounded-lg shadow-sm border-gold">
               <legend className="text-lg font-semibold text-ink">
-                Auteurs, livres ou podcasts appréciés <span className="text-xs text-inkMuted font-normal">(optionnel)</span>
+                Auteurs, livres ou podcasts appréciés <span className="text-xs font-normal text-inkMuted">(optionnel)</span>
               </legend>
               <textarea
                 name="favorites"
@@ -552,16 +552,16 @@ export default function PreferencesSignupForm() {
                 onChange={(e) => setFavorites(e.target.value)}
                 rows={4}
                 placeholder="Ex. : Nom d'auteurs, titres, émissions…"
-                className="w-full bg-gradient-to-br from-white to-accent/2 border border-borderSoft rounded-lg px-4 py-3 text-ink placeholder-inkMuted shadow-sm focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 resize-none transition-all"
+                className="w-full px-4 py-3 transition-all border rounded-lg shadow-sm resize-none bg-gradient-to-br from-white to-accent/2 border-borderSoft text-ink placeholder-inkMuted focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
               />
             </fieldset>
           )}
 
           {/* STEP 9: Description des goûts */}
           {currentStep === 9 && (
-            <fieldset className="space-y-4 p-5 bg-white border-l-4 border-gold rounded-lg shadow-sm">
+            <fieldset className="p-5 space-y-4 bg-white border-l-4 rounded-lg shadow-sm border-gold">
               <legend className="text-lg font-semibold text-ink">
-                Décrivez brièvement vos goûts <span className="text-xs text-inkMuted font-normal">(optionnel)</span>
+                Décrivez brièvement vos goûts <span className="text-xs font-normal text-inkMuted">(optionnel)</span>
               </legend>
               <textarea
                 name="tasteDescription"
@@ -569,14 +569,14 @@ export default function PreferencesSignupForm() {
                 onChange={(e) => setTasteDescription(e.target.value)}
                 rows={4}
                 placeholder="Ex. : J'aime la science vulgarisée et les romans historiques…"
-                className="w-full bg-gradient-to-br from-white to-accent/2 border border-borderSoft rounded-lg px-4 py-3 text-ink placeholder-inkMuted shadow-sm focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 resize-none transition-all"
+                className="w-full px-4 py-3 transition-all border rounded-lg shadow-sm resize-none bg-gradient-to-br from-white to-accent/2 border-borderSoft text-ink placeholder-inkMuted focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
               />
             </fieldset>
           )}
 
           {/* STEP 10: Découverte vs continuité */}
           {currentStep === 10 && (
-            <fieldset className="space-y-4 p-5 bg-white border-l-4 border-accent rounded-lg shadow-sm">
+            <fieldset className="p-5 space-y-4 bg-white border-l-4 rounded-lg shadow-sm border-accent">
               <legend className="text-lg font-semibold text-ink">
                 Préférence : découverte vs continuité <span className="text-red-500">*</span>
               </legend>
@@ -615,11 +615,11 @@ export default function PreferencesSignupForm() {
 
           {/* STEP 11: Consentement RGPD */}
           {currentStep === 11 && (
-            <fieldset className="space-y-4 p-5 bg-white border-l-4 border-accent rounded-lg shadow-sm">
+            <fieldset className="p-5 space-y-4 bg-white border-l-4 rounded-lg shadow-sm border-accent">
               <legend className="text-lg font-semibold text-ink">
                 Consentement RGPD <span className="text-red-500">*</span>
               </legend>
-              <label className="flex items-start gap-3 p-3 rounded-lg border-2 border-borderSoft bg-white hover:border-accent hover:bg-accent/5 cursor-pointer transition-all">
+              <label className="flex items-start gap-3 p-3 transition-all bg-white border-2 rounded-lg cursor-pointer border-borderSoft hover:border-accent hover:bg-accent/5">
                 <input 
                   type="checkbox" 
                   name="consent" 
@@ -638,16 +638,16 @@ export default function PreferencesSignupForm() {
           {/* STEP 12: Résumé */}
           {currentStep === 12 && (
             <div className="space-y-6">
-              <div className="bg-gradient-to-br from-accent/10 to-gold/10 border border-accent/20 rounded-lg p-6">
-                <h2 className="text-2xl font-bold text-ink mb-6">Vérifiez votre résumé</h2>
+              <div className="p-6 border rounded-lg bg-gradient-to-br from-accent/10 to-gold/10 border-accent/20">
+                <h2 className="mb-6 text-2xl font-bold text-ink">Vérifiez votre résumé</h2>
                 
                 <div className="space-y-4">
                   {/* Groupe 1: Informations personnelles */}
-                  <div className="bg-white rounded-lg p-4 border border-borderSoft">
-                    <h3 className="font-semibold text-ink mb-3">Informations personnelles</h3>
+                  <div className="p-4 bg-white border rounded-lg border-borderSoft">
+                    <h3 className="mb-3 font-semibold text-ink">Informations personnelles</h3>
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
-                        <p className="text-inkMuted mb-1">Tranche d'âge</p>
+                        <p className="mb-1 text-inkMuted">Tranche d'âge</p>
                         <p className="font-medium text-ink">{
                           ageRange ? 
                           { "13-17": "13–17 ans", "18-24": "18–24 ans", "25-34": "25–34 ans", "35-44": "35–44 ans", "45-54": "45–54 ans", "55+": "55 ans et plus" }[ageRange]
@@ -655,7 +655,7 @@ export default function PreferencesSignupForm() {
                         }</p>
                       </div>
                       <div>
-                        <p className="text-inkMuted mb-1">Niveau de lecture</p>
+                        <p className="mb-1 text-inkMuted">Niveau de lecture</p>
                         <p className="font-medium text-ink">{
                           readingLevel ?
                           { "debutant": "Débutant", "intermediaire": "Intermédiaire", "avance": "Avancé" }[readingLevel]
@@ -666,15 +666,15 @@ export default function PreferencesSignupForm() {
                   </div>
 
                   {/* Groupe 2: Préférences de contenu */}
-                  <div className="bg-white rounded-lg p-4 border border-borderSoft">
-                    <h3 className="font-semibold text-ink mb-3">Préférences de contenu</h3>
+                  <div className="p-4 bg-white border rounded-lg border-borderSoft">
+                    <h3 className="mb-3 font-semibold text-ink">Préférences de contenu</h3>
                     <div className="space-y-3 text-sm">
                       <div>
-                        <p className="text-inkMuted mb-1">Objectifs ({selectedObjectives.length}/{maxObjectives})</p>
+                        <p className="mb-1 text-inkMuted">Objectifs ({selectedObjectives.length}/{maxObjectives})</p>
                         <div className="flex flex-wrap gap-2">
                           {selectedObjectives.length > 0 ? (
                             selectedObjectives.map(obj => (
-                              <span key={obj} className="bg-accent/10 text-accent px-3 py-1 rounded-full text-xs font-medium">
+                              <span key={obj} className="px-3 py-1 text-xs font-medium rounded-full bg-accent/10 text-accent">
                                 {objectives.find(o => o.id === obj)?.label}
                               </span>
                             ))
@@ -684,11 +684,11 @@ export default function PreferencesSignupForm() {
                         </div>
                       </div>
                       <div>
-                        <p className="text-inkMuted mb-1">Formats</p>
+                        <p className="mb-1 text-inkMuted">Formats</p>
                         <div className="flex flex-wrap gap-2">
                           {selectedFormats.length > 0 ? (
                             selectedFormats.map(fmt => (
-                              <span key={fmt} className="bg-accent/10 text-accent px-3 py-1 rounded-full text-xs font-medium">
+                              <span key={fmt} className="px-3 py-1 text-xs font-medium rounded-full bg-accent/10 text-accent">
                                 {formats.find(f => f.id === fmt)?.label}
                               </span>
                             ))
@@ -698,11 +698,11 @@ export default function PreferencesSignupForm() {
                         </div>
                       </div>
                       <div>
-                        <p className="text-inkMuted mb-1">Thématiques ({selectedThemes.length}/{maxThemes})</p>
+                        <p className="mb-1 text-inkMuted">Thématiques ({selectedThemes.length}/{maxThemes})</p>
                         <div className="flex flex-wrap gap-2">
                           {selectedThemes.length > 0 ? (
                             selectedThemes.map(theme => (
-                              <span key={theme} className="bg-accent/10 text-accent px-3 py-1 rounded-full text-xs font-medium">
+                              <span key={theme} className="px-3 py-1 text-xs font-medium rounded-full bg-accent/10 text-accent">
                                 {themes.find(t => t.id === theme)?.label}
                               </span>
                             ))
@@ -715,11 +715,11 @@ export default function PreferencesSignupForm() {
                   </div>
 
                   {/* Groupe 3: Habitudes de consommation */}
-                  <div className="bg-white rounded-lg p-4 border border-borderSoft">
-                    <h3 className="font-semibold text-ink mb-3">Habitudes de consommation</h3>
+                  <div className="p-4 bg-white border rounded-lg border-borderSoft">
+                    <h3 className="mb-3 font-semibold text-ink">Habitudes de consommation</h3>
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
-                        <p className="text-inkMuted mb-1">Temps par session</p>
+                        <p className="mb-1 text-inkMuted">Temps par session</p>
                         <p className="font-medium text-ink">{
                           sessionTime ?
                           { "5-10": "5–10 min", "10-20": "10–20 min", "20-30": "20–30 min", "30-60": "30–60 min", "60+": "60+ min" }[sessionTime]
@@ -727,8 +727,8 @@ export default function PreferencesSignupForm() {
                         }</p>
                       </div>
                       <div>
-                        <p className="text-inkMuted mb-1">Moments ({selectedMoments.length})</p>
-                        <p className="font-medium text-ink text-xs">
+                        <p className="mb-1 text-inkMuted">Moments ({selectedMoments.length})</p>
+                        <p className="text-xs font-medium text-ink">
                           {selectedMoments.length > 0 ? selectedMoments.map(m => moments.find(mo => mo.id === m)?.label).join(", ") : "Non renseigné"}
                         </p>
                       </div>
@@ -736,23 +736,23 @@ export default function PreferencesSignupForm() {
                   </div>
 
                   {/* Groupe 4: Préférences additionnelles */}
-                  <div className="bg-white rounded-lg p-4 border border-borderSoft">
-                    <h3 className="font-semibold text-ink mb-3">Préférences additionnelles</h3>
+                  <div className="p-4 bg-white border rounded-lg border-borderSoft">
+                    <h3 className="mb-3 font-semibold text-ink">Préférences additionnelles</h3>
                     <div className="space-y-3 text-sm">
                       {favorites && (
                         <div>
-                          <p className="text-inkMuted mb-1">Auteurs/livres appréciés</p>
+                          <p className="mb-1 text-inkMuted">Auteurs/livres appréciés</p>
                           <p className="font-medium text-ink">{favorites}</p>
                         </div>
                       )}
                       {tasteDescription && (
                         <div>
-                          <p className="text-inkMuted mb-1">Vos goûts</p>
+                          <p className="mb-1 text-inkMuted">Vos goûts</p>
                           <p className="font-medium text-ink">{tasteDescription}</p>
                         </div>
                       )}
                       <div>
-                        <p className="text-inkMuted mb-1">Découverte vs continuité</p>
+                        <p className="mb-1 text-inkMuted">Découverte vs continuité</p>
                         <p className="font-medium text-ink">{
                           discoveryPreference ?
                           { "decouverte": "Découvrir de nouveaux contenus", "habitudes": "Continuer dans mes habitudes", "mix": "Un mix des deux" }[discoveryPreference]
@@ -766,20 +766,20 @@ export default function PreferencesSignupForm() {
                   <div className={`rounded-lg p-4 border ${consent ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
                     <div className="flex items-start gap-3">
                       <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${consent ? 'bg-green-500' : 'bg-red-500'}`}>
-                        <span className="text-white text-sm font-bold">{consent ? '✓' : '✗'}</span>
+                        <span className="text-sm font-bold text-white">{consent ? '✓' : '✗'}</span>
                       </div>
                       <div>
                         <p className="text-sm font-medium">
                           {consent ? 'RGPD accepté' : 'RGPD non accepté'}
                         </p>
-                        <p className="text-xs text-inkMuted mt-1">Vos données seront utilisées pour personnaliser vos recommandations</p>
+                        <p className="mt-1 text-xs text-inkMuted">Vos données seront utilisées pour personnaliser vos recommandations</p>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="p-4 border border-blue-200 rounded-lg bg-blue-50">
                 <p className="text-sm text-blue-900">
                   ℹ️ Vérifiez que toutes les informations sont correctes avant de soumettre.
                 </p>
@@ -788,7 +788,7 @@ export default function PreferencesSignupForm() {
           )}
 
           {/* Navigation buttons */}
-          <div className="pt-6 flex justify-between gap-4 border-t border-borderSoft">
+          <div className="flex justify-between gap-4 pt-6 border-t border-borderSoft">
             <button
               type="button"
               onClick={handlePreviousStep}
@@ -806,7 +806,7 @@ export default function PreferencesSignupForm() {
               <button
                 type="button"
                 onClick={handleNextStep}
-                className="px-8 py-3 bg-accent text-white rounded-lg font-semibold hover:bg-accentHover transition-all"
+                className="px-8 py-3 font-semibold text-white transition-all rounded-lg bg-accent hover:bg-accentHover"
               >
                 Suivant
               </button>
