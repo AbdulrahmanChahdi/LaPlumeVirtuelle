@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { savePreferences } from "../api/preferencesApi"
+import { createOrUpdateProfile, getRecommendations } from "../api/profileRecommendationsApi"
 import { getAndClearIntendedDestination } from "../utils/navigation"
 import Card from "./ui/Card"
 import Button from "./ui/Button"
@@ -14,6 +14,7 @@ export default function PreferencesSignupForm() {
   const [selectedMoments, setSelectedMoments] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [recommendationsWarning, setRecommendationsWarning] = useState("")
   const [ageRange, setAgeRange] = useState("")
   const [readingLevel, setReadingLevel] = useState("")
   const [sessionTime, setSessionTime] = useState("")
@@ -178,39 +179,54 @@ export default function PreferencesSignupForm() {
     e.preventDefault()
     setLoading(true)
     setError(null)
+    setRecommendationsWarning("")
+
+    const normalizedFormats = selectedFormats
+      .map((id) => formats.find((f) => f.id === id)?.id || id)
+      .filter(Boolean)
+
+    const normalizedGenres = selectedThemes
+      .map((id) => themes.find((t) => t.id === id)?.label || id)
+      .filter(Boolean)
+
+    const normalizedTexteLibre = [tasteDescription, favorites]
+      .map((value) => (value || "").trim())
+      .filter(Boolean)
+      .join(" | ")
+
+    const profilePayload = {
+      formats: normalizedFormats,
+      genres: normalizedGenres,
+      texteLibre: normalizedTexteLibre,
+    }
 
     try {
-      const preferences = {
-        id_preference: null,
-        tranche_age: ageRange,
-        objectif: selectedObjectives.join(","),
-        format: selectedFormats.join(","),
-        thematique: selectedThemes.join(","),
-        niveau_lecture: readingLevel,
-        frequence_lecture: sessionTime,
-        moment_consomation: selectedMoments.join(","),
-        auteur_prefere: favorites || "",
-        description: tasteDescription || "",
-        decouvertePrefrence: discoveryPreference,
-        RGPD: consent,
-      }
-
-      console.log("Données à envoyer:", preferences)
-      await savePreferences(preferences)
-
-      localStorage.setItem("onboardingDone", "true")
-      
-      // Utiliser la destination sauvegardée si elle existe, sinon retour au dashboard
-      const intendedDestination = getAndClearIntendedDestination()
-      const destination = intendedDestination || "/dashboard"
-      
-      navigate(destination, { replace: true })
+      await createOrUpdateProfile(profilePayload)
     } catch (err) {
-      console.error("Erreur lors de l'envoi des préférences:", err)
-      setError(err.message || "Une erreur est survenue")
-    } finally {
+      console.error("Erreur lors de l'enregistrement du profil:", err)
+      setError(err.message || "Impossible d'enregistrer votre profil pour le moment.")
       setLoading(false)
+      return
     }
+
+    try {
+      const recommendations = await getRecommendations(12)
+      localStorage.setItem("latestRecommendations", JSON.stringify(recommendations))
+    } catch (err) {
+      console.error("Erreur lors de la récupération des recommandations:", err)
+      setRecommendationsWarning(
+        "Votre profil est bien enregistré. Les recommandations seront chargées plus tard sur le dashboard."
+      )
+    }
+
+    localStorage.setItem("onboardingDone", "true")
+
+    // Utiliser la destination sauvegardée si elle existe, sinon retour au dashboard
+    const intendedDestination = getAndClearIntendedDestination()
+    const destination = intendedDestination || "/dashboard"
+
+    navigate(destination, { replace: true })
+    setLoading(false)
   }
 
   return (
@@ -247,6 +263,12 @@ export default function PreferencesSignupForm() {
           {error && (
             <div className="p-4 text-red-700 border-l-4 border-red-500 rounded bg-red-50">
               <p className="font-medium">{error}</p>
+            </div>
+          )}
+
+          {recommendationsWarning && (
+            <div className="p-4 rounded border-l-4 border-blue-500 bg-blue-50 text-blue-800">
+              <p className="font-medium">{recommendationsWarning}</p>
             </div>
           )}
 

@@ -11,8 +11,40 @@ engine = get_engine()
 CORS(app, resources={
     r"/api/*": {
         "origins": ["http://localhost:8080", "http://localhost:4200", "http://localhost:5173"]
+    },
+    r"/nlp/*": {
+        "origins": ["http://localhost:8080", "http://localhost:4200", "http://localhost:5173"]
     }
 })
+
+
+def _validate_nlp_payload(payload):
+    if payload is None:
+        return "JSON body is required", ["genres", "formats", "texteLibre"]
+
+    required_fields = ["genres", "formats", "texteLibre"]
+    missing_fields = [field for field in required_fields if field not in payload]
+    if missing_fields:
+        return "Missing required fields", missing_fields
+
+    if not isinstance(payload.get("genres"), list):
+        return "Field 'genres' must be a list", []
+
+    if not isinstance(payload.get("formats"), list):
+        return "Field 'formats' must be a list", []
+
+    if not isinstance(payload.get("texteLibre"), str):
+        return "Field 'texteLibre' must be a string", []
+
+    non_string_genres = [g for g in payload["genres"] if not isinstance(g, str)]
+    if non_string_genres:
+        return "All items in 'genres' must be strings", []
+
+    non_string_formats = [f for f in payload["formats"] if not isinstance(f, str)]
+    if non_string_formats:
+        return "All items in 'formats' must be strings", []
+
+    return None, []
 
 @app.route('/health', methods=['GET'])
 def health():
@@ -24,6 +56,58 @@ def health():
         "model_trained": model_info["is_trained"],
         "num_profiles": model_info["num_profiles"]
     }), 200
+
+
+@app.route('/nlp/recommend', methods=['POST'])
+def nlp_recommend():
+    """
+    Endpoint contract:
+    Input JSON:
+      {
+        "genres": ["Roman", "Science"],
+        "formats": ["livre", "podcast"],
+        "texteLibre": "j'aime les histoires immersives",
+        "limit": 12
+      }
+    Output JSON:
+      {
+        "recommendations": [
+          {"id": "...", "type": "livre", "score": 0.81, ...}
+        ],
+        "total": 12
+      }
+    """
+    try:
+        payload = request.get_json(silent=True)
+        error_message, missing_fields = _validate_nlp_payload(payload)
+        if error_message is not None:
+            response = {"error": error_message}
+            if missing_fields:
+                response["missingFields"] = missing_fields
+            return jsonify(response), 400
+
+        try:
+            limit = int(payload.get("limit", 12))
+        except (TypeError, ValueError):
+            limit = 12
+        limit = max(1, min(limit, 50))
+
+        recommendations = engine.get_ranked_recommendations(
+            genres=payload.get("genres", []),
+            formats=payload.get("formats", []),
+            texte_libre=payload.get("texteLibre", ""),
+            top_n=limit,
+        )
+
+        return jsonify({
+            "recommendations": recommendations,
+            "total": len(recommendations)
+        }), 200
+    except Exception as e:
+        return jsonify({
+            "error": "Internal error while generating NLP recommendations",
+            "details": str(e)
+        }), 500
 
 @app.route('/api/recommendations', methods=['POST'])
 def get_recommendations():
