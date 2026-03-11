@@ -1,5 +1,6 @@
 import React from "react"
 
+// Ce composant capture les erreurs dans son arbre de composants enfants et affiche une interface utilisateur de secours
 export default class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props)
