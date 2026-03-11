@@ -228,16 +228,8 @@ public class DataInitializer implements CommandLineRunner {
             podcastLitterature.setImageUrl("https://example.com/images/grands-classiques.jpg");
             podcastRepository.save(podcastLitterature);
 
-            // Association des utilisateurs aux livres et podcasts
-            logger.info("Association des utilisateurs aux livres et podcasts...");
-            user.setPodcastsEcoutes(new HashSet<>(Arrays.asList(podcastScience, podcastHistoire, podcastLitterature)));
-            utilisateurRepository.save(user);
-
-            // Création des ReadingProgress pour l'utilisateur test
-            logger.info("Création des ReadingProgress pour les livres de l'utilisateur test...");
-            readingProgressService.getOrCreateProgress(user, lesMiserables);
-            readingProgressService.getOrCreateProgress(user, tourDuMonde);
-            logger.info("ReadingProgress créés pour 2 livres");
+            // La bibliothèque personnelle reste au choix de l'utilisateur
+            logger.info("Aucun contenu n'est ajouté automatiquement à la bibliothèque utilisateur");
 
             logger.info("Initialisation des données terminée avec succès !");
         } catch (Exception e) {

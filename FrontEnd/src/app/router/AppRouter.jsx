@@ -60,6 +60,7 @@ export default function AppRouter() {
 
         {/* Catalogue à découvrir (connecté) */}
         <Route path="/catalogue" element={<Catalogue />} />
+        <Route path="/catalogue/books/:id" element={<DigitalBookDetail />} />
         <Route path="/catalogue/audiobooks/:id" element={<AudiobookDetail />} />
         <Route path="/catalogue/podcasts/:id" element={<PodcastDetail />} />
 

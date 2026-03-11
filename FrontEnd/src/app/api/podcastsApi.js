@@ -10,7 +10,7 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080"
 export async function getPodcasts(token) {
   const authToken = token || await getAuthToken()
   
-  const res = await fetch(`${API_BASE}/api/podcasts`, {
+  const res = await fetch(`${API_BASE}/api/library/podcasts`, {
     headers: {
       "Authorization": `Bearer ${authToken}`,
       "Content-Type": "application/json"
@@ -42,7 +42,7 @@ export async function getPodcastById(id) {
     throw new Error("Vous devez être connecté pour accéder à ce podcast.");
   }
   
-  const res = await fetch(`${API_BASE}/api/podcasts/${id}`, {
+  const res = await fetch(`${API_BASE}/api/library/podcasts`, {
     headers: {
       "Authorization": `Bearer ${token}`,
       "Content-Type": "application/json"
@@ -58,7 +58,44 @@ export async function getPodcastById(id) {
     throw new Error(`Erreur lors de la récupération du podcast: ${res.statusText}`);
   }
   
-  return res.json();
+  const items = await res.json();
+  const fromLibrary = (items || []).find((podcast) => String(podcast.id) === String(id)) || null;
+  if (fromLibrary) return fromLibrary;
+
+  const fallback = await fetch(`${API_BASE}/api/podcasts/${id}`, {
+    headers: {
+      "Authorization": `Bearer ${token}`,
+      "Content-Type": "application/json"
+    }
+  });
+
+  if (!fallback.ok) {
+    if (fallback.status === 401) {
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("currentUser");
+      throw new Error("Votre session a expiré. Veuillez vous reconnecter.");
+    }
+    return null;
+  }
+
+  return fallback.json();
+}
+
+export async function addPodcastToLibrary(id, token) {
+  const authToken = token || await getAuthToken()
+  const res = await fetch(`${API_BASE}/api/library/podcasts/${id}`, {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${authToken}`,
+      "Content-Type": "application/json"
+    }
+  })
+
+  if (!res.ok) {
+    throw new Error(`Erreur lors de l'ajout du podcast: ${res.statusText || res.status}`)
+  }
+
+  return true
 }
 
 /**

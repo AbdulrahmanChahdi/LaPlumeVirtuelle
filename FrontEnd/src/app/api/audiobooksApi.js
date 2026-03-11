@@ -10,7 +10,7 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080"
 export async function getAudiobooks(token) {
   const authToken = token || await getAuthToken()
   
-  const res = await fetch(`${API_BASE}/api/livres-audio`, {
+  const res = await fetch(`${API_BASE}/api/library/audiobooks`, {
     headers: {
       "Authorization": `Bearer ${authToken}`,
       "Content-Type": "application/json"
@@ -38,7 +38,7 @@ export async function getAudiobooks(token) {
 export async function getAudiobookById(id) {
   const token = await getAuthToken()
   
-  const res = await fetch(`${API_BASE}/api/livres-audio/${id}`, {
+  const res = await fetch(`${API_BASE}/api/library/audiobooks`, {
     headers: {
       "Authorization": `Bearer ${token}`,
       "Content-Type": "application/json"
@@ -54,7 +54,44 @@ export async function getAudiobookById(id) {
     throw new Error(`Erreur lors de la récupération de l'audiobook: ${res.statusText}`);
   }
   
-  return res.json();
+  const items = await res.json();
+  const fromLibrary = (items || []).find((audio) => String(audio.id) === String(id)) || null;
+  if (fromLibrary) return fromLibrary;
+
+  const fallback = await fetch(`${API_BASE}/api/livres-audio/${id}`, {
+    headers: {
+      "Authorization": `Bearer ${token}`,
+      "Content-Type": "application/json"
+    }
+  });
+
+  if (!fallback.ok) {
+    if (fallback.status === 401) {
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("currentUser");
+      throw new Error("Votre session a expiré. Veuillez vous reconnecter.");
+    }
+    return null;
+  }
+
+  return fallback.json();
+}
+
+export async function addAudiobookToLibrary(id, token) {
+  const authToken = token || await getAuthToken()
+  const res = await fetch(`${API_BASE}/api/library/audiobooks/${id}`, {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${authToken}`,
+      "Content-Type": "application/json"
+    }
+  })
+
+  if (!res.ok) {
+    throw new Error(`Erreur lors de l'ajout de l'audiobook: ${res.statusText || res.status}`)
+  }
+
+  return true
 }
 
 /**

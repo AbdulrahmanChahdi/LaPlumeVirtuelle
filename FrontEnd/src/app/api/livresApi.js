@@ -7,7 +7,13 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
  * @returns {Promise<Array>} List of all books
  */
 export async function getAllLivres() {
-  const res = await fetch(`${API_BASE}/api/livres`);
+  const authToken = await getAuthToken()
+  const res = await fetch(`${API_BASE}/api/livres`, {
+    headers: {
+      "Authorization": `Bearer ${authToken}`,
+      "Content-Type": "application/json"
+    }
+  });
   
   if (!res.ok) {
     throw new Error(`Erreur lors de la récupération des livres: ${res.statusText}`);
@@ -60,7 +66,7 @@ export async function getLivreById(id) {
 export async function getUserLivres(token) {
   const authToken = token || await getAuthToken()
   
-  const res = await fetch(`${API_BASE}/api/reading-progress/all`, {
+  const res = await fetch(`${API_BASE}/api/library/books`, {
     headers: {
       "Authorization": `Bearer ${authToken}`,
       "Content-Type": "application/json"

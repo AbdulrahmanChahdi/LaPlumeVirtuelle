@@ -2,6 +2,7 @@ package com.example.laplumevirtuel.entities;
 
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -31,7 +32,8 @@ public class LivreAudio {
     
     @OneToOne
     private Livre livre;
-    
+
+    @JsonIgnore
     @ManyToMany(mappedBy = "livresAudiosEcouter")
     private Set<Utilisateur> utilisateurEcouteLivre;
 }

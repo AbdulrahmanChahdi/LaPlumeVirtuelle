@@ -11,7 +11,7 @@ export async function getDigitalBooks(token) {
   // Use provided token or get from localStorage with retry
   const authToken = token || await getAuthToken()
   
-  const res = await fetch(`${API_BASE}/api/livres`, {
+  const res = await fetch(`${API_BASE}/api/library/books`, {
     headers: {
       "Authorization": `Bearer ${authToken}`,
       "Content-Type": "application/json"
@@ -40,7 +40,7 @@ export async function getDigitalBooks(token) {
 export async function getDigitalBookById(id, token) {
   const authToken = token || await getAuthToken()
   
-  const res = await fetch(`${API_BASE}/api/livres/${id}`, {
+  const res = await fetch(`${API_BASE}/api/library/books`, {
     headers: {
       "Authorization": `Bearer ${authToken}`,
       "Content-Type": "application/json"
@@ -56,7 +56,28 @@ export async function getDigitalBookById(id, token) {
     throw new Error(`Erreur lors de la récupération du livre: ${res.statusText}`);
   }
   
-  return res.json();
+  const items = await res.json();
+  const fromLibrary = (items || []).find((book) => String(book.id) === String(id)) || null;
+  if (fromLibrary) return fromLibrary;
+
+  // If the book is not in personal library yet, fallback to global catalogue.
+  const fallback = await fetch(`${API_BASE}/api/livres/${id}`, {
+    headers: {
+      "Authorization": `Bearer ${authToken}`,
+      "Content-Type": "application/json"
+    }
+  });
+
+  if (!fallback.ok) {
+    if (fallback.status === 401) {
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("currentUser");
+      throw new Error("Votre session a expiré. Veuillez vous reconnecter.");
+    }
+    return null;
+  }
+
+  return fallback.json();
 }
 
 /**
@@ -95,4 +116,26 @@ export async function addBookToLibrary(externalId, token) {
   }
 
   return res.json();
+}
+
+export async function addInternalBookToLibrary(bookId, token) {
+  const authToken = token || await getAuthToken()
+
+  if (!authToken || authToken === "undefined") {
+    throw new Error("Vous devez être connecté pour ajouter un livre à votre bibliothèque.");
+  }
+
+  const res = await fetch(`${API_BASE}/api/library/books/${bookId}`, {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${authToken}`,
+      "Content-Type": "application/json"
+    }
+  })
+
+  if (!res.ok) {
+    throw new Error(`Erreur lors de l'ajout du livre: ${res.statusText || res.status}`)
+  }
+
+  return true
 }

@@ -1,23 +1,44 @@
 import { useEffect, useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
-import { getAudiobookById } from "../../api/audiobooksApi"
+import { addAudiobookToLibrary, getAudiobookById, getAudiobooks } from "../../api/audiobooksApi"
+import { useAuth } from "../../hooks/useAuth"
 import Loader from "../../components/ui/Loader"
+import Button from "../../components/ui/Button"
 
 export default function AudiobookDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const { token } = useAuth()
   const [item, setItem] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [isInLibrary, setIsInLibrary] = useState(false)
+  const [addingToLibrary, setAddingToLibrary] = useState(false)
 
   useEffect(() => {
     let cancelled = false
-    getAudiobookById(id)
-      .then(data => { if (!cancelled) setItem(data) })
+    Promise.all([getAudiobookById(id), getAudiobooks(token)])
+      .then(([data, items]) => {
+        if (cancelled) return
+        setItem(data)
+        setIsInLibrary(Array.isArray(items) && items.some((audio) => String(audio.id) === String(id)))
+      })
       .catch(() => { if (!cancelled) setError("Impossible de charger cet audiobook.") })
       .finally(() => { if (!cancelled) setLoading(false) })
     return () => { cancelled = true }
-  }, [id])
+  }, [id, token])
+
+  const handleAddToLibrary = async () => {
+    try {
+      setAddingToLibrary(true)
+      await addAudiobookToLibrary(id, token)
+      setIsInLibrary(true)
+    } catch (err) {
+      alert(err?.message || "Erreur lors de l'ajout à la bibliothèque")
+    } finally {
+      setAddingToLibrary(false)
+    }
+  }
 
   if (loading) return <div className="flex justify-center py-20"><Loader /></div>
 
@@ -88,6 +109,18 @@ export default function AudiobookDetail() {
 
       {/* Corps */}
       <div className="px-6 py-8 lg:px-10 max-w-4xl">
+        <div className="bg-white rounded-2xl border border-borderSoft p-6 shadow-sm mb-5">
+          {isInLibrary ? (
+            <div className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-50 text-emerald-700 text-sm font-medium">
+              <span>✓</span> Déjà dans votre bibliothèque
+            </div>
+          ) : (
+            <Button onClick={handleAddToLibrary} disabled={addingToLibrary}>
+              {addingToLibrary ? "Ajout..." : "Ajouter à ma bibliothèque"}
+            </Button>
+          )}
+        </div>
+
         {/* Fiche technique */}
         <div className="bg-white rounded-2xl border border-borderSoft p-6 shadow-sm">
           <h2 className="text-xs uppercase tracking-widest text-inkMuted font-semibold mb-5">Informations</h2>
