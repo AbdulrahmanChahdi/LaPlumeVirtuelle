@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 public class CategoryMappingService {
 
     private static final Map<String, Set<String>> CATEGORY_MAPPING = new HashMap<>();
+        private static final Map<String, String> CANONICAL_CATEGORY_NAMES = new HashMap<>();
 
     static {
         // Science & Technology
@@ -149,6 +150,51 @@ public class CategoryMappingService {
         CATEGORY_MAPPING.put("gastronomie", Set.of(
                 "cooking", "cookbooks", "recipes", "food", "cuisine",
                 "gastronomy", "culinary"));
+
+        CATEGORY_MAPPING.put("roman historique", Set.of(
+                "historical fiction", "historical novel", "period drama", "roman historique"));
+
+        CATEGORY_MAPPING.put("conte et legende", Set.of(
+                "folklore", "fairy tales", "fables", "mythology", "legends", "contes"));
+
+        CATEGORY_MAPPING.put("essai", Set.of(
+                "essay", "essays", "criticism", "social commentary", "non-fiction"));
+
+        CATEGORY_MAPPING.put("developpement personnel", Set.of(
+                "self-help", "personal growth", "motivation", "productivity", "habits"));
+
+        CATEGORY_MAPPING.put("theatre", Set.of(
+                "theater", "theatre", "plays", "drama"));
+
+        CATEGORY_MAPPING.put("voyage", Set.of(
+                "travel", "travel writing", "guidebooks", "voyages"));
+
+        CANONICAL_CATEGORY_NAMES.put("science", "Sciences");
+        CANONICAL_CATEGORY_NAMES.put("policier", "Policier / Thriller");
+        CANONICAL_CATEGORY_NAMES.put("thriller", "Policier / Thriller");
+        CANONICAL_CATEGORY_NAMES.put("romance", "Romance");
+        CANONICAL_CATEGORY_NAMES.put("fantasy", "Fantasy");
+        CANONICAL_CATEGORY_NAMES.put("science fiction", "Science-Fiction");
+        CANONICAL_CATEGORY_NAMES.put("histoire", "Histoire");
+        CANONICAL_CATEGORY_NAMES.put("philosophie", "Philosophie");
+        CANONICAL_CATEGORY_NAMES.put("business", "Économie");
+        CANONICAL_CATEGORY_NAMES.put("psychologie", "Psychologie");
+        CANONICAL_CATEGORY_NAMES.put("art", "Art / Photographie");
+        CANONICAL_CATEGORY_NAMES.put("biographie", "Biographie / Autobiographie");
+        CANONICAL_CATEGORY_NAMES.put("aventure", "Aventure");
+        CANONICAL_CATEGORY_NAMES.put("spiritualite", "Religion et Spiritualité");
+        CANONICAL_CATEGORY_NAMES.put("young-adult", "Young Adult");
+        CANONICAL_CATEGORY_NAMES.put("classique", "Littérature Classique");
+        CANONICAL_CATEGORY_NAMES.put("horreur", "Horreur / Épouvante");
+        CANONICAL_CATEGORY_NAMES.put("poesie", "Poésie");
+        CANONICAL_CATEGORY_NAMES.put("manga", "Bande Dessinée / Manga");
+        CANONICAL_CATEGORY_NAMES.put("gastronomie", "Cuisine");
+                CANONICAL_CATEGORY_NAMES.put("roman historique", "Roman Historique");
+                CANONICAL_CATEGORY_NAMES.put("conte et legende", "Conte et Légende");
+                CANONICAL_CATEGORY_NAMES.put("essai", "Essai");
+                CANONICAL_CATEGORY_NAMES.put("developpement personnel", "Développement Personnel");
+                CANONICAL_CATEGORY_NAMES.put("theatre", "Théâtre");
+                CANONICAL_CATEGORY_NAMES.put("voyage", "Voyage");
     }
 
     /**
@@ -194,6 +240,7 @@ public class CategoryMappingService {
         return categoryScores.entrySet().stream()
                 .max(Map.Entry.comparingByValue())
                 .map(Map.Entry::getKey)
+                .map(this::toCanonicalCategory)
                 .orElse(null);
     }
 
@@ -238,6 +285,12 @@ public class CategoryMappingService {
                 .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
                 .limit(topN)
                 .map(Map.Entry::getKey)
+                                .map(this::toCanonicalCategory)
+                                .distinct()
                 .collect(Collectors.toList());
     }
+
+        private String toCanonicalCategory(String mappedCategory) {
+                return CANONICAL_CATEGORY_NAMES.getOrDefault(mappedCategory, mappedCategory);
+        }
 }

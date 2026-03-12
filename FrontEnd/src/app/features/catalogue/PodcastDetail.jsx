@@ -1,23 +1,44 @@
 import { useEffect, useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
-import { getPodcastById } from "../../api/podcastsApi"
+import { addPodcastToLibrary, getPodcastById, getPodcasts } from "../../api/podcastsApi"
+import { useAuth } from "../../hooks/useAuth"
 import Loader from "../../components/ui/Loader"
+import Button from "../../components/ui/Button"
 
 export default function PodcastDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const { token } = useAuth()
   const [item, setItem] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [isInLibrary, setIsInLibrary] = useState(false)
+  const [addingToLibrary, setAddingToLibrary] = useState(false)
 
   useEffect(() => {
     let cancelled = false
-    getPodcastById(id)
-      .then(data => { if (!cancelled) setItem(data) })
+    Promise.all([getPodcastById(id), getPodcasts(token)])
+      .then(([data, items]) => {
+        if (cancelled) return
+        setItem(data)
+        setIsInLibrary(Array.isArray(items) && items.some((podcast) => String(podcast.id) === String(id)))
+      })
       .catch(() => { if (!cancelled) setError("Impossible de charger ce podcast.") })
       .finally(() => { if (!cancelled) setLoading(false) })
     return () => { cancelled = true }
-  }, [id])
+  }, [id, token])
+
+  const handleAddToLibrary = async () => {
+    try {
+      setAddingToLibrary(true)
+      await addPodcastToLibrary(id, token)
+      setIsInLibrary(true)
+    } catch (err) {
+      alert(err?.message || "Erreur lors de l'ajout à la bibliothèque")
+    } finally {
+      setAddingToLibrary(false)
+    }
+  }
 
   if (loading) return <div className="flex justify-center py-20"><Loader /></div>
 
@@ -57,17 +78,17 @@ export default function PodcastDetail() {
           {/* Titre + meta */}
           <div className="flex-1 pt-1">
             <span className="inline-block text-[11px] uppercase tracking-widest text-purple-200 font-semibold mb-3">Podcast</span>
-            <h1 className="text-3xl sm:text-4xl font-bold text-white leading-tight mb-2">{item.titre || "Sans titre"}</h1>
+            <h1 className="text-3xl sm:text-4xl font-bold text-white leading-tight mb-2">{item.nom || item.titre || "Sans titre"}</h1>
 
             <div className="flex flex-wrap gap-2 mt-5">
-              {item.thematique && (
+              {(item.theme || item.thematique) && (
                 <span className="text-xs bg-white/20 text-white px-3 py-1 rounded-full backdrop-blur">
-                  {item.thematique}
+                  {item.theme || item.thematique}
                 </span>
               )}
-              {item.nombreEpisodes && (
+              {item.duree && (
                 <span className="text-xs bg-white/20 text-white px-3 py-1 rounded-full backdrop-blur">
-                  🎵 {item.nombreEpisodes} épisodes
+                  🎵 {item.duree} sec
                 </span>
               )}
               {item.langue && (
@@ -82,6 +103,18 @@ export default function PodcastDetail() {
 
       {/* Corps */}
       <div className="px-6 py-8 lg:px-10 max-w-4xl space-y-5">
+        <div className="bg-white rounded-2xl border border-borderSoft p-6 shadow-sm">
+          {isInLibrary ? (
+            <div className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-50 text-emerald-700 text-sm font-medium">
+              <span>✓</span> Déjà dans votre bibliothèque
+            </div>
+          ) : (
+            <Button onClick={handleAddToLibrary} disabled={addingToLibrary}>
+              {addingToLibrary ? "Ajout..." : "Ajouter à ma bibliothèque"}
+            </Button>
+          )}
+        </div>
+
         {/* Description */}
         {item.description && (
           <div className="bg-white rounded-2xl border border-borderSoft p-6 shadow-sm">
@@ -94,16 +127,16 @@ export default function PodcastDetail() {
         <div className="bg-white rounded-2xl border border-borderSoft p-6 shadow-sm">
           <h2 className="text-xs uppercase tracking-widest text-inkMuted font-semibold mb-5">Informations</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
-            {item.nombreEpisodes && (
+            {item.duree && (
               <div>
-                <p className="text-inkMuted text-xs uppercase tracking-wide mb-1">Épisodes</p>
-                <p className="text-ink font-semibold text-sm">{item.nombreEpisodes}</p>
+                <p className="text-inkMuted text-xs uppercase tracking-wide mb-1">Durée</p>
+                <p className="text-ink font-semibold text-sm">{item.duree} sec</p>
               </div>
             )}
-            {item.thematique && (
+            {(item.theme || item.thematique) && (
               <div>
                 <p className="text-inkMuted text-xs uppercase tracking-wide mb-1">Thématique</p>
-                <p className="text-ink font-semibold text-sm">{item.thematique}</p>
+                <p className="text-ink font-semibold text-sm">{item.theme || item.thematique}</p>
               </div>
             )}
             {item.id && (

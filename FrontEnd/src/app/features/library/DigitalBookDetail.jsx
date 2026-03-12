@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { getDigitalBookById } from "../../api/digitalBooksApi";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { addInternalBookToLibrary, getDigitalBookById, getDigitalBooks } from "../../api/digitalBooksApi";
 import { getUserDownloadStats, downloadBook } from "../../api/downloadApi";
 import { useAuth } from "../../context/AuthContext";
 import Loader from "../../components/ui/Loader";
@@ -10,6 +10,7 @@ import ConfirmModal from "../../components/ui/ConfirmModal";
 export default function DigitalBookDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { token } = useAuth();
   const [book, setBook] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -17,6 +18,8 @@ export default function DigitalBookDetail() {
   const [downloadStats, setDownloadStats] = useState(null);
   const [downloading, setDownloading] = useState(false);
   const [showDownloadConfirm, setShowDownloadConfirm] = useState(false);
+  const [isInLibrary, setIsInLibrary] = useState(false);
+  const [addingToLibrary, setAddingToLibrary] = useState(false);
 
   useEffect(() => {
     async function loadBookAndStats() {
@@ -31,6 +34,11 @@ export default function DigitalBookDetail() {
 
         setBook(bookData);
         setDownloadStats(statsData);
+
+        const libraryBooks = await getDigitalBooks(token);
+        const inLibrary = Array.isArray(libraryBooks)
+          && libraryBooks.some((b) => String(b.id) === String(id));
+        setIsInLibrary(inLibrary);
       } catch (err) {
         console.error("Erreur chargement détails:", err);
         setError("Impossible de charger les détails du livre.");
@@ -95,6 +103,19 @@ Catégorie: ${book.categorie?.nom || 'N/A'}`],
     }
   };
 
+  const handleAddToLibrary = async () => {
+    try {
+      setAddingToLibrary(true);
+      await addInternalBookToLibrary(id, token);
+      setIsInLibrary(true);
+    } catch (err) {
+      console.error("Erreur ajout bibliothèque:", err);
+      alert(err?.message || "Erreur lors de l'ajout à la bibliothèque.");
+    } finally {
+      setAddingToLibrary(false);
+    }
+  };
+
   if (loading) return <div className="flex justify-center py-20"><Loader /></div>
 
   if (error || !book) return (
@@ -108,6 +129,8 @@ Catégorie: ${book.categorie?.nom || 'N/A'}`],
 
   const canDownload = downloadStats?.isSubscriber || (downloadStats?.remainingDownloads > 0)
 
+  const fromCatalogue = location.pathname.startsWith("/catalogue/");
+
   return (
     <div className="min-h-screen">
       {/* Hero banner */}
@@ -120,7 +143,7 @@ Catégorie: ${book.categorie?.nom || 'N/A'}`],
           <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
           </svg>
-          Retour à ma bibliothèque
+            {fromCatalogue ? "Retour au catalogue" : "Retour à ma bibliothèque"}
         </button>
 
         <div className="flex flex-col sm:flex-row gap-8 items-start max-w-4xl">
@@ -158,6 +181,17 @@ Catégorie: ${book.categorie?.nom || 'N/A'}`],
         {/* Actions + quota */}
         <div className="bg-white rounded-2xl border border-borderSoft p-6 shadow-sm">
           <h2 className="text-xs uppercase tracking-widest text-inkMuted font-semibold mb-4">Téléchargement</h2>
+          <div className="mb-4">
+            {isInLibrary ? (
+              <div className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-50 text-emerald-700 text-sm font-medium">
+                <span>✓</span> Déjà dans votre bibliothèque
+              </div>
+            ) : (
+              <Button onClick={handleAddToLibrary} disabled={addingToLibrary}>
+                {addingToLibrary ? "Ajout..." : "Ajouter à ma bibliothèque"}
+              </Button>
+            )}
+          </div>
           <Button onClick={handleDownload} disabled={!canDownload || downloading}>
             {downloading ? "Téléchargement..." : canDownload ? "⬇ Télécharger" : "Limite atteinte"}
           </Button>

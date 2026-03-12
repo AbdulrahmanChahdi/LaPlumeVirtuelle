@@ -14,7 +14,11 @@ import com.example.laplumevirtuel.services.LivreService;
 import com.example.laplumevirtuel.service.ExternalBookService;
 import com.example.laplumevirtuel.service.ReadingProgressService;
 import com.example.laplumevirtuel.repository.UtilisateurRepository;
+import com.example.laplumevirtuel.repository.LivreRepository;
 import com.example.laplumevirtuel.dto.BookSearchResultDTO;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/livres")
@@ -32,6 +36,9 @@ public class LivreController {
 
 	@Autowired
 	private UtilisateurRepository utilisateurRepository;
+
+	@Autowired
+	private LivreRepository livreRepository;
 
 	@GetMapping
 	public List<Livre> getAllLivres() {
@@ -77,34 +84,46 @@ public class LivreController {
 
 		String email = (String) authentication.getPrincipal();
 
-		// Get book details from Open Library
-		BookSearchResultDTO externalBook = externalBookService.getBookById(externalId);
+		Livre livre = livreRepository.findByExternalId(externalId).orElse(null);
 
-		if (externalBook == null) {
-			return ResponseEntity.notFound().build();
+		if (livre == null) {
+			// Get book details from Open Library
+			BookSearchResultDTO externalBook = externalBookService.getBookById(externalId);
+
+			if (externalBook == null) {
+				return ResponseEntity.notFound().build();
+			}
+
+			// Create new Livre entity
+			livre = new Livre();
+			livre.setTitre(externalBook.getTitle());
+			livre.setExternalId(externalBook.getExternalId());
+			livre.setResume(externalBook.getDescription());
+			livre.setImageUrl(externalBook.getCoverUrl());
+			livre.setLangue(externalBook.getLanguage());
+			livre.setNombreDePage(externalBook.getPageCount() != null ? externalBook.getPageCount() : 0);
+			livre.setAnneeEdition(externalBook.getPublishedDate());
+			livre.setDisponible(true);
+
+			// Save to database once (catalogue global)
+			livre = livreService.saveLivre(livre);
 		}
 
-		// Create new Livre entity
-		Livre livre = new Livre();
-		livre.setTitre(externalBook.getTitle());
-		livre.setExternalId(externalBook.getExternalId());
-		livre.setResume(externalBook.getDescription());
-		livre.setImageUrl(externalBook.getCoverUrl());
-		livre.setLangue(externalBook.getLanguage());
-		livre.setNombreDePage(externalBook.getPageCount() != null ? externalBook.getPageCount() : 0);
-		livre.setAnneeEdition(externalBook.getPublishedDate());
-		livre.setDisponible(true);
-
 		try {
-			// Save to database
-			Livre savedBook = livreService.saveLivre(livre);
-
-			// Create reading progress for this user
 			Utilisateur user = utilisateurRepository.findByAdresseMail(email)
 					.orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
-			readingProgressService.getOrCreateProgress(user, savedBook);
 
-			return ResponseEntity.ok(savedBook);
+			Set<Livre> userBooks = user.getLivresTelecharges() == null
+					? new HashSet<>()
+					: new HashSet<>(user.getLivresTelecharges());
+			userBooks.add(livre);
+			user.setLivresTelecharges(userBooks);
+			utilisateurRepository.save(user);
+
+			// Create reading progress for this user only (bibliothèque perso)
+			readingProgressService.getOrCreateProgress(user, livre);
+
+			return ResponseEntity.ok(livre);
 		} catch (RuntimeException ex) {
 			return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
 		}

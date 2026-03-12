@@ -3,6 +3,7 @@ import { useSearchParams, Link } from "react-router-dom"
 import Loader from "../../components/ui/Loader"
 import BookCard from "../../components/BookCard"
 import { searchBooks } from "../../api/booksApi"
+import { getAllLivres } from "../../api/livresApi"
 import { enrichBookWithCategories } from "../../utils/categoryMapping"
 
 const TABS = [
@@ -13,13 +14,26 @@ const TABS = [
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080"
 
+function buildAuthHeaders() {
+  const token = localStorage.getItem("authToken")
+  return {
+    "Content-Type": "application/json",
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  }
+}
+
 /* ── Cards ── */
 function AudioCard({ item }) {
+  const cover = item.livre?.imageUrl || item.imageUrl
   return (
     <Link to={`/catalogue/audiobooks/${item.id}`} className="block group">
       <div className="bg-white rounded-lg border border-borderSoft group-hover:shadow-md transition-shadow p-4 flex flex-col gap-2">
         <div className="w-full aspect-[3/4] bg-paper rounded flex items-center justify-center mb-2">
-          <span className="text-3xl">🎧</span>
+          {cover ? (
+            <img src={cover} alt={item.livre?.titre || item.titre || "Audiobook"} className="w-full h-full object-cover rounded" />
+          ) : (
+            <span className="text-3xl">🎧</span>
+          )}
         </div>
         <p className="text-sm font-semibold text-ink leading-tight line-clamp-2">
           {item.livre?.titre || item.titre || "Sans titre"}
@@ -44,13 +58,13 @@ function PodcastCard({ item }) {
           <span className="text-3xl">🎙️</span>
         </div>
         <p className="text-sm font-semibold text-ink leading-tight line-clamp-2">
-          {item.titre || "Sans titre"}
+          {item.nom || item.titre || "Sans titre"}
         </p>
-        <p className="text-xs text-inkMuted line-clamp-2">{item.description || ""}</p>
+        <p className="text-xs text-inkMuted line-clamp-2">{item.animateur || item.description || ""}</p>
         {item.nombreEpisodes && <p className="text-xs text-inkMuted">{item.nombreEpisodes} épisodes</p>}
-        {item.thematique && (
+        {(item.theme || item.thematique) && (
           <span className="self-start text-[10px] uppercase tracking-wide bg-purple-50 text-purple-700 px-2 py-0.5 rounded-full">
-            {item.thematique}
+            {item.theme || item.thematique}
           </span>
         )}
       </div>
@@ -100,10 +114,37 @@ export default function Catalogue() {
     let cancelled = false
     async function load() {
       try {
-        const data = await searchBooks("roman fiction")
-        if (!cancelled) setBooks((data || []).map(b => enrichBookWithCategories(b)))
-      } catch {
-        if (!cancelled) setError(p => ({ ...p, books: "Impossible de charger les livres." }))
+        const [externalResult, localResult] = await Promise.allSettled([
+          searchBooks("roman fiction"),
+          getAllLivres(),
+        ])
+
+        if (cancelled) return
+
+        const externalBooks = externalResult.status === "fulfilled" ? (externalResult.value || []) : []
+        const localBooks = localResult.status === "fulfilled" ? (localResult.value || []) : []
+
+        const enrichedExternal = externalBooks.map(b => enrichBookWithCategories(b))
+        const normalizedLocal = localBooks.map((b) => ({
+          ...b,
+          title: b.titre,
+          categories: b.categorie?.nom ? [b.categorie.nom] : [],
+          author_name: b.auteur?.nom ? [b.auteur.nom] : [],
+        }))
+
+        const merged = [...enrichedExternal, ...normalizedLocal]
+        const unique = merged.filter((item, idx, arr) => {
+          const key = item.externalId || `local-${item.id}`
+          return arr.findIndex((other) => (other.externalId || `local-${other.id}`) === key) === idx
+        })
+
+        setBooks(unique)
+
+        if (externalResult.status === "rejected") {
+          setError(p => ({ ...p, books: "Impossible de charger les livres." }))
+        } else {
+          setError(p => ({ ...p, books: null }))
+        }
       } finally {
         if (!cancelled) setLoading(p => ({ ...p, books: false }))
       }
@@ -116,7 +157,10 @@ export default function Catalogue() {
     let cancelled = false
     async function load() {
       try {
-        const r = await fetch(`${API_BASE}/api/livres-audio`)
+        const r = await fetch(`${API_BASE}/api/livres-audio`, {
+          headers: buildAuthHeaders(),
+        })
+        if (!r.ok) throw new Error("audiobooks fetch failed")
         const data = await r.json()
         if (!cancelled) setAudiobooks(Array.isArray(data) ? data : [])
       } catch {
@@ -133,7 +177,10 @@ export default function Catalogue() {
     let cancelled = false
     async function load() {
       try {
-        const r = await fetch(`${API_BASE}/api/podcasts`)
+        const r = await fetch(`${API_BASE}/api/podcasts`, {
+          headers: buildAuthHeaders(),
+        })
+        if (!r.ok) throw new Error("podcasts fetch failed")
         const data = await r.json()
         if (!cancelled) setPodcasts(Array.isArray(data) ? data : [])
       } catch {
@@ -159,11 +206,11 @@ export default function Catalogue() {
     let items = currentItems
     if (category) {
       if (activeTab === "books")
-        items = items.filter(b => b.categories?.includes(category) || b.thematique === category)
+        items = items.filter(b => b.categories?.includes(category) || b.thematique === category || b.categorie?.nom === category)
       else if (activeTab === "audiobooks")
         items = items.filter(a => (a.livre?.thematique || a.thematique) === category)
       else
-        items = items.filter(p => p.thematique === category)
+        items = items.filter(p => (p.theme || p.thematique) === category)
     }
     if (query.trim()) {
       const q = query.trim().toLowerCase()
@@ -179,17 +226,17 @@ export default function Catalogue() {
         )
       else
         items = items.filter(p =>
-          (p.titre || "").toLowerCase().includes(q) ||
-          (p.description || "").toLowerCase().includes(q)
+          (p.nom || p.titre || "").toLowerCase().includes(q) ||
+          (p.animateur || p.description || "").toLowerCase().includes(q)
         )
     }
     return items
   })()
 
   const getKey =
-    activeTab === "books" ? b => b.categories?.[0] || b.thematique :
+    activeTab === "books" ? b => b.categories?.[0] || b.thematique || b.categorie?.nom :
     activeTab === "audiobooks" ? a => a.livre?.thematique || a.thematique :
-    p => p.thematique
+    p => p.theme || p.thematique
 
   const isLoading = loading[activeTab]
   const currentError = error[activeTab]

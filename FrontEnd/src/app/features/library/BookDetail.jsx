@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation, Link } from "react-router-dom";
 import { getBookByExternalId, searchBooks } from "../../api/booksApi";
 import { getUserDownloadStats, downloadBook } from "../../api/downloadApi";
-import { addBookToLibrary, getDigitalBooks } from "../../api/digitalBooksApi";
+import { addBookToLibrary, addInternalBookToLibrary, getDigitalBookById, getDigitalBooks } from "../../api/digitalBooksApi";
 import { useAuth } from "../../hooks/useAuth";
 import { saveIntendedDestination } from "../../utils/navigation";
 import Loader from "../../components/ui/Loader";
@@ -12,6 +12,7 @@ import ConfirmModal from "../../components/ui/ConfirmModal";
 export default function BookDetail() {
   const { externalId } = useParams();
   const decodedExternalId = externalId ? decodeURIComponent(externalId) : externalId;
+  const isExternalRef = decodedExternalId?.startsWith("/works/");
   const navigate = useNavigate();
   const location = useLocation();
   const { isAuthenticated, token } = useAuth();
@@ -43,7 +44,9 @@ export default function BookDetail() {
         setLoading(true);
         setError(null);
 
-        const bookData = await getBookByExternalId(decodedExternalId);
+        const bookData = isExternalRef
+          ? await getBookByExternalId(decodedExternalId)
+          : await getDigitalBookById(decodedExternalId, token);
         setBook(bookData);
 
         // Charger les stats uniquement si l'utilisateur est connecté
@@ -58,8 +61,11 @@ export default function BookDetail() {
 
           try {
             const libraryBooks = await getDigitalBooks(token);
-            const alreadyInLibrary = Array.isArray(libraryBooks)
-              && libraryBooks.some((b) => b.externalId && b.externalId === decodedExternalId);
+            const alreadyInLibrary = Array.isArray(libraryBooks) && (
+              isExternalRef
+                ? libraryBooks.some((b) => b.externalId && b.externalId === decodedExternalId)
+                : libraryBooks.some((b) => String(b.id) === String(decodedExternalId))
+            );
             setIsInLibrary(alreadyInLibrary);
           } catch (err) {
             console.error("Erreur chargement bibliothèque:", err);
@@ -74,7 +80,7 @@ export default function BookDetail() {
     }
 
     loadBookAndStats();
-  }, [decodedExternalId, isAuthenticated, token]);
+  }, [decodedExternalId, isAuthenticated, token, isExternalRef]);
 
   useEffect(() => {
     if (!book) return;
@@ -112,14 +118,14 @@ export default function BookDetail() {
 
       // Simuler un téléchargement (créer un fichier de démo)
       const blob = new Blob(
-        [`Démo - "${book.title}"\n\nCeci est une démo de téléchargement.\n\nDans une version production, le fichier ebook serait téléchargé ici.\n\nAuteur(s): ${book.authors?.join(', ') || 'N/A'}\nÉditeur: ${book.publisher || 'N/A'}\nISBN: ${book.isbn || 'N/A'}`],
+        [`Démo - "${bookTitle}"\n\nCeci est une démo de téléchargement.\n\nDans une version production, le fichier ebook serait téléchargé ici.\n\nAuteur(s): ${bookAuthors.join(', ') || 'N/A'}\nÉditeur: ${book.publisher || 'N/A'}\nISBN: ${book.isbn || 'N/A'}`],
         { type: 'text/plain' }
       );
 
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${book.title.replace(/[^a-z0-9]/gi, '_')}_demo.txt`;
+      a.download = `${bookTitle.replace(/[^a-z0-9]/gi, '_')}_demo.txt`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
@@ -135,7 +141,7 @@ export default function BookDetail() {
       // Show success notification
       setNotification({
         type: 'success',
-        message: `"${book.title}" a été téléchargé avec succès !`
+        message: `"${bookTitle}" a été téléchargé avec succès !`
       });
     } catch (err) {
       console.error("Erreur téléchargement:", err);
@@ -148,10 +154,14 @@ export default function BookDetail() {
   const handleAddToLibrary = async () => {
     try {
       setAddingToLibrary(true);
-      await addBookToLibrary(decodedExternalId, token);
+      if (isExternalRef) {
+        await addBookToLibrary(decodedExternalId, token);
+      } else {
+        await addInternalBookToLibrary(decodedExternalId, token);
+      }
       setNotification({
         type: 'success',
-        message: `"${book.title}" a été ajouté à votre bibliothèque !`
+        message: `"${book.title || book.titre}" a été ajouté à votre bibliothèque !`
       });
       setIsInLibrary(true);
       // Optionnel: rediriger vers la bibliothèque
@@ -179,6 +189,12 @@ export default function BookDetail() {
   )
 
   const canDownload = downloadStats?.isSubscriber || (downloadStats?.remainingDownloads > 0)
+  const bookTitle = book.title || book.titre || "Livre"
+  const bookCover = book.coverUrl || book.imageUrl
+  const bookAuthors = book.authors?.length ? book.authors : (book.auteur?.nom ? [book.auteur.nom] : [])
+  const bookCategory = book.category || book.categorie?.nom
+  const bookPages = book.pageCount || book.nombreDePage
+  const bookLanguage = book.language || book.langue
 
   return (
     <>
@@ -215,8 +231,8 @@ export default function BookDetail() {
           <div className="flex flex-col sm:flex-row gap-8 items-start max-w-4xl">
             {/* Cover */}
             <div className="shrink-0 w-32 sm:w-44 aspect-[2/3] bg-white/10 backdrop-blur rounded-2xl overflow-hidden shadow-xl flex items-center justify-center">
-              {book.coverUrl ? (
-                <img src={book.coverUrl} alt={book.title} className="w-full h-full object-cover" />
+              {bookCover ? (
+                <img src={bookCover} alt={bookTitle} className="w-full h-full object-cover" />
               ) : (
                 <span className="text-6xl">📖</span>
               )}
@@ -225,15 +241,15 @@ export default function BookDetail() {
             {/* Titre + meta */}
             <div className="flex-1 pt-1">
               <span className="inline-block text-[11px] uppercase tracking-widest text-emerald-200 font-semibold mb-3">Livre</span>
-              <h1 className="text-3xl sm:text-4xl font-bold text-white leading-tight mb-2">{book.title}</h1>
-              {book.authors?.length > 0 && (
-                <p className="text-emerald-100 text-base mb-5">{book.authors.join(", ")}</p>
+              <h1 className="text-3xl sm:text-4xl font-bold text-white leading-tight mb-2">{bookTitle}</h1>
+              {bookAuthors.length > 0 && (
+                <p className="text-emerald-100 text-base mb-5">{bookAuthors.join(", ")}</p>
               )}
               <div className="flex flex-wrap gap-2">
-                {book.category && <span className="text-xs bg-white/20 text-white px-3 py-1 rounded-full backdrop-blur">{book.category}</span>}
+                {bookCategory && <span className="text-xs bg-white/20 text-white px-3 py-1 rounded-full backdrop-blur">{bookCategory}</span>}
                 {book.publishedDate && <span className="text-xs bg-white/20 text-white px-3 py-1 rounded-full backdrop-blur">{new Date(book.publishedDate).getFullYear()}</span>}
-                {book.pageCount && <span className="text-xs bg-white/20 text-white px-3 py-1 rounded-full backdrop-blur">📄 {book.pageCount} pages</span>}
-                {book.language && <span className="text-xs bg-white/20 text-white px-3 py-1 rounded-full backdrop-blur uppercase">{book.language}</span>}
+                {bookPages && <span className="text-xs bg-white/20 text-white px-3 py-1 rounded-full backdrop-blur">📄 {bookPages} pages</span>}
+                {bookLanguage && <span className="text-xs bg-white/20 text-white px-3 py-1 rounded-full backdrop-blur uppercase">{bookLanguage}</span>}
               </div>
             </div>
           </div>
@@ -353,10 +369,14 @@ export default function BookDetail() {
           )}
 
           {/* Description */}
-          {book.description && (
+          {(book.description || book.resume) && (
             <div className="bg-white rounded-2xl border border-borderSoft p-6 shadow-sm">
               <h2 className="text-xs uppercase tracking-widest text-inkMuted font-semibold mb-3">Description</h2>
-              <div className="text-ink text-sm leading-relaxed" dangerouslySetInnerHTML={{ __html: book.description }} />
+              {book.description ? (
+                <div className="text-ink text-sm leading-relaxed" dangerouslySetInnerHTML={{ __html: book.description }} />
+              ) : (
+                <p className="text-ink text-sm leading-relaxed whitespace-pre-line">{book.resume}</p>
+              )}
             </div>
           )}
 

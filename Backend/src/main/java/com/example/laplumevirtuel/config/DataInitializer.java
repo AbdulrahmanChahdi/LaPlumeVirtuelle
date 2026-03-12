@@ -1,7 +1,9 @@
 package com.example.laplumevirtuel.config;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,15 +74,41 @@ public class DataInitializer implements CommandLineRunner {
         try {
             // Création des catégories
             logger.info("Création des catégories...");
-            Categorie roman = new Categorie();
-            roman.setNom("Roman");
-            roman.setDescription("Romans et fictions");
-            categorieRepository.save(roman);
+            Map<String, Categorie> categoriesByName = new HashMap<>();
+            String[] categoryNames = {
+                    "Fantasy",
+                    "Science-Fiction",
+                    "Policier / Thriller",
+                    "Roman Historique",
+                    "Romance",
+                    "Horreur / Épouvante",
+                    "Littérature Classique",
+                    "Conte et Légende",
+                    "Aventure",
+                    "Young Adult",
+                    "Biographie / Autobiographie",
+                    "Essai",
+                    "Développement Personnel",
+                    "Histoire",
+                    "Sciences",
+                    "Philosophie",
+                    "Religion et Spiritualité",
+                    "Bande Dessinée / Manga",
+                    "Poésie",
+                    "Théâtre",
+                    "Cuisine",
+                    "Voyage",
+                    "Art / Photographie",
+                    "Psychologie",
+                    "Économie"
+            };
 
-            Categorie science = new Categorie();
-            science.setNom("Science");
-            science.setDescription("Livres scientifiques");
-            categorieRepository.save(science);
+            for (String name : categoryNames) {
+                Categorie c = new Categorie();
+                c.setNom(name);
+                c.setDescription("Catégorie " + name);
+                categoriesByName.put(name, categorieRepository.save(c));
+            }
 
             // Création des éditeurs
             logger.info("Création des éditeurs...");
@@ -111,10 +139,10 @@ public class DataInitializer implements CommandLineRunner {
             // Création des utilisateurs
             logger.info("Création des utilisateurs...");
             Utilisateur admin = new Utilisateur();
-            admin.setNom("Admin");
-            admin.setAdresseMail("admin@example.com");
-            admin.setMotDePasse(passwordEncoder.encode("admin123"));
-            admin.setAdressePostal("123 rue Admin, 75001 Paris");
+            admin.setNom("Admin LPV");
+            admin.setAdresseMail("admin@lpv.fr");
+            admin.setMotDePasse(passwordEncoder.encode("123456789"));
+            admin.setAdressePostal("1 rue Admin, 75001 Paris");
             admin.setTel("0123456789");
             admin.setRole("ADMIN");
             utilisateurRepository.save(admin);
@@ -138,7 +166,7 @@ public class DataInitializer implements CommandLineRunner {
             lesMiserables.setDisponible(true);
             lesMiserables.setNombreDePage(1500);
             lesMiserables.setImageUrl("https://m.media-amazon.com/images/I/71W4ZP0-RQL._AC_UF1000,1000_QL80_.jpg");
-            lesMiserables.setCategorie(roman);
+            lesMiserables.setCategorie(categoriesByName.get("Littérature Classique"));
             lesMiserables.setAuteur(hugo);
             lesMiserables.setEditeurs(new HashSet<>(Arrays.asList(gallimard)));
             livreRepository.save(lesMiserables);
@@ -151,7 +179,7 @@ public class DataInitializer implements CommandLineRunner {
             tourDuMonde.setDisponible(true);
             tourDuMonde.setNombreDePage(300);
             tourDuMonde.setImageUrl("https://m.media-amazon.com/images/I/81WvnYY9ZxL._AC_UF1000,1000_QL80_.jpg");
-            tourDuMonde.setCategorie(roman);
+            tourDuMonde.setCategorie(categoriesByName.get("Aventure"));
             tourDuMonde.setAuteur(verne);
             tourDuMonde.setEditeurs(new HashSet<>(Arrays.asList(flammarion)));
             livreRepository.save(tourDuMonde);
@@ -200,16 +228,8 @@ public class DataInitializer implements CommandLineRunner {
             podcastLitterature.setImageUrl("https://example.com/images/grands-classiques.jpg");
             podcastRepository.save(podcastLitterature);
 
-            // Association des utilisateurs aux livres et podcasts
-            logger.info("Association des utilisateurs aux livres et podcasts...");
-            user.setPodcastsEcoutes(new HashSet<>(Arrays.asList(podcastScience, podcastHistoire, podcastLitterature)));
-            utilisateurRepository.save(user);
-
-            // Création des ReadingProgress pour l'utilisateur test
-            logger.info("Création des ReadingProgress pour les livres de l'utilisateur test...");
-            readingProgressService.getOrCreateProgress(user, lesMiserables);
-            readingProgressService.getOrCreateProgress(user, tourDuMonde);
-            logger.info("ReadingProgress créés pour 2 livres");
+            // La bibliothèque personnelle reste au choix de l'utilisateur
+            logger.info("Aucun contenu n'est ajouté automatiquement à la bibliothèque utilisateur");
 
             logger.info("Initialisation des données terminée avec succès !");
         } catch (Exception e) {

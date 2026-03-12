@@ -8,6 +8,7 @@ import MainLayout from "../components/layout/MainLayout"
 import LibraryLayout from "../components/layout/LibraryLayout"
 import RequireRegistration from "../guards/RequireRegistration"
 import RequireAuth from "../guards/RequireAuth"
+import RequireAdmin from "../guards/RequireAdmin"
 import PreferencesSignupForm from "../components/PreferencesSignupForm"
 
 import MyLibrary from "../features/library/MyLibrary"
@@ -23,6 +24,7 @@ import PodcastsPublic from "../features/public/PodcastsPublic"
 import Catalogue from "../features/catalogue/Catalogue"
 import AudiobookDetail from "../features/catalogue/AudiobookDetail"
 import PodcastDetail from "../features/catalogue/PodcastDetail"
+import AdminDashboard from "../features/admin/AdminDashboard"
 
 export default function AppRouter() {
   return (
@@ -58,6 +60,7 @@ export default function AppRouter() {
 
         {/* Catalogue à découvrir (connecté) */}
         <Route path="/catalogue" element={<Catalogue />} />
+        <Route path="/catalogue/books/:id" element={<DigitalBookDetail />} />
         <Route path="/catalogue/audiobooks/:id" element={<AudiobookDetail />} />
         <Route path="/catalogue/podcasts/:id" element={<PodcastDetail />} />
 
@@ -75,6 +78,18 @@ export default function AppRouter() {
 
       {/* ================= FALLBACK ================= */}
       <Route path="*" element={<Navigate to="/" replace />} />
+
+      {/* ================= ADMIN ================= */}
+      <Route
+        path="/admin"
+        element={
+          <RequireAuth>
+            <RequireAdmin>
+              <AdminDashboard />
+            </RequireAdmin>
+          </RequireAuth>
+        }
+      />
 
     </Routes>
   )
