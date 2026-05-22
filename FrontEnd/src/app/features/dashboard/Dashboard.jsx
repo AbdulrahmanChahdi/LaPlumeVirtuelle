@@ -1,11 +1,31 @@
-import { useEffect, useState } from "react"
-import { useLocation } from "react-router-dom"
+import { useCallback, useEffect, useState } from "react"
+import { useLocation, useSearchParams } from "react-router-dom"
 import { useAuth } from "../../hooks/useAuth"
 import { getUserLivres } from "../../api/livresApi"
 import { getAudiobooks } from "../../api/audiobooksApi"
 import { getPodcasts } from "../../api/podcastsApi"
+import { getRecommendations } from "../../api/profileRecommendationsApi"
+import RecommendationCard from "../../components/RecommendationCard"
 
 const TABS = ["Mes favoris", "Historique", "Recommandations"]
+const TAB_KEYS = ["favorites", "history", "recommendations"]
+
+function resolveTabIndex(tab) {
+  const index = TAB_KEYS.indexOf(tab)
+  return index >= 0 ? index : 0
+}
+
+function readCachedRecommendations() {
+  try {
+    const cached = localStorage.getItem("latestRecommendations")
+    if (!cached) return []
+
+    const parsed = JSON.parse(cached)
+    return Array.isArray(parsed?.recommendations) ? parsed.recommendations : []
+  } catch {
+    return []
+  }
+}
 
 function MediaCard({ tag }) {
   const tagColors = {
@@ -55,8 +75,18 @@ function AddCard() {
 export default function Dashboard() {
   const { user, token } = useAuth()
   const location = useLocation()
-  const [activeTab, setActiveTab] = useState(0)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const tabFromQuery = searchParams.get("tab")
+  const [activeTab, setActiveTab] = useState(() => resolveTabIndex(tabFromQuery))
   const [stats, setStats] = useState({ booksCount: 0, audiobooksCount: 0, podcastsCount: 0 })
+  const [recommendations, setRecommendations] = useState(() => readCachedRecommendations())
+  const [recommendationsLoading, setRecommendationsLoading] = useState(false)
+  const [recommendationsError, setRecommendationsError] = useState("")
+  const [favoriteIds, setFavoriteIds] = useState([])
+
+  useEffect(() => {
+    setActiveTab(resolveTabIndex(tabFromQuery))
+  }, [tabFromQuery])
 
   useEffect(() => {
     if (!token) return
@@ -69,6 +99,71 @@ export default function Dashboard() {
         })
       })
   }, [token, location.key])
+
+  const loadRecommendations = useCallback(async () => {
+    if (!token) return
+
+    setRecommendationsLoading(true)
+    setRecommendationsError("")
+
+    try {
+      const response = await getRecommendations(12)
+      const items = Array.isArray(response?.recommendations) ? response.recommendations : []
+
+      setRecommendations(items)
+      localStorage.setItem("latestRecommendations", JSON.stringify(response))
+    } catch (err) {
+      console.error("Erreur chargement recommandations:", err)
+      setRecommendationsError(err?.message || "Impossible de charger les recommandations pour le moment.")
+
+      try {
+        const cached = localStorage.getItem("latestRecommendations")
+        if (cached) {
+          const parsed = JSON.parse(cached)
+          const items = Array.isArray(parsed?.recommendations) ? parsed.recommendations : []
+          if (items.length > 0) {
+            setRecommendations(items)
+          }
+        }
+      } catch {
+        // Ignore local cache parsing errors and keep API error state.
+      }
+    } finally {
+      setRecommendationsLoading(false)
+    }
+  }, [token])
+
+  useEffect(() => {
+    loadRecommendations()
+  }, [loadRecommendations, location.key])
+
+  const toggleFavorite = useCallback((item) => {
+    if (!item?.id) return
+
+    setFavoriteIds((prev) => {
+      if (prev.includes(item.id)) {
+        return prev.filter((id) => id !== item.id)
+      }
+      return [...prev, item.id]
+    })
+  }, [])
+
+  const recommendationItems = recommendations.map((item) => ({
+    ...item,
+    favorite: favoriteIds.includes(item.id),
+  }))
+
+  const handleTabChange = useCallback((index) => {
+    setActiveTab(index)
+
+    const tabKey = TAB_KEYS[index]
+    if (!tabKey || tabKey === "favorites") {
+      setSearchParams({}, { replace: true })
+      return
+    }
+
+    setSearchParams({ tab: tabKey }, { replace: true })
+  }, [setSearchParams])
 
   const DEMO_CARDS = [
     { tag: "ROMAN" }, { tag: "PODCAST" }, { tag: "AUDIO" },
@@ -99,7 +194,7 @@ export default function Dashboard() {
           {TABS.map((tab, i) => (
             <button
               key={tab}
-              onClick={() => setActiveTab(i)}
+              onClick={() => handleTabChange(i)}
               className={`pb-3 text-sm font-semibold uppercase tracking-wide transition-colors ${
                 activeTab === i
                   ? "text-ink border-b-2 border-ink -mb-px"
@@ -111,13 +206,56 @@ export default function Dashboard() {
           ))}
         </div>
 
-        {/* Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {DEMO_CARDS.map((card, i) => (
-            <MediaCard key={i} tag={card.tag} />
-          ))}
-          <AddCard />
-        </div>
+        {activeTab === 2 ? (
+          <div className="space-y-4">
+            {recommendationsLoading && (
+              <div className="p-4 border rounded-lg bg-stone-50 border-borderSoft text-inkSoft text-sm">
+                Chargement des recommandations en cours...
+              </div>
+            )}
+
+            {recommendationsError && (
+              <div className="p-4 border-l-4 rounded bg-red-50 border-red-500 text-red-700">
+                <p className="font-medium">{recommendationsError}</p>
+                <button
+                  type="button"
+                  onClick={loadRecommendations}
+                  className="mt-2 text-xs px-3 py-1.5 rounded bg-white border border-red-300 text-red-700 hover:bg-red-100 transition"
+                >
+                  Réessayer
+                </button>
+              </div>
+            )}
+
+            {!recommendationsLoading && recommendationItems.length === 0 && (
+              <div className="p-5 rounded-lg border border-dashed border-borderSoft bg-paper text-center">
+                <p className="font-semibold text-ink">Aucune recommandation disponible pour le moment.</p>
+                <p className="text-sm text-inkMuted mt-1">
+                  Complétez votre onboarding ou réessayez dans quelques instants.
+                </p>
+              </div>
+            )}
+
+            {recommendationItems.length > 0 && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                {recommendationItems.map((item) => (
+                  <RecommendationCard
+                    key={`${item.type || "item"}-${item.id || item.title}`}
+                    item={item}
+                    onToggleFavorite={toggleFavorite}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {DEMO_CARDS.map((card, i) => (
+              <MediaCard key={i} tag={card.tag} />
+            ))}
+            <AddCard />
+          </div>
+        )}
     </div>
   )
 }

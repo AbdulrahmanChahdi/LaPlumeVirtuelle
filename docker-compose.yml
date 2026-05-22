@@ -38,6 +38,12 @@ services:
       dockerfile: Dockerfile
     container_name: lpv-backend
     restart: unless-stopped
+    image: maven:3.9.9-eclipse-temurin-17
+    working_dir: /workspace
+    volumes:
+      - ./:/workspace
+      - maven_cache:/root/.m2
+    command: mvn -f Backend/pom.xml spring-boot:run
     ports:
       - "8080:8080"
     environment:

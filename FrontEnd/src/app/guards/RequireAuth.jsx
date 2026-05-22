@@ -17,7 +17,7 @@ export default function RequireAuth({ children }) {
         saveIntendedDestination(fullPath)
         
         // Rediriger vers login avec backup dans l'URL
-        return <Navigate to={`/login?redirectTo=${encodeURIComponent(fullPath)}`} replace />
+        return <Navigate to={`/auth/login?redirectTo=${encodeURIComponent(fullPath)}`} replace />
     }
     return children
 }
