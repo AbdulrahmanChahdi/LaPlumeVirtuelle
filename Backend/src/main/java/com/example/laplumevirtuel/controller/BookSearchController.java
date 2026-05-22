@@ -2,11 +2,15 @@ package com.example.laplumevirtuel.controller;
 
 import com.example.laplumevirtuel.dto.BookSearchResultDTO;
 import com.example.laplumevirtuel.service.ExternalBookService;
+import com.example.laplumevirtuel.services.LivreService;
+import com.example.laplumevirtuel.entities.Livre;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 /**
  * Controller for public book search using external API
@@ -18,9 +22,11 @@ import java.util.List;
 public class BookSearchController {
 
     private final ExternalBookService externalBookService;
+    private final LivreService livreService;
 
-    public BookSearchController(ExternalBookService externalBookService) {
+    public BookSearchController(ExternalBookService externalBookService, LivreService livreService) {
         this.externalBookService = externalBookService;
+        this.livreService = livreService;
     }
 
     /**
@@ -42,7 +48,18 @@ public class BookSearchController {
             return ResponseEntity.badRequest().build();
         }
 
+        // Call external API first
         List<BookSearchResultDTO> results = externalBookService.searchBooks(query, maxResults);
+
+        // Fallback to local database if external API returns no results
+        if (results == null || results.isEmpty()) {
+            log.info("No results from external API, falling back to local database for query: '{}'", query);
+            List<Livre> localBooks = livreService.searchLivres(query);
+            results = localBooks.stream()
+                .map(this::mapLivreToDTO)
+                .collect(Collectors.toList());
+            log.info("Found {} books in local database", results.size());
+        }
 
         log.info("Returning {} search results for query: '{}'", results.size(), query);
         return ResponseEntity.ok(results);
@@ -82,7 +99,7 @@ public class BookSearchController {
         }
 
         String finalQuery = queryBuilder.toString().trim();
-        
+
         if (finalQuery.isEmpty()) {
             log.warn("No search criteria provided for advanced search");
             return ResponseEntity.badRequest().build();
@@ -90,11 +107,40 @@ public class BookSearchController {
 
         log.info("Final Google Books query: '{}'", finalQuery);
         List<BookSearchResultDTO> results = externalBookService.searchBooks(finalQuery, maxResults);
+
+        // Fallback to local database if external API returns no results
+        if (results == null || results.isEmpty()) {
+            log.info("No results from external API, falling back to local database for advanced query: '{}'", finalQuery);
+            List<Livre> localBooks = livreService.searchLivres(finalQuery);
+            results = localBooks.stream()
+                    .map(this::mapLivreToDTO)
+                    .collect(Collectors.toList());
+            log.info("Found {} books in local database for advanced search", results.size());
+        }
         
         log.info("Returning {} results for advanced search", results.size());
         return ResponseEntity.ok(results);
     }
 
+
+    /**
+     * Convert Livre entity to BookSearchResultDTO
+     */
+    private BookSearchResultDTO mapLivreToDTO(Livre livre) {
+        return BookSearchResultDTO.builder()
+                .externalId(livre.getExternalId())
+                .title(livre.getTitre())
+                .authors(livre.getAuteur() != null ? List.of(livre.getAuteur().getNom()) : new ArrayList<>())
+                .description(livre.getResume())
+                .coverUrl(livre.getImageUrl())
+                .category(livre.getCategorie() != null ? livre.getCategorie().getNom() : null)
+                .publisher(livre.getEditeurs() != null && !livre.getEditeurs().isEmpty() 
+                    ? livre.getEditeurs().stream().findFirst().map(e -> e.getNom()).orElse(null) : null)
+                .publishedDate(livre.getAnneeEdition())
+                .pageCount(livre.getNombreDePage())
+                .language(livre.getLangue())
+                .build();
+    }
     /**
      * Get book details by external ID
      * No authentication required for preview

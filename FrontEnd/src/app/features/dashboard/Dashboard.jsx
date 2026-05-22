@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react"
-import { useLocation } from "react-router-dom"
+import { useLocation, useSearchParams } from "react-router-dom"
 import { useAuth } from "../../hooks/useAuth"
 import { getUserLivres } from "../../api/livresApi"
 import { getAudiobooks } from "../../api/audiobooksApi"
@@ -8,6 +8,24 @@ import { getRecommendations } from "../../api/profileRecommendationsApi"
 import RecommendationCard from "../../components/RecommendationCard"
 
 const TABS = ["Mes favoris", "Historique", "Recommandations"]
+const TAB_KEYS = ["favorites", "history", "recommendations"]
+
+function resolveTabIndex(tab) {
+  const index = TAB_KEYS.indexOf(tab)
+  return index >= 0 ? index : 0
+}
+
+function readCachedRecommendations() {
+  try {
+    const cached = localStorage.getItem("latestRecommendations")
+    if (!cached) return []
+
+    const parsed = JSON.parse(cached)
+    return Array.isArray(parsed?.recommendations) ? parsed.recommendations : []
+  } catch {
+    return []
+  }
+}
 
 function MediaCard({ tag }) {
   const tagColors = {
@@ -57,12 +75,18 @@ function AddCard() {
 export default function Dashboard() {
   const { user, token } = useAuth()
   const location = useLocation()
-  const [activeTab, setActiveTab] = useState(0)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const tabFromQuery = searchParams.get("tab")
+  const [activeTab, setActiveTab] = useState(() => resolveTabIndex(tabFromQuery))
   const [stats, setStats] = useState({ booksCount: 0, audiobooksCount: 0, podcastsCount: 0 })
-  const [recommendations, setRecommendations] = useState([])
+  const [recommendations, setRecommendations] = useState(() => readCachedRecommendations())
   const [recommendationsLoading, setRecommendationsLoading] = useState(false)
   const [recommendationsError, setRecommendationsError] = useState("")
   const [favoriteIds, setFavoriteIds] = useState([])
+
+  useEffect(() => {
+    setActiveTab(resolveTabIndex(tabFromQuery))
+  }, [tabFromQuery])
 
   useEffect(() => {
     if (!token) return
@@ -129,6 +153,18 @@ export default function Dashboard() {
     favorite: favoriteIds.includes(item.id),
   }))
 
+  const handleTabChange = useCallback((index) => {
+    setActiveTab(index)
+
+    const tabKey = TAB_KEYS[index]
+    if (!tabKey || tabKey === "favorites") {
+      setSearchParams({}, { replace: true })
+      return
+    }
+
+    setSearchParams({ tab: tabKey }, { replace: true })
+  }, [setSearchParams])
+
   const DEMO_CARDS = [
     { tag: "ROMAN" }, { tag: "PODCAST" }, { tag: "AUDIO" },
     { tag: "ROMAN" }, { tag: "HISTOIRE" },
@@ -158,7 +194,7 @@ export default function Dashboard() {
           {TABS.map((tab, i) => (
             <button
               key={tab}
-              onClick={() => setActiveTab(i)}
+              onClick={() => handleTabChange(i)}
               className={`pb-3 text-sm font-semibold uppercase tracking-wide transition-colors ${
                 activeTab === i
                   ? "text-ink border-b-2 border-ink -mb-px"

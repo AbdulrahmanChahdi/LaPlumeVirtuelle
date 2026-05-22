@@ -9,12 +9,11 @@ import java.util.Set;
 import org.springframework.stereotype.Service;
 
 import com.example.laplumevirtuel.document.OnboardingProfileDocument;
+import com.example.laplumevirtuel.dto.BookSearchResultDTO;
 import com.example.laplumevirtuel.dto.RecommendationsResponse;
-import com.example.laplumevirtuel.entities.Livre;
 import com.example.laplumevirtuel.entities.LivreAudio;
 import com.example.laplumevirtuel.entities.Podcast;
 import com.example.laplumevirtuel.repository.LivreAudioRepository;
-import com.example.laplumevirtuel.repository.LivreRepository;
 import com.example.laplumevirtuel.repository.OnboardingProfileRepository;
 import com.example.laplumevirtuel.repository.PodcastRepository;
 
@@ -26,19 +25,19 @@ public class RecommendationCompositionService {
 
     private final OnboardingProfileRepository onboardingProfileRepository;
     private final NlpRecommendationClient nlpRecommendationClient;
-    private final LivreRepository livreRepository;
+    private final ExternalBookService externalBookService;
     private final LivreAudioRepository livreAudioRepository;
     private final PodcastRepository podcastRepository;
 
     public RecommendationCompositionService(
             OnboardingProfileRepository onboardingProfileRepository,
             NlpRecommendationClient nlpRecommendationClient,
-            LivreRepository livreRepository,
+            ExternalBookService externalBookService,
             LivreAudioRepository livreAudioRepository,
             PodcastRepository podcastRepository) {
         this.onboardingProfileRepository = onboardingProfileRepository;
         this.nlpRecommendationClient = nlpRecommendationClient;
-        this.livreRepository = livreRepository;
+        this.externalBookService = externalBookService;
         this.livreAudioRepository = livreAudioRepository;
         this.podcastRepository = podcastRepository;
     }
@@ -97,51 +96,72 @@ public class RecommendationCompositionService {
             return resolved;
         }
 
+        // If the item was classified (e.g. as podcast) but couldn't be resolved,
+        // try the generic fallback resolution which attempts livre -> livreAudio -> podcast.
+        RecommendationsResponse.RecommendationCard fallback = resolveFallback(item);
+        if (fallback != null) {
+            return fallback;
+        }
+
         return buildNlpFallbackCard(item);
     }
 
     private RecommendationsResponse.RecommendationCard resolveLivre(NlpRecommendationClient.NlpRecommendationItem item) {
-        Optional<Livre> candidate = Optional.empty();
+        BookSearchResultDTO externalBook = null;
 
-        if (hasText(item.getId())) {
-            Long numericId = parseLong(item.getId());
-            if (numericId != null) {
-                candidate = livreRepository.findById(numericId);
-            }
-            if (candidate.isEmpty()) {
-                candidate = livreRepository.findByExternalId(item.getId());
+        // Only attempt to fetch by ID when the NLP-provided ID looks like an OpenLibrary work key
+        if (hasText(item.getId()) && item.getId().startsWith("/works/")) {
+            externalBook = externalBookService.getBookById(item.getId());
+        }
+
+        if (externalBook == null && hasText(item.getTitle())) {
+            List<BookSearchResultDTO> byTitle = externalBookService.searchBooks(item.getTitle(), 1);
+            if (!byTitle.isEmpty()) {
+                externalBook = byTitle.get(0);
             }
         }
 
-        if (candidate.isEmpty() && hasText(item.getTitle())) {
-            candidate = livreRepository.searchByKeyword(item.getTitle()).stream().findFirst();
+        if (externalBook == null && hasText(item.getAuthor())) {
+            List<BookSearchResultDTO> byAuthor = externalBookService.searchBooks(item.getAuthor(), 1);
+            if (!byAuthor.isEmpty()) {
+                externalBook = byAuthor.get(0);
+            }
         }
 
-        if (candidate.isEmpty()) {
+        if (externalBook == null) {
             return null;
         }
 
-        Livre livre = candidate.get();
         Set<String> tags = new LinkedHashSet<>();
         tags.add("Livre");
-        if (livre.getCategorie() != null && hasText(livre.getCategorie().getNom())) {
-            tags.add(livre.getCategorie().getNom());
+        if (hasText(externalBook.getCategory())) {
+            tags.add(externalBook.getCategory());
         }
         if (item.getTags() != null) {
             item.getTags().stream().filter(this::hasText).forEach(tags::add);
         }
 
         String author = item.getAuthor();
-        if (livre.getAuteur() != null && hasText(livre.getAuteur().getNom())) {
-            author = livre.getAuteur().getNom();
+        if (externalBook.getAuthors() != null && !externalBook.getAuthors().isEmpty()) {
+            String primaryAuthor = externalBook.getAuthors().get(0);
+            if (hasText(primaryAuthor)) {
+                author = primaryAuthor;
+            }
         }
 
+        String id = hasText(externalBook.getExternalId())
+                ? externalBook.getExternalId()
+                : (hasText(item.getId()) ? item.getId() : item.getTitle());
+
+        String title = hasText(externalBook.getTitle()) ? externalBook.getTitle() : item.getTitle();
+        String coverUrl = hasText(externalBook.getCoverUrl()) ? externalBook.getCoverUrl() : item.getCoverUrl();
+
         return RecommendationsResponse.RecommendationCard.builder()
-                .id(String.valueOf(livre.getId()))
+                .id(id)
                 .type("livre")
-                .title(livre.getTitre())
+                .title(title)
                 .author(author)
-                .coverUrl(hasText(livre.getImageUrl()) ? livre.getImageUrl() : item.getCoverUrl())
+                .coverUrl(coverUrl)
                 .tags(new ArrayList<>(tags))
                 .score(item.getScore())
                 .favorite(Boolean.FALSE)

@@ -220,12 +220,11 @@ export default function PreferencesSignupForm() {
     }
 
     localStorage.setItem("onboardingDone", "true")
+    localStorage.setItem("postOnboardingDestination", "/recommendations")
 
-    // Utiliser la destination sauvegardée si elle existe, sinon retour au dashboard
-    const intendedDestination = getAndClearIntendedDestination()
-    const destination = intendedDestination || "/dashboard"
-
-    navigate(destination, { replace: true })
+    // Vider une éventuelle destination sauvegardee puis ouvrir directement la page recommandations.
+    getAndClearIntendedDestination()
+    navigate("/recommendations", { replace: true })
     setLoading(false)
   }
 

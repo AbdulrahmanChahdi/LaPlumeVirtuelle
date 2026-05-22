@@ -1,9 +1,11 @@
 import { Fragment } from "react"
 import { Navigate, Outlet, Link, useLocation, useNavigate } from "react-router-dom"
 import { useAuth } from "../../hooks/useAuth"
+import { useEffect } from "react"
 
 const NAV_LINKS = [
   { label: "Tableau de bord", to: "/dashboard" },
+  { label: "Recommandations", to: "/recommendations" },
   { label: "Ma bibliothèque", to: "/library" },
   { label: "Découvrir", to: "/catalogue", group: "catalogue" },
 ]
@@ -13,6 +15,21 @@ export default function MainLayout() {
   const navigate = useNavigate()
   const { user, logout } = useAuth()
   const onboardingDone = typeof window !== "undefined" && localStorage.getItem("onboardingDone") === "true"
+
+  useEffect(() => {
+    if (!onboardingDone) return
+
+    const forcedDestination = localStorage.getItem("postOnboardingDestination")
+    if (!forcedDestination) return
+
+    if (location.pathname !== forcedDestination) {
+      localStorage.removeItem("postOnboardingDestination")
+      navigate(forcedDestination, { replace: true })
+      return
+    }
+
+    localStorage.removeItem("postOnboardingDestination")
+  }, [location.pathname, navigate, onboardingDone])
 
   if (!onboardingDone && location.pathname !== "/onboarding/preferences") {
     return <Navigate to="/onboarding/preferences" replace />

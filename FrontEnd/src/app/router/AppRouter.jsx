@@ -23,6 +23,7 @@ import PodcastsPublic from "../features/public/PodcastsPublic"
 import Catalogue from "../features/catalogue/Catalogue"
 import AudiobookDetail from "../features/catalogue/AudiobookDetail"
 import PodcastDetail from "../features/catalogue/PodcastDetail"
+import RecommendationsLanding from "../features/recommendations/RecommendationsLanding"
 
 export default function AppRouter() {
   return (
@@ -51,6 +52,7 @@ export default function AppRouter() {
         }
       >
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/recommendations" element={<RecommendationsLanding />} />
         <Route path="/onboarding/preferences" element={<PreferencesSignupForm />} />
 
         {/* Bibliothèque personnelle - tous types réunis */}
