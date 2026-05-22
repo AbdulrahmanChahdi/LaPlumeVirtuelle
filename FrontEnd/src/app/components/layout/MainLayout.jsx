@@ -1,9 +1,11 @@
 import { Fragment } from "react"
 import { Navigate, Outlet, Link, useLocation, useNavigate } from "react-router-dom"
 import { useAuth } from "../../hooks/useAuth"
+import { useEffect } from "react"
 
 const NAV_LINKS = [
   { label: "Tableau de bord", to: "/dashboard" },
+  { label: "Recommandations", to: "/recommendations" },
   { label: "Ma bibliothèque", to: "/library" },
   { label: "Découvrir", to: "/catalogue", group: "catalogue" },
 ]
@@ -18,6 +20,20 @@ export default function MainLayout() {
   const navLinks = isAdmin
     ? [...NAV_LINKS, { label: "Administration", to: "/admin" }]
     : NAV_LINKS
+  useEffect(() => {
+    if (!onboardingDone) return
+
+    const forcedDestination = localStorage.getItem("postOnboardingDestination")
+    if (!forcedDestination) return
+
+    if (location.pathname !== forcedDestination) {
+      localStorage.removeItem("postOnboardingDestination")
+      navigate(forcedDestination, { replace: true })
+      return
+    }
+
+    localStorage.removeItem("postOnboardingDestination")
+  }, [location.pathname, navigate, onboardingDone])
 
   if (!onboardingDone && location.pathname !== "/onboarding/preferences") {
     return <Navigate to="/onboarding/preferences" replace />
@@ -32,7 +48,7 @@ export default function MainLayout() {
       {/* ── Sidebar ── */}
       {onboardingDone && (
         <aside
-          className="hidden lg:flex flex-col w-60 shrink-0 py-8 px-5 gap-8 fixed top-0 left-0 h-full z-30"
+          className="fixed top-0 left-0 z-30 flex-col hidden h-full gap-8 px-5 py-8 lg:flex w-60 shrink-0"
           style={{ backgroundColor: "#2F5D50" }}
         >
           {/* Logo */}
@@ -48,12 +64,12 @@ export default function MainLayout() {
 
           {/* User info */}
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-white font-semibold text-sm shrink-0">
+            <div className="flex items-center justify-center text-sm font-semibold text-white rounded-full w-9 h-9 bg-white/20 shrink-0">
               {initials}
             </div>
             <div className="min-w-0">
-              <p className="text-white text-sm font-semibold leading-tight truncate">{user?.nom || "Utilisateur"}</p>
-              <p className="text-white/50 text-xs truncate">{user?.adresseMail || ""}</p>
+              <p className="text-sm font-semibold leading-tight text-white truncate">{user?.nom || "Utilisateur"}</p>
+              <p className="text-xs truncate text-white/50">{user?.adresseMail || ""}</p>
             </div>
           </div>
 
@@ -89,7 +105,7 @@ export default function MainLayout() {
           <div className="mt-auto">
             <button
               onClick={() => { logout(); navigate("/") }}
-              className="text-xs text-white/40 hover:text-white/70 transition flex items-center gap-2"
+              className="flex items-center gap-2 text-xs transition text-white/40 hover:text-white/70"
             >
               <span>←</span> Déconnexion
             </button>

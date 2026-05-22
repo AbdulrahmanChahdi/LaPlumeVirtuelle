@@ -3,6 +3,7 @@ import numpy as np
 from numpy.linalg import norm
 import re
 import os
+import hashlib
 from gensim.models import Word2Vec
 from gensim.utils import simple_preprocess
 
@@ -228,6 +229,116 @@ class RecommendationEngine:
             import traceback
             traceback.print_exc()
             return []
+
+    def get_ranked_recommendations(self, genres, formats, texte_libre, top_n=12):
+        """
+        Build a unified profile from genres + formats + texte libre,
+        then rank recommendations using cosine similarity against learned profiles.
+        Returns structured items sorted by descending score.
+        """
+        try:
+            if not self.is_trained:
+                print("[!] Model not trained, training now...")
+                if not self.train():
+                    return []
+
+            profile_text = self._compose_profile_text(genres, formats, texte_libre)
+            profile_vector = self.sentence_vector(profile_text)
+
+            similarities = []
+            for idx, _ in enumerate(self.qa_pairs):
+                if idx >= len(self.profile_vectors):
+                    continue
+                score = self.cosine_similarity(profile_vector, self.profile_vectors[idx])
+                similarities.append((score, idx))
+
+            similarities.sort(reverse=True, key=lambda x: x[0])
+
+            ranked_items = []
+            seen_ids = set()
+
+            for profile_score, idx in similarities:
+                if idx >= len(self.qa_pairs):
+                    continue
+
+                _, answer = self.qa_pairs[idx]
+                if not answer:
+                    continue
+
+                row = self.user_profiles_df.iloc[idx] if self.user_profiles_df is not None and idx < len(self.user_profiles_df) else {}
+                row_format = str(row.get('format', '')) if hasattr(row, 'get') else ''
+                row_theme = str(row.get('thematique', '')) if hasattr(row, 'get') else ''
+
+                candidates = [c.strip() for c in str(answer).split('|') if c and c.strip()]
+                for position, candidate in enumerate(candidates):
+                    title, author = self._split_title_author(candidate)
+                    rec_type = self._infer_recommendation_type(row_format, formats, candidate)
+                    rec_id = self._build_recommendation_id(rec_type, title, author)
+
+                    if rec_id in seen_ids:
+                        continue
+
+                    # Slight decay by position within a profile to favor the first items.
+                    adjusted_score = float(profile_score) * max(0.7, 1.0 - (position * 0.05))
+
+                    ranked_items.append({
+                        "id": rec_id,
+                        "type": rec_type,
+                        "title": title,
+                        "author": author,
+                        "score": round(adjusted_score, 6),
+                        "tags": [t for t in [row_theme] if t and t.lower() != 'nan']
+                    })
+                    seen_ids.add(rec_id)
+
+                    if len(ranked_items) >= max(top_n * 3, 30):
+                        break
+
+                if len(ranked_items) >= max(top_n * 3, 30):
+                    break
+
+            ranked_items.sort(key=lambda item: item.get("score", 0.0), reverse=True)
+            return ranked_items[:top_n]
+        except Exception as e:
+            print(f"[!] Error generating ranked recommendations: {e}")
+            import traceback
+            traceback.print_exc()
+            return []
+
+    def _compose_profile_text(self, genres, formats, texte_libre):
+        parts = []
+
+        if isinstance(genres, list):
+            parts.extend([str(g).strip() for g in genres if str(g).strip()])
+
+        if isinstance(formats, list):
+            parts.extend([str(f).strip() for f in formats if str(f).strip()])
+
+        if isinstance(texte_libre, str) and texte_libre.strip():
+            parts.append(texte_libre.strip())
+
+        return ' '.join(parts)
+
+    def _split_title_author(self, recommendation_text):
+        text = recommendation_text.strip()
+        if ' - ' in text:
+            title, author = text.split(' - ', 1)
+            return title.strip(), author.strip()
+        return text, ""
+
+    def _infer_recommendation_type(self, row_format, requested_formats, recommendation_text):
+        source = f"{row_format} {' '.join(requested_formats if isinstance(requested_formats, list) else [])} {recommendation_text}".lower()
+
+        if any(keyword in source for keyword in ['podcast']):
+            return 'podcast'
+        if any(keyword in source for keyword in ['audio', 'livreaudio', 'livre_audio', 'audiobook']):
+            return 'livreAudio'
+        return 'livre'
+
+    def _build_recommendation_id(self, rec_type, title, author):
+        base = f"{rec_type}:{title}:{author}".strip().lower()
+        digest = hashlib.sha1(base.encode('utf-8')).hexdigest()[:12]
+        return f"{rec_type}-{digest}"
     
     def _dict_to_text(self, profile_dict):
 
