@@ -1,0 +1,109 @@
+services:
+  mongo:
+    image: mongo:7.0
+    container_name: trainingMongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 8
+      start_period: 15s
+
+  nlp-service:
+    image: python:3.11-slim
+    container_name: lpv-nlp-service
+    restart: unless-stopped
+    working_dir: /app
+    volumes:
+      - ./recommendations-service:/app
+    command: >
+      sh -c "pip install --no-cache-dir -r requirements.txt gensim && python app.py"
+    ports:
+      - "5001:5001"
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:5001/health').read()\""]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 25s
+
+  backend:
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile
+    container_name: lpv-backend
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      MONGO_URI: mongodb://mongo:27017/lpvDB
+      NLP_BASE_URL: http://nlp-service:5001
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/lpvDB?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin
+    depends_on:
+      mongo:
+        condition: service_healthy
+      nlp-service:
+        condition: service_started
+      db:
+        condition: service_started
+
+  db:
+    build: ./db
+    image: lpv-mysql:local
+    container_name: lpv-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_DATABASE: lpvDB
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin:5.2.1-apache
+    container_name: lpv-phpmyadmin
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_started
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_USER: admin
+      PMA_PASSWORD: admin
+      UPLOAD_LIMIT: 64M
+    ports:
+      - "8081:80"
+
+
+
+  frontend:
+    image: node:20-alpine
+    container_name: lpv-frontend
+    restart: unless-stopped
+    working_dir: /app
+    volumes:
+      - ./FrontEnd:/app
+      - frontend_node_modules:/app/node_modules
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0 --port 5173"
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_BASE_URL: http://localhost:8080
+    depends_on:
+      backend:
+        condition: service_started
+
+volumes:
+  mongo_data:
+  maven_cache:
+  frontend_node_modules:
+  db_data:

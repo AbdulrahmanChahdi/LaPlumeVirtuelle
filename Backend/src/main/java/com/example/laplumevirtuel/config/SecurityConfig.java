@@ -37,7 +37,6 @@ public class SecurityConfig {
         "/api/editeurs/**",
         "/auth/**",
         "/preferences/**",
-        "/h2-console/**",
         // Swagger UI
         "/v3/api-docs/**",
         "/swagger-ui/**",
