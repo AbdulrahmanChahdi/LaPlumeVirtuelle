@@ -31,8 +31,17 @@ public class ProfilePersistenceService {
                         .createdAt(now)
                         .build());
 
+        profile.setAgeRange(request.getAgeRange());
+        profile.setObjectives(sanitizeList(request.getObjectives()));
         profile.setFormats(sanitizeList(request.getFormats()));
         profile.setGenres(sanitizeList(request.getGenres()));
+        profile.setReadingLevel(request.getReadingLevel());
+        profile.setSessionTime(request.getSessionTime());
+        profile.setMoments(sanitizeList(request.getMoments()));
+        profile.setDiscoveryPreference(request.getDiscoveryPreference());
+        profile.setConsent(request.getConsent());
+        profile.setFavorites(request.getFavorites());
+        profile.setTasteDescription(request.getTasteDescription());
         profile.setTexteLibre(request.getTexteLibre());
 
         if (profile.getCreatedAt() == null) {

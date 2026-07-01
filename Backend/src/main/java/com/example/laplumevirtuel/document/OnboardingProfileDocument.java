@@ -25,9 +25,27 @@ public class OnboardingProfileDocument {
     @Indexed(unique = true)
     private Long userId;
 
+    private String ageRange;
+
+    private List<String> objectives;
+
     private List<String> formats;
 
     private List<String> genres;
+
+    private String readingLevel;
+
+    private String sessionTime;
+
+    private List<String> moments;
+
+    private String discoveryPreference;
+
+    private Boolean consent;
+
+    private String favorites;
+
+    private String tasteDescription;
 
     private String texteLibre;
 

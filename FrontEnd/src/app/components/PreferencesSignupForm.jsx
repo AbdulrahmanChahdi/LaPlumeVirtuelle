@@ -195,8 +195,17 @@ export default function PreferencesSignupForm() {
       .join(" | ")
 
     const profilePayload = {
+      ageRange,
+      objectives: selectedObjectives,
       formats: normalizedFormats,
       genres: normalizedGenres,
+      readingLevel,
+      sessionTime,
+      moments: selectedMoments,
+      discoveryPreference,
+      consent,
+      favorites,
+      tasteDescription,
       texteLibre: normalizedTexteLibre,
     }
 
